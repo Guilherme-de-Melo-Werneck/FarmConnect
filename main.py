@@ -29,8 +29,7 @@ def main(page: ft.Page):
             page.views.append(tela_login(page))
         elif page.route == "/cadastro":
             page.views.append(tela_cadastro(page))
-
-        elif page.route == "/tela_usuario":
+        elif page.route == "/usuario":
             page.views.append(tela_usuario(page))
 
         page.update()

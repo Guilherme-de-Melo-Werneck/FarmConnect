@@ -70,7 +70,7 @@ def tela_usuario(page: ft.Page):
     )
 
     return ft.View(
-        route="/tela_usuario",
+        route="/usuario",
         controls=[
             ft.Row([
                 side_menu,
