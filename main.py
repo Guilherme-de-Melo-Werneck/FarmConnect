@@ -24,7 +24,7 @@ def main(page: ft.Page):
                     ]
                 )
             )
-
+            
         elif page.route == "/login":
             page.views.append(tela_login(page))
         elif page.route == "/cadastro":

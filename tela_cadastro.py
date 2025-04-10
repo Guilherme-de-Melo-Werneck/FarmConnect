@@ -5,8 +5,11 @@ def tela_cadastro(page: ft.Page):
         # Aqui pode adicionar validações mais tarde
         page.go("/tela_usuario")
 
+    def cancelar_click(e):
+        page.go("/")
+
     return ft.View(
-        route="/cadastro",
+        route="/tela_cadastro",
         controls=[
             ft.Container(
                 bgcolor=ft.colors.GREEN_700,
