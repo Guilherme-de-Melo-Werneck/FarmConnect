@@ -1,6 +1,6 @@
 import flet as ft
 from tela_usuario import tela_usuario
-from tela_inicial import FarmConnectApp, LoginScreen
+from tela_inicial import FarmConnectApp
 from tela_cadastro import tela_cadastro
 from tela_login import tela_login
 
@@ -24,7 +24,7 @@ def main(page: ft.Page):
                     ]
                 )
             )
-            
+
         elif page.route == "/login":
             page.views.append(tela_login(page))
         elif page.route == "/cadastro":

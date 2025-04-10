@@ -65,37 +65,3 @@ class FarmConnectApp(ft.Column):
         self.controls = [self.header, self.content, self.footer]
         self.expand = True
 
-
-class LoginScreen(ft.Column):
-    def __init__(self, on_success_login, on_back):
-        super().__init__()
-        self.controls = [
-            ft.Row([
-                ft.IconButton(icon=ft.icons.ARROW_BACK, on_click=on_back),
-            ], alignment=ft.MainAxisAlignment.START),
-            ft.Text("Login", size=24, weight=ft.FontWeight.BOLD),
-            ft.TextField(label="Usuário"),
-            ft.TextField(label="Senha", password=True),
-            ft.ElevatedButton("Entrar", on_click=on_success_login),
-        ]
-        self.alignment = ft.MainAxisAlignment.CENTER
-        self.horizontal_alignment = ft.CrossAxisAlignment.CENTER
-        self.expand = True
-
-
-class RegisterScreen(ft.Column):
-    def __init__(self, on_back):
-        super().__init__()
-        self.controls = [
-            ft.Row([
-                ft.IconButton(icon=ft.icons.ARROW_BACK, on_click=on_back),
-            ], alignment=ft.MainAxisAlignment.START),
-            ft.Text("Cadastro", size=24, weight=ft.FontWeight.BOLD),
-            ft.TextField(label="Nome"),
-            ft.TextField(label="Email"),
-            ft.TextField(label="Senha", password=True),
-            ft.ElevatedButton("Registrar", on_click=on_back),  # Simula login para simplificar
-        ]
-        self.alignment = ft.MainAxisAlignment.CENTER
-        self.horizontal_alignment = ft.CrossAxisAlignment.CENTER
-        self.expand = True
