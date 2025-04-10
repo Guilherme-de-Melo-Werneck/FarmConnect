@@ -1,21 +1,49 @@
 import flet as ft
+from tela_usuario import tela_usuario
+from tela_inicial import FarmConnectApp, LoginScreen
 from tela_cadastro import tela_cadastro
-from tela_usuario import tela_inicial
 
 def main(page: ft.Page):
+    page.title = "FarmConnect"
+    page.bgcolor = "#2E7D32"
+    page.scroll = ft.ScrollMode.AUTO
+
     def route_change(route):
         page.views.clear()
 
-        if page.route == "/cadastro":
+        if page.route == "/":
+            page.views.append(
+                ft.View(
+                    route="/",
+                    controls=[
+                        FarmConnectApp(
+                            on_login=lambda e: page.go("/login"),
+                            on_register=lambda e: page.go("/cadastro")
+                        )
+                    ]
+                )
+            )
+        elif page.route == "/login":
+            page.views.append(
+                ft.View(
+                    route="/login",
+                    controls=[
+                        LoginScreen(
+                            on_success_login=lambda e: page.go("/tela_usuario"),
+                            on_back=lambda e: page.go("/")
+                        )
+                    ]
+                )
+            )
+        elif page.route == "/cadastro":
             page.views.append(tela_cadastro(page))
+
         elif page.route == "/tela_usuario":
-            page.views.append(tela_inicial(page))
-        else:
-            page.go("/cadastro")
+            page.views.append(tela_usuario(page))
 
         page.update()
 
     page.on_route_change = route_change
-    page.go(page.route)
+    page.go("/")  # Início do app
 
 ft.app(target=main)

@@ -1,6 +1,6 @@
 import flet as ft
 
-def tela_inicial(page: ft.Page):
+def tela_usuario(page: ft.Page):
     # Menu lateral esquerdo
     side_menu = ft.Container(
         width=260,
@@ -70,7 +70,7 @@ def tela_inicial(page: ft.Page):
     )
 
     return ft.View(
-        route="/telainicial",
+        route="/tela_usuario",
         controls=[
             ft.Row([
                 side_menu,

@@ -1,70 +1,101 @@
 import flet as ft
 
-def tela_inicial(page: ft.Page):
-    def go_to_login(e):
-        page.go("/login")
+class FarmConnectApp(ft.Column):
+    def __init__(self, on_login, on_register):
+        super().__init__()
 
-    def go_to_register(e):
-        page.go("/cadastro")
-
-    header = ft.Container(
-        padding=ft.padding.symmetric(horizontal=30, vertical=10),
-        bgcolor=ft.colors.GREEN_600,
-        content=ft.Row(
+        self.header = ft.Row(
             controls=[
-                ft.Row([
-                    ft.Image(src="/images/logo.png", width=50, height=50),
-                    ft.Text("FarmConnect", size=28, weight=ft.FontWeight.BOLD, color=ft.colors.WHITE),
-                ], alignment=ft.MainAxisAlignment.START),
-                ft.Row([
-                    ft.TextButton("Sobre", style=ft.ButtonStyle(color=ft.colors.WHITE)),
-                    ft.TextButton("Ajuda", style=ft.ButtonStyle(color=ft.colors.WHITE)),
-                    ft.TextButton("Contato", style=ft.ButtonStyle(color=ft.colors.WHITE)),
-                ], alignment=ft.MainAxisAlignment.CENTER),
-                ft.Row([
-                    ft.TextButton("Entrar", on_click=go_to_login, style=ft.ButtonStyle(color=ft.colors.WHITE)),
-                    ft.TextButton("Registrar", on_click=go_to_register, style=ft.ButtonStyle(color=ft.colors.WHITE)),
-                ], alignment=ft.MainAxisAlignment.END),
+                ft.Row(
+                    controls=[
+                        ft.Image(src="logo.png", width=50, height=50),
+                        ft.Text("FarmConnect", size=30, weight=ft.FontWeight.BOLD, color="white"),
+                    ],
+                    alignment=ft.MainAxisAlignment.START,
+                ),
+                ft.Row(
+                    controls=[
+                        ft.TextButton("Sobre"),
+                        ft.TextButton("Ajuda"),
+                        ft.TextButton("Contato"),
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                ),
+                ft.Row(
+                    controls=[
+                        ft.TextButton("Entrar", on_click=on_login),
+                        ft.TextButton("Registrar", on_click=on_register),
+                    ],
+                    alignment=ft.MainAxisAlignment.END,
+                ),
             ],
-            alignment=ft.MainAxisAlignment.SPACE_BETWEEN
+            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
         )
-    )
 
-    content = ft.Column([
-        ft.Text(
-            "Facilitar seus agendamentos e busca para medicamentos especializados",
-            size=18,
-            color=ft.colors.WHITE,
-            text_align=ft.TextAlign.CENTER
-        ),
-        ft.Row([
-            ft.TextField(label="Digite um medicamento", expand=True),
-            ft.ElevatedButton("Enviar", bgcolor=ft.colors.GREEN_700, color=ft.colors.WHITE),
-        ], alignment=ft.MainAxisAlignment.CENTER)
-    ], alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=30)
-
-    footer = ft.Container(
-        content=ft.Row(
+        self.content = ft.Column(
             controls=[
-                ft.Text("Siga-nos", color=ft.colors.WHITE),
+                ft.Text(
+                    "Facilitar seus agendamentos e busca para medicamentos especializados",
+                    size=18,
+                    color="white",
+                ),
+                ft.Row(
+                    controls=[
+                        ft.TextField(label="Digite um medicamento", expand=True),
+                        ft.ElevatedButton("Enviar", bgcolor="#4CAF50", color="white"),
+                    ],
+                    alignment=ft.MainAxisAlignment.CENTER,
+                )
             ],
             alignment=ft.MainAxisAlignment.CENTER,
-        ),
-        alignment=ft.alignment.bottom_center,
-        padding=10,
-    )
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        )
 
-    return ft.View(
-        route="/",
-        controls=[
-            ft.Column([
-                header,
-                ft.Container(
-                    expand=True,
-                    alignment=ft.alignment.center,
-                    content=content
-                ),
-                footer
-            ], expand=True)
+        self.footer = ft.Container(
+            content=ft.Row(
+                controls=[
+                    ft.Text("Siga-nos: "),
+                ],
+                alignment=ft.MainAxisAlignment.CENTER,
+            ),
+            alignment=ft.alignment.bottom_center,
+            padding=10,
+        )
+
+        self.controls = [self.header, self.content, self.footer]
+        self.expand = True
+
+
+class LoginScreen(ft.Column):
+    def __init__(self, on_success_login, on_back):
+        super().__init__()
+        self.controls = [
+            ft.Row([
+                ft.IconButton(icon=ft.icons.ARROW_BACK, on_click=on_back),
+            ], alignment=ft.MainAxisAlignment.START),
+            ft.Text("Login", size=24, weight=ft.FontWeight.BOLD),
+            ft.TextField(label="Usuário"),
+            ft.TextField(label="Senha", password=True),
+            ft.ElevatedButton("Entrar", on_click=on_success_login),
         ]
-    )
+        self.alignment = ft.MainAxisAlignment.CENTER
+        self.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+        self.expand = True
+
+
+class RegisterScreen(ft.Column):
+    def __init__(self, on_back):
+        super().__init__()
+        self.controls = [
+            ft.Row([
+                ft.IconButton(icon=ft.icons.ARROW_BACK, on_click=on_back),
+            ], alignment=ft.MainAxisAlignment.START),
+            ft.Text("Cadastro", size=24, weight=ft.FontWeight.BOLD),
+            ft.TextField(label="Nome"),
+            ft.TextField(label="Email"),
+            ft.TextField(label="Senha", password=True),
+            ft.ElevatedButton("Registrar", on_click=on_back),  # Simula login para simplificar
+        ]
+        self.alignment = ft.MainAxisAlignment.CENTER
+        self.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+        self.expand = True
