@@ -1,11 +1,7 @@
 import flet as ft
 
-def main(page: ft.Page):
-    page.title = "FarmConnect"
-    page.bgcolor = ft.colors.GREEN_700
-    page.scroll = ft.ScrollMode.AUTO
-
-    # Menu lateral esquerdo fixo até embaixo com box preto de fundo
+def tela_inicial(page: ft.Page):
+    # Menu lateral esquerdo
     side_menu = ft.Container(
         width=260,
         bgcolor=ft.colors.BLACK,
@@ -26,7 +22,7 @@ def main(page: ft.Page):
         )
     )
 
-    # Topo com logo, barra de busca e perfil
+    # Topo com logo, busca e perfil
     top_bar = ft.Container(
         bgcolor=ft.colors.GREEN_600,
         padding=ft.padding.symmetric(horizontal=20, vertical=10),
@@ -40,7 +36,7 @@ def main(page: ft.Page):
         ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
     )
 
-    # Conteúdo branco centralizado com elementos
+    # Conteúdo central
     welcome_text = ft.Text("OLÁ, SEJA BEM VINDO", size=22, weight=ft.FontWeight.BOLD, text_align=ft.TextAlign.CENTER)
 
     buttons_row = ft.Row([
@@ -70,30 +66,25 @@ def main(page: ft.Page):
         border_radius=10,
         padding=30,
         width=800,
-        content=ft.Column([
-            welcome_text,
-            buttons_row,
-            ft.Divider(height=20, color=ft.colors.TRANSPARENT),
-            medicamentos,
-        ], spacing=30)
+        content=ft.Column([welcome_text, buttons_row, ft.Divider(height=20), medicamentos], spacing=30)
     )
 
-    # Layout principal centralizado
-    page.add(
-        ft.Row([
-            side_menu,
-            ft.Container(
-                expand=True,
-                content=ft.Column([
-                    top_bar,
-                    ft.Container(
-                        alignment=ft.alignment.center,
-                        expand=True,
-                        content=content_area
-                    )
-                ], expand=True)
-            )
-        ], expand=True, vertical_alignment=ft.CrossAxisAlignment.STRETCH)
+    return ft.View(
+        route="/telainicial",
+        controls=[
+            ft.Row([
+                side_menu,
+                ft.Container(
+                    expand=True,
+                    content=ft.Column([
+                        top_bar,
+                        ft.Container(
+                            alignment=ft.alignment.center,
+                            expand=True,
+                            content=content_area
+                        )
+                    ], expand=True)
+                )
+            ], expand=True, vertical_alignment=ft.CrossAxisAlignment.STRETCH)
+        ]
     )
-
-ft.app(target=main)
