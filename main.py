@@ -1,6 +1,6 @@
 import flet as ft
-from cadastro import tela_cadastro
-from telainicial import tela_inicial
+from tela_cadastro import tela_cadastro
+from tela_usuario import tela_inicial
 
 def main(page: ft.Page):
     def route_change(route):
@@ -8,7 +8,7 @@ def main(page: ft.Page):
 
         if page.route == "/cadastro":
             page.views.append(tela_cadastro(page))
-        elif page.route == "/telainicial":
+        elif page.route == "/tela_usuario":
             page.views.append(tela_inicial(page))
         else:
             page.go("/cadastro")

@@ -3,7 +3,7 @@ import flet as ft
 def tela_cadastro(page: ft.Page):
     def registrar_click(e):
         # Aqui pode adicionar validações mais tarde
-        page.go("/telainicial")
+        page.go("/tela_usuario")
 
     return ft.View(
         route="/cadastro",
