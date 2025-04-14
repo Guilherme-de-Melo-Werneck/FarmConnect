@@ -3,6 +3,7 @@ import flet as ft
 def main(page: ft.Page):
     page.title = "Farmconnect"
     page.bgcolor = "#3A936C"
+    page.theme_mode = ft.ThemeMode.LIGHT
     page.scroll = ft.ScrollMode.AUTO
     page.padding = 0
 
@@ -32,6 +33,7 @@ def main(page: ft.Page):
                 alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                 vertical_alignment=ft.CrossAxisAlignment.CENTER,
             ),
+            margin = 0,
             padding=ft.padding.symmetric(horizontal=30, vertical=20),
             bgcolor="#3A936C"
         )
@@ -39,12 +41,12 @@ def main(page: ft.Page):
         # Texto principal e campo de sugestão
         left_content = ft.Column(
             [
-                ft.Text("Farmconnect", size=50, color="white", weight="bold"),
+                ft.Text("Farmconnect", size=50, color="black", weight="bold"),
                 ft.Text(
                     "Facilitar seus agendamentos e\nbusca para medicamentos\nespecializados",
                     size=30,
-                    color="white"
-                ),
+                    color="black"
+                ), 
                 ft.Container(
                     content=ft.Row([  
                         ft.Icon(ft.icons.SEARCH, color="black"),
@@ -55,7 +57,7 @@ def main(page: ft.Page):
                     bgcolor=ft.colors.WHITE,
                     padding=10,
                     width=400
-                )
+                ),
             ],
             spacing=20,
             alignment=ft.MainAxisAlignment.START
@@ -75,7 +77,9 @@ def main(page: ft.Page):
                 alignment=ft.MainAxisAlignment.SPACE_EVENLY,
             ),
             padding=30,
+            margin = 0,
             expand=True,
+            bgcolor="#3A936C",
         )
 
         # Rodapé
@@ -94,18 +98,18 @@ def main(page: ft.Page):
                 ],
             ),
             bgcolor="#99ACFF",
+            margin = 0,
             padding=30,
         )
-        page.add(
-        ft.Column(
-            [header, main_section, footer],
-            spacing=0,
-            expand=True
-        )
-        )
+
         return ft.View(
             route="/",
-            controls=[header, main_section, footer]
+            controls= [ft.Column(
+                [header, main_section, footer], 
+                spacing=0, 
+                expand=True
+                )
+            ]
         )
     
 
@@ -126,23 +130,28 @@ def main(page: ft.Page):
 
         return ft.View(
             route="/login",
-            controls=[ft.Container(
-                alignment=ft.alignment.center,
-                expand=True,
-                content=ft.Column(
-                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                    spacing=25,
-                    controls=[
-                        ft.Text("LOGIN", size=28, weight=ft.FontWeight.BOLD),
-                        email,
-                        senha,
-                        ft.Row([
-                            ft.ElevatedButton("Entrar", on_click=login_click),
-                            ft.TextButton("Voltar", on_click=voltar_click)
-                        ], alignment=ft.MainAxisAlignment.CENTER)
-                    ]
-                )
-            )]
+            controls=[
+                ft.Container(
+                    alignment=ft.alignment.center,
+                    content=ft.Column(
+                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                        spacing=25,
+                        controls=[
+                            ft.Text("LOGIN", size=28, weight=ft.FontWeight.BOLD),
+                            email,
+                            senha,
+                            ft.Row([
+                                ft.ElevatedButton("Entrar", on_click=login_click),
+                                ft.TextButton("Voltar", on_click=voltar_click)
+                            ], alignment=ft.MainAxisAlignment.CENTER)
+                        ],
+                    ),
+                    padding=20,
+                    bgcolor = "#99ACFF",
+                    border_radius=10,
+                    margin=50
+                ) 
+            ]
         )
 
     def tela_cadastro():
@@ -173,14 +182,16 @@ def main(page: ft.Page):
                         ft.Text("* Campos Obrigatórios", size=10, color="red")
                     ], spacing=15),
                     padding=20,
-                    bgcolor="white",
+                    bgcolor = "#99ACFF",
                     border_radius=10,
                     margin=20
                 ),
+
                 ft.Row([
                     ft.ElevatedButton("CADASTRAR", bgcolor="white", color="black", width=150, on_click=lambda e: page.go("/login")),
                     ft.ElevatedButton("CANCELAR", bgcolor="white", color="black", width=150, on_click=cancelar_click),
                 ], alignment=ft.MainAxisAlignment.CENTER, spacing=50),
+
                 ft.Container(
                     content=ft.Column([
                         ft.Text("Siga-nos", size=16, weight=ft.FontWeight.BOLD, text_align=ft.TextAlign.CENTER),
@@ -202,7 +213,7 @@ def main(page: ft.Page):
                 ft.Row([
                     ft.Container(
                         width=260,
-                        bgcolor=ft.colors.BLACK,
+                        bgcolor=ft.colors.WHITE,
                         content=ft.Container(
                             padding=ft.padding.symmetric(horizontal=10, vertical=20),
                             bgcolor=ft.colors.BLUE_GREY_900,
@@ -219,6 +230,7 @@ def main(page: ft.Page):
                             ], spacing=10)
                         )
                     ),
+
                     ft.Container(
                         expand=True,
                         content=ft.Column([
@@ -234,6 +246,7 @@ def main(page: ft.Page):
                                     ], spacing=10)
                                 ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
                             ),
+                            
                             ft.Container(
                                 alignment=ft.alignment.center,
                                 expand=True,
