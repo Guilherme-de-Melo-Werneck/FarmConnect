@@ -126,7 +126,6 @@ def main(page: ft.Page):
         return ft.View(
             route="/cadastro",
             controls=[
-
                 ft.Container(
                     content=ft.Column([
                         ft.Row([
