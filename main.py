@@ -135,19 +135,19 @@ def main(page: ft.Page):
                         ft.Row([
                             ft.TextField(label="Nome Completo *", width=400),
                             ft.TextField(label="Endereço", width=400),
-                        ]),
+                        ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
                         ft.Row([
                             ft.TextField(label="CPF *", width=400),
                             ft.TextField(label="Telefone *", width=400),
-                        ]),
+                        ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
                         ft.Row([
                             ft.TextField(label="E-mail *", width=400),
                             ft.TextField(label="Verificar E-mail *", width=400),
-                        ]),
+                        ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
                         ft.Row([
                             ft.TextField(label="Senha *", password=True, width=400),
                             ft.TextField(label="Confirmar Senha *", password=True, width=400),
-                        ]),
+                        ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
                         ft.Text("* Campos Obrigatórios", size=10, color="red")
                     ], spacing=15),
                     padding=20,
