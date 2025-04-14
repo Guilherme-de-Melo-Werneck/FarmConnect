@@ -126,10 +126,7 @@ def main(page: ft.Page):
         return ft.View(
             route="/cadastro",
             controls=[
-                ft.Row([
-                    ft.ElevatedButton("Registrar", bgcolor="#ffffff", color="green", width=100),
-                    ft.ElevatedButton("Entrar", bgcolor="#ffffff", color="green", width=100),
-                ], alignment=ft.MainAxisAlignment.END),
+
                 ft.Container(
                     content=ft.Column([
                         ft.Row([
