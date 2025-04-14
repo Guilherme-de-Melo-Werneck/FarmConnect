@@ -152,15 +152,11 @@ def main(page: ft.Page):
                     margin=20
                 ),
                 ft.Row([
-                    ft.ElevatedButton("CADASTRAR", bgcolor="white", color="black", width=150),
+                    ft.ElevatedButton("CADASTRAR", bgcolor="white", color="black", width=150, on_click=lambda e: page.go("/login")),
                     ft.ElevatedButton("CANCELAR", bgcolor="white", color="black", width=150, on_click=cancelar_click),
                 ], alignment=ft.MainAxisAlignment.CENTER, spacing=50),
                 ft.Container(
                     content=ft.Column([
-                        ft.Row([
-                            ft.Image(src="https://i.ibb.co/nb1GjNF/site-blindado.png", width=120),
-                            ft.Image(src="https://i.ibb.co/yR9VZzt/google-safe.png", width=120),
-                        ], alignment=ft.MainAxisAlignment.CENTER, spacing=40),
                         ft.Text("Siga-nos", size=16, weight=ft.FontWeight.BOLD, text_align=ft.TextAlign.CENTER),
                         ft.Row([
                             ft.Image(src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png", width=30),
@@ -268,3 +264,5 @@ def main(page: ft.Page):
     page.go("/")
 
 ft.app(target=main)
+
+
