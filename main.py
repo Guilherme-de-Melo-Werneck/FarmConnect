@@ -211,7 +211,7 @@ def main(page: ft.Page):
 
     def tela_cadastro():
         def registrar_click(e):
-            if nome.value.strip() and email.value.strip() and senha.value.strip():
+            if nome.value.strip() and email.value.strip() and cpf.value.strip() and nascimento.value.strip() and senha.value.strip():
                 page.snack_bar = ft.SnackBar(ft.Text("Cadastro realizado com sucesso!"))
                 page.snack_bar.open = True
                 page.go("/login")
@@ -241,6 +241,28 @@ def main(page: ft.Page):
             expand=True
         )
 
+        cpf = ft.TextField(
+            label="CPF",
+            prefix_icon=ft.icons.BADGE,
+            border_radius=10,
+            filled=True,
+            bgcolor=ft.colors.WHITE,
+            expand=True,
+            keyboard_type=ft.KeyboardType.NUMBER,
+            max_length=11,
+            hint_text="Apenas números"
+        )
+
+        nascimento = ft.TextField(
+            label="Data de Nascimento",
+            hint_text="DD/MM/AAAA",
+            prefix_icon=ft.icons.CALENDAR_MONTH,
+            border_radius=10,
+            filled=True,
+            bgcolor=ft.colors.WHITE,
+            expand=True
+        )
+
         senha = ft.TextField(
             label="Senha",
             password=True,
@@ -254,7 +276,7 @@ def main(page: ft.Page):
 
         card_container = ft.Container(
             width=450,
-            height = 450,
+            height=550,
             padding=30,
             bgcolor=ft.colors.WHITE,
             border_radius=15,
@@ -272,6 +294,8 @@ def main(page: ft.Page):
                     ft.Text("Preencha os dados abaixo para se cadastrar", size=14, color=ft.colors.GREY),
                     nome,
                     email,
+                    cpf,
+                    nascimento,
                     senha,
                     ft.ElevatedButton("Cadastrar", width=200, height=45, on_click=registrar_click),
                     ft.TextButton("Voltar à tela inicial", on_click=voltar_click)
@@ -279,7 +303,6 @@ def main(page: ft.Page):
             )
         )
 
-        # Corrigido: o fundo agora está no Container externo
         return ft.View(
             route="/cadastro",
             controls=[
