@@ -7,6 +7,15 @@ def main(page: ft.Page):
     page.scroll = ft.ScrollMode.AUTO
     page.padding = 0
 
+    import flet as ft
+
+def main(page: ft.Page):
+    page.title = "Farmconnect"
+    page.bgcolor = "#3A936C"
+    page.theme_mode = ft.ThemeMode.LIGHT
+    page.scroll = ft.ScrollMode.AUTO
+    page.padding = 0
+
     def tela_inicial():
         def on_login(e):
             page.go("/login")
@@ -111,7 +120,6 @@ def main(page: ft.Page):
                 )
             ]
         )
-    
 
     def tela_login():
         def login_click(e):
@@ -125,83 +133,172 @@ def main(page: ft.Page):
         def voltar_click(e):
             page.go("/")
 
-        email = ft.TextField(label="Email", width=400)
-        senha = ft.TextField(label="Senha", password=True, can_reveal_password=True, width=400)
+        email = ft.TextField(
+            label="Email",
+            prefix_icon=ft.icons.EMAIL,
+            border_radius=10,
+            filled=True,
+            bgcolor=ft.colors.WHITE,
+            expand=True
+        )
+
+        senha = ft.TextField(
+            label="Senha",
+            password=True,
+            can_reveal_password=True,
+            prefix_icon=ft.icons.LOCK,
+            border_radius=10,
+            filled=True,
+            bgcolor=ft.colors.WHITE,
+            expand=True
+        )
+
+        # Definindo a "largura máxima" do card com base no tamanho da tela
+        card_container = ft.Container(
+            width=450,
+            height=450,
+            padding=30,
+            bgcolor=ft.colors.WHITE,
+            border_radius=15,
+            shadow=ft.BoxShadow(
+                blur_radius=25,
+                color=ft.colors.BLACK26,
+                offset=ft.Offset(4, 4),
+                spread_radius=1
+            ),
+            content=ft.Column(
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                spacing=20,
+                controls=[
+                    ft.Text("Bem-vindo!", size=24, weight=ft.FontWeight.BOLD),
+                    ft.Text("Faça login para continuar", size=14, color=ft.colors.GREY),
+                    email,
+                    senha,
+                    ft.ElevatedButton("Entrar", width=200, height=45, on_click=login_click),
+                    ft.TextButton("Voltar à tela inicial", on_click=voltar_click)
+                ]
+            )
+        )
 
         return ft.View(
             route="/login",
             controls=[
                 ft.Container(
+                    expand=True,
                     alignment=ft.alignment.center,
-                    content=ft.Column(
-                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                        spacing=25,
-                        controls=[
-                            ft.Text("LOGIN", size=28, weight=ft.FontWeight.BOLD),
-                            email,
-                            senha,
-                            ft.Row([
-                                ft.ElevatedButton("Entrar", on_click=login_click),
-                                ft.TextButton("Voltar", on_click=voltar_click)
-                            ], alignment=ft.MainAxisAlignment.CENTER)
-                        ],
+                    gradient=ft.LinearGradient(
+                        begin=ft.alignment.top_center,
+                        end=ft.alignment.bottom_center,
+                        colors=["#87eaa5", "#7dc1fe"]
                     ),
-                    padding=20,
-                    bgcolor = "#99ACFF",
-                    border_radius=10,
-                    margin=50
-                ) 
+                    content=ft.ResponsiveRow(
+                        columns=12,
+                        alignment=ft.MainAxisAlignment.CENTER,
+                        vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                        controls=[
+                            ft.Container(
+                                col={"sm": 12, "md": 6, "lg": 4},
+                                content=card_container
+                            )
+                        ]
+                    )
+                )
             ]
         )
 
     def tela_cadastro():
-        def cancelar_click(e):
+        def registrar_click(e):
+            if nome.value.strip() and email.value.strip() and senha.value.strip():
+                page.snack_bar = ft.SnackBar(ft.Text("Cadastro realizado com sucesso!"))
+                page.snack_bar.open = True
+                page.go("/login")
+            else:
+                page.snack_bar = ft.SnackBar(ft.Text("Preencha todos os campos."))
+                page.snack_bar.open = True
+                page.update()
+
+        def voltar_click(e):
             page.go("/")
 
+        nome = ft.TextField(
+            label="Nome completo",
+            prefix_icon=ft.icons.PERSON,
+            border_radius=10,
+            filled=True,
+            bgcolor=ft.colors.WHITE,
+            expand=True
+        )
+
+        email = ft.TextField(
+            label="Email",
+            prefix_icon=ft.icons.EMAIL,
+            border_radius=10,
+            filled=True,
+            bgcolor=ft.colors.WHITE,
+            expand=True
+        )
+
+        senha = ft.TextField(
+            label="Senha",
+            password=True,
+            can_reveal_password=True,
+            prefix_icon=ft.icons.LOCK,
+            border_radius=10,
+            filled=True,
+            bgcolor=ft.colors.WHITE,
+            expand=True
+        )
+
+        card_container = ft.Container(
+            width=450,
+            height = 450,
+            padding=30,
+            bgcolor=ft.colors.WHITE,
+            border_radius=15,
+            shadow=ft.BoxShadow(
+                blur_radius=25,
+                color=ft.colors.BLACK26,
+                offset=ft.Offset(4, 4),
+                spread_radius=1
+            ),
+            content=ft.Column(
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                spacing=20,
+                controls=[
+                    ft.Text("Crie sua conta", size=24, weight=ft.FontWeight.BOLD),
+                    ft.Text("Preencha os dados abaixo para se cadastrar", size=14, color=ft.colors.GREY),
+                    nome,
+                    email,
+                    senha,
+                    ft.ElevatedButton("Cadastrar", width=200, height=45, on_click=registrar_click),
+                    ft.TextButton("Voltar à tela inicial", on_click=voltar_click)
+                ]
+            )
+        )
+
+        # Corrigido: o fundo agora está no Container externo
         return ft.View(
             route="/cadastro",
             controls=[
                 ft.Container(
-                    content=ft.Column([
-                        ft.Row([
-                            ft.TextField(label="Nome Completo *", width=400),
-                            ft.TextField(label="Endereço", width=400),
-                        ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
-                        ft.Row([
-                            ft.TextField(label="CPF *", width=400),
-                            ft.TextField(label="Telefone *", width=400),
-                        ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
-                        ft.Row([
-                            ft.TextField(label="E-mail *", width=400),
-                            ft.TextField(label="Verificar E-mail *", width=400),
-                        ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
-                        ft.Row([
-                            ft.TextField(label="Senha *", password=True, width=400),
-                            ft.TextField(label="Confirmar Senha *", password=True, width=400),
-                        ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
-                        ft.Text("* Campos Obrigatórios", size=10, color="red")
-                    ], spacing=15),
-                    padding=20,
-                    bgcolor = "#99ACFF",
-                    border_radius=10,
-                    margin=20
-                ),
-
-                ft.Row([
-                    ft.ElevatedButton("CADASTRAR", bgcolor="white", color="black", width=150, on_click=lambda e: page.go("/login")),
-                    ft.ElevatedButton("CANCELAR", bgcolor="white", color="black", width=150, on_click=cancelar_click),
-                ], alignment=ft.MainAxisAlignment.CENTER, spacing=50),
-
-                ft.Container(
-                    content=ft.Column([
-                        ft.Text("Siga-nos", size=16, weight=ft.FontWeight.BOLD, text_align=ft.TextAlign.CENTER),
-                        ft.Row([
-                            ft.Image(src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png", width=30),
-                            ft.Image(src="https://cdn-icons-png.flaticon.com/512/733/733547.png", width=30),
-                            ft.Image(src="https://cdn-icons-png.flaticon.com/512/733/733585.png", width=30),
-                        ], alignment=ft.MainAxisAlignment.CENTER, spacing=20),
-                    ], alignment=ft.MainAxisAlignment.CENTER, spacing=10),
-                    padding=20
+                    expand=True,
+                    alignment=ft.alignment.center,
+                    gradient=ft.LinearGradient(
+                        begin=ft.alignment.top_center,
+                        end=ft.alignment.bottom_center,
+                        colors=["#87eaa5", "#7dc1fe"]
+                    ),
+                    content=ft.ResponsiveRow(
+                        columns=12,
+                        alignment=ft.MainAxisAlignment.CENTER,
+                        vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                        controls=[
+                            ft.Container(
+                                col={"sm": 12, "md": 6, "lg": 4},
+                                content=card_container
+                            )
+                        ]
+                    )
                 )
             ]
         )
@@ -246,7 +343,7 @@ def main(page: ft.Page):
                                     ], spacing=10)
                                 ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
                             ),
-                            
+
                             ft.Container(
                                 alignment=ft.alignment.center,
                                 expand=True,
