@@ -223,6 +223,54 @@ def main(page: ft.Page):
         def voltar_click(e):
             page.go("/")
 
+        def cpf_change(e):
+            texto_original = cpf.value
+            numeros = ''.join(filter(str.isdigit, texto_original))
+
+            if len(numeros) > 11:
+                numeros = numeros[:11]
+
+            formatado = ""
+            if len(numeros) >= 3:
+                formatado += numeros[:3] + "."
+            if len(numeros) >= 6:
+                formatado += numeros[3:6] + "."
+            if len(numeros) >= 9:
+                formatado += numeros[6:9] + "-"
+            if len(numeros) > 9:
+                formatado += numeros[9:]
+            elif len(numeros) > 6:
+                formatado += numeros[6:9]
+            elif len(numeros) > 3:
+                formatado += numeros[3:6]
+            elif len(numeros) > 0:
+                formatado += numeros[0:3]
+
+            if cpf.value != formatado:
+                cpf.value = formatado
+                cpf.update()
+
+        def nascimento_change(e):
+            texto_original = nascimento.value
+            numeros = ''.join(filter(str.isdigit, texto_original))
+
+            if len(numeros) > 8:
+                numeros = numeros[:8]
+
+            formatado = ""
+            if len(numeros) >= 2:
+                formatado += numeros[:2] + "/"
+            if len(numeros) >= 4:
+                formatado += numeros[2:4] + "/"
+            if len(numeros) > 4:
+                formatado += numeros[4:]
+            elif len(numeros) > 2:
+                formatado += numeros[2:]
+
+            if nascimento.value != formatado:
+                nascimento.value = formatado
+                nascimento.update()
+
         nome = ft.TextField(
             label="Nome completo",
             prefix_icon=ft.icons.PERSON,
@@ -249,8 +297,8 @@ def main(page: ft.Page):
             bgcolor=ft.colors.WHITE,
             expand=True,
             keyboard_type=ft.KeyboardType.NUMBER,
-            max_length=11,
-            hint_text="Apenas números"
+            hint_text="Apenas números",
+            on_change=cpf_change
         )
 
         nascimento = ft.TextField(
@@ -260,7 +308,9 @@ def main(page: ft.Page):
             border_radius=10,
             filled=True,
             bgcolor=ft.colors.WHITE,
-            expand=True
+            expand=True,
+            input_filter=ft.InputFilter(allow=True, regex_string=r"[0-9]", replacement_string=""),
+            on_blur=nascimento_change  # Agora formata só quando o campo perde o foco
         )
 
         senha = ft.TextField(
@@ -328,7 +378,7 @@ def main(page: ft.Page):
                 )
             ]
         )
-
+    
     def tela_usuario():
         return ft.View(
             route="/usuario",
