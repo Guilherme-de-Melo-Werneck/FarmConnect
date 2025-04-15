@@ -16,43 +16,47 @@ def main(page: ft.Page):
 
         # Header
         header = ft.Container(
-            content=ft.Row(
-                [
-                    ft.Image(src="logo.png", width=100, height=50),
-                    ft.Row(
-                        [
-                            ft.Text("Feedback", size=14, color="white"),
-                            ft.Text("Ajuda", size=14, color="white"),
-                            ft.Text("Contato", size=14, color="white"),
-                            ft.ElevatedButton("Registrar", bgcolor="#D9F6E6", color="black", height=30, on_click=on_register),
-                            ft.ElevatedButton("Entrar", bgcolor="#D9F6E6", color="black", height=30, on_click=on_login),
-                        ],
-                        spacing=20,
+            content=ft.ResponsiveRow(
+                columns=12,
+                controls=[
+                    ft.Container(
+                        col={"sm": 12, "md": 6},
+                        content=ft.Row([
+                            ft.Image(src="logo.png", width=100, height=50),
+                        ])
+                    ),
+                    ft.Container(
+                        col={"sm": 12, "md": 6},
+                        alignment=ft.alignment.center_right,
+                        content=ft.Row(
+                            [
+                                ft.Text("Feedback", size=14, color="white"),
+                                ft.Text("Ajuda", size=14, color="white"),
+                                ft.Text("Contato", size=14, color="white"),
+                                ft.ElevatedButton("Registrar", bgcolor="#D9F6E6", color="black", height=30, on_click=on_register),
+                                ft.ElevatedButton("Entrar", bgcolor="#D9F6E6", color="black", height=30, on_click=on_login),
+                            ],
+                            spacing=15,
+                            wrap=True
+                        )
                     ),
                 ],
-                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                vertical_alignment=ft.CrossAxisAlignment.CENTER,
             ),
-            margin = 0,
             padding=ft.padding.symmetric(horizontal=30, vertical=20),
             gradient=ft.LinearGradient(
-                        begin=ft.alignment.top_center,
-                        end=ft.alignment.bottom_center,
-                        colors=["#7dc1fe", "#87eaa5"]
-                    ),
+                begin=ft.alignment.top_center,
+                end=ft.alignment.bottom_center,
+                colors=["#7dc1fe", "#87eaa5"]
+            ),
         )
 
-        # Texto principal e campo de sugestão
+        # Texto e campo de sugestão
         left_content = ft.Column(
             [
-                ft.Text("Farmconnect", size=50, color="black", weight="bold"),
-                ft.Text(
-                    "Facilitar seus agendamentos e\nbusca para medicamentos\nespecializados",
-                    size=30,
-                    color="black"
-                ), 
+                ft.Text("Farmconnect", size=40, weight=ft.FontWeight.BOLD, color=ft.colors.BLACK),
+                ft.Text("Facilitar seus agendamentos e\nbusca para medicamentos especializados", size=22, color=ft.colors.BLACK),
                 ft.Container(
-                    content=ft.Row([  
+                    content=ft.Row([
                         ft.Icon(ft.icons.SEARCH, color="black"),
                         ft.TextField(hint_text="Digite uma sugestão", expand=True),
                         ft.ElevatedButton("Enviar", bgcolor="#0066CC", color="white")
@@ -60,34 +64,33 @@ def main(page: ft.Page):
                     border=ft.border.all(1, ft.colors.BLACK),
                     bgcolor=ft.colors.WHITE,
                     padding=10,
-                    width=400
-                ),
+                    # expand=True,
+                )
             ],
+            alignment=ft.MainAxisAlignment.CENTER,
             spacing=20,
-            alignment=ft.MainAxisAlignment.START
+            expand=True
         )
 
-        # Imagem à direita
-        phone_image = ft.Image(
-            src="img/celular.png",
-            width=400,
-            height=400,
-        )
+        phone_image = ft.Image(src="img/celular.png", width=450, height=450, expand=True)
 
-        # Seção principal com fundo verde
+        # Seção principal com responsive layout
         main_section = ft.Container(
-            content=ft.Row(
-                [left_content, phone_image],
-                alignment=ft.MainAxisAlignment.SPACE_EVENLY,
-            ),
             padding=30,
-            margin = 0,
             expand=True,
             gradient=ft.LinearGradient(
-                        begin=ft.alignment.top_center,
-                        end=ft.alignment.bottom_center,
-                        colors=["#87eaa5", "#7dc1fe"]
-                    ),
+                begin=ft.alignment.top_center,
+                end=ft.alignment.bottom_center,
+                colors=["#87eaa5", "#7dc1fe"]
+            ),
+            content=ft.ResponsiveRow(
+                columns=12,
+                controls=[
+                    ft.Container(col={"sm": 12, "md": 6}, content=left_content),
+                    ft.Container(col={"sm": 12, "md": 6}, content=phone_image, alignment=ft.alignment.center)
+                ],
+                vertical_alignment=ft.CrossAxisAlignment.CENTER
+            )
         )
 
         # Rodapé
@@ -106,23 +109,20 @@ def main(page: ft.Page):
                 ],
             ),
             gradient=ft.LinearGradient(
-                        begin=ft.alignment.top_center,
-                        end=ft.alignment.bottom_center,
-                        colors=["#7dc1fe", "#87eaa5"]
-                    ),
-            margin = 0,
+                begin=ft.alignment.top_center,
+                end=ft.alignment.bottom_center,
+                colors=["#7dc1fe", "#87eaa5"]
+            ),
             padding=30,
         )
 
         return ft.View(
             route="/",
-            controls= [ft.Column(
-                [header, main_section, footer], 
-                spacing=0, 
-                expand=True
-                )
+            controls=[
+                ft.Column([header, main_section, footer], spacing=0, expand=True)
             ]
         )
+
 
     def tela_login():
         def login_click(e):
