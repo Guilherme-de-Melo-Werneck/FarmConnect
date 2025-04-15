@@ -309,7 +309,7 @@ def main(page: ft.Page):
             filled=True,
             bgcolor=ft.colors.WHITE,
             expand=True,
-            input_filter=ft.InputFilter(allow=True, regex_string=r"[0-9]", replacement_string=""),
+            
             on_blur=nascimento_change  # Agora formata só quando o campo perde o foco
         )
 
