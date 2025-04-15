@@ -35,7 +35,11 @@ def main(page: ft.Page):
             ),
             margin = 0,
             padding=ft.padding.symmetric(horizontal=30, vertical=20),
-            bgcolor="#3A936C"
+            gradient=ft.LinearGradient(
+                        begin=ft.alignment.top_center,
+                        end=ft.alignment.bottom_center,
+                        colors=["#7dc1fe", "#87eaa5"]
+                    ),
         )
 
         # Texto principal e campo de sugestão
@@ -79,7 +83,11 @@ def main(page: ft.Page):
             padding=30,
             margin = 0,
             expand=True,
-            bgcolor="#3A936C",
+            gradient=ft.LinearGradient(
+                        begin=ft.alignment.top_center,
+                        end=ft.alignment.bottom_center,
+                        colors=["#87eaa5", "#7dc1fe"]
+                    ),
         )
 
         # Rodapé
@@ -97,7 +105,11 @@ def main(page: ft.Page):
                     )
                 ],
             ),
-            bgcolor="#99ACFF",
+            gradient=ft.LinearGradient(
+                        begin=ft.alignment.top_center,
+                        end=ft.alignment.bottom_center,
+                        colors=["#7dc1fe", "#87eaa5"]
+                    ),
             margin = 0,
             padding=30,
         )
