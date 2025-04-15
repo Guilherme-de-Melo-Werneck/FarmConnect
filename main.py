@@ -7,15 +7,6 @@ def main(page: ft.Page):
     page.scroll = ft.ScrollMode.AUTO
     page.padding = 0
 
-    import flet as ft
-
-def main(page: ft.Page):
-    page.title = "Farmconnect"
-    page.bgcolor = "#3A936C"
-    page.theme_mode = ft.ThemeMode.LIGHT
-    page.scroll = ft.ScrollMode.AUTO
-    page.padding = 0
-
     def tela_inicial():
         def on_login(e):
             page.go("/login")
