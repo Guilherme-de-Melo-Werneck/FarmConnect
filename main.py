@@ -5,7 +5,7 @@ def main(page: ft.Page):
     page.title = "Farmconnect"
     page.bgcolor = "#3A936C"
     page.theme_mode = ft.ThemeMode.LIGHT
-    page.scroll = ft.ScrollMode.AUTO
+    page.scroll = ft.ScrollMode.ADAPTIVE
     page.padding = 0
 
     def tela_inicial():
@@ -274,7 +274,7 @@ def main(page: ft.Page):
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 spacing=16,
                 controls=[
-                    ft.Text("Bem-vindo de volta 👋", size=22, weight=ft.FontWeight.BOLD, color="#1E3A8A"),
+                    ft.Text("Bem-vindo!👋", size=22, weight=ft.FontWeight.BOLD, color="#1E3A8A"),
                     ft.Text("Acesse sua conta para continuar", size=13, color=ft.colors.GREY_700),
                     campos_login,
                     ft.ElevatedButton(
@@ -462,82 +462,128 @@ def main(page: ft.Page):
         return ft.View(
             route="/usuario",
             controls=[
-                ft.Row([
-                    ft.Container(
-                        width=260,
-                        bgcolor=ft.colors.WHITE,
-                        content=ft.Container(
-                            padding=ft.padding.symmetric(horizontal=10, vertical=20),
-                            bgcolor=ft.colors.BLUE_GREY_900,
-                            expand=True,
-                            content=ft.Column([
-                                ft.Image(src="/images/logo.png", width=150, height=60),
-                                ft.Divider(height=20, color=ft.colors.TRANSPARENT),
-                                ft.ElevatedButton("VER PERFIL", width=180),
-                                ft.ElevatedButton("MEDICAMENTOS RETIRADOS", width=180),
-                                ft.ElevatedButton("AGENDAMENTOS", width=180),
-                                ft.ElevatedButton("DOCUMENTOS NECESSÁRIOS", width=180),
-                                ft.ElevatedButton("EDITAR DADOS", width=180),
-                                ft.ElevatedButton("SAIR", width=180, bgcolor=ft.colors.RED_400, on_click=lambda e: page.go("/")),
-                            ], spacing=10)
-                        )
+                ft.Container(
+                    expand=True,
+                    gradient=ft.LinearGradient(
+                        begin=ft.alignment.top_left,
+                        end=ft.alignment.bottom_right,
+                        colors=["#F0F9FF", "#E0F2FE"]
                     ),
+                    content=ft.ResponsiveRow([
+                        # SIDEBAR
+                        ft.Container(
+                            width=280,
+                            padding=20,
+                            bgcolor="#1E3A8A",
+                            border_radius=10,
+                            col={"xs": 12, "md": 3, "lg": 2}, 
+                            content=ft.Column([
+                                ft.Image(src="logo.png", width=140, height=50),
+                                ft.Divider(height=20, color=ft.colors.TRANSPARENT),
+                                ft.ElevatedButton("Ver Perfil", width=200, style=ft.ButtonStyle(bgcolor="white", color="#1E3A8A")),
+                                ft.ElevatedButton("Medicamentos Retirados", width=200, style=ft.ButtonStyle(bgcolor="white", color="#1E3A8A")),
+                                ft.ElevatedButton("Agendamentos", width=200, style=ft.ButtonStyle(bgcolor="white", color="#1E3A8A")),
+                                ft.ElevatedButton("Documentos Necessários", width=200, style=ft.ButtonStyle(bgcolor="white", color="#1E3A8A")),
+                                ft.ElevatedButton("Editar Dados", width=200, style=ft.ButtonStyle(bgcolor="white", color="#1E3A8A")),
+                                ft.ElevatedButton("Sair", width=200, bgcolor=ft.colors.RED_400, color=ft.colors.WHITE, on_click=lambda e: page.go("/")),
+                            ], spacing=14, alignment=ft.MainAxisAlignment.START, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
+                        ),
 
-                    ft.Container(
-                        expand=True,
-                        content=ft.Column([
-                            ft.Container(
-                                bgcolor=ft.colors.GREEN_600,
-                                padding=ft.padding.symmetric(horizontal=20, vertical=10),
-                                content=ft.Row([
-                                    ft.Image(src="/images/farmconnect_logo.png", width=120),
-                                    ft.TextField(hint_text="Buscar", prefix_icon=ft.icons.SEARCH, expand=True),
-                                    ft.Row([
-                                        ft.CircleAvatar(foreground_image_src="/images/profile.jpg", radius=25),
-                                        ft.Text("JOÃO NASCIMENTO", size=12, weight=ft.FontWeight.BOLD, color=ft.colors.WHITE)
-                                    ], spacing=10)
-                                ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
-                            ),
+                        # CONTEÚDO PRINCIPAL
+                        ft.Container(
+                            expand=True,
+                            padding=20,
+                            col={"xs": 12, "md": 9},
+                            content=ft.Column([
+                                # TOPO
+                                ft.Container(
+                                    bgcolor="#1E40AF",
+                                    border_radius=12,
+                                    padding=ft.padding.symmetric(horizontal=20, vertical=16),
+                                    shadow=ft.BoxShadow(blur_radius=18, color=ft.colors.BLACK12, offset=ft.Offset(0, 4)),
+                                    content=ft.ResponsiveRow([
+                                        ft.Image(src="logo.png", width=110, col={"xs": 12, "md": 2}),
+                                        ft.TextField(
+                                            hint_text="Buscar",
+                                            prefix_icon=ft.icons.SEARCH,
+                                            border_radius=12,
+                                            bgcolor=ft.colors.WHITE,
+                                            col={"xs": 12, "md": 6}
+                                        ),
+                                        ft.Row([
+                                            ft.CircleAvatar(foreground_image_src="/images/profile.jpg", radius=22),
+                                            ft.Text("JOÃO NASCIMENTO", size=13, weight=ft.FontWeight.BOLD, color=ft.colors.WHITE)
+                                        ], spacing=10, col={"xs": 12, "md": 4})
+                                    ])
+                                ),
 
-                            ft.Container(
-                                alignment=ft.alignment.center,
-                                expand=True,
-                                content=ft.Container(
-                                    bgcolor=ft.colors.WHITE,
-                                    border_radius=10,
+                                # CONTEÚDO
+                                ft.Container(
+                                    expand=True,
+                                    alignment=ft.alignment.center,
                                     padding=30,
-                                    width=800,
-                                    content=ft.Column([
-                                        ft.Text("OLÁ, SEJA BEM VINDO", size=22, weight=ft.FontWeight.BOLD, text_align=ft.TextAlign.CENTER),
-                                        ft.Row([
-                                            ft.OutlinedButton("MAIS BUSCADOS"),
-                                            ft.OutlinedButton("MEUS AGENDAMENTOS"),
-                                            ft.OutlinedButton("FEEDBACK"),
-                                        ], alignment=ft.MainAxisAlignment.CENTER, spacing=20),
-                                        ft.Divider(height=20),
-                                        ft.Row([
-                                            *[
-                                                ft.Container(
-                                                    width=150,
-                                                    bgcolor=ft.colors.WHITE,
-                                                    border_radius=10,
-                                                    padding=10,
-                                                    content=ft.Column([
-                                                        ft.Image(src="/images/remedio.png", width=100, height=100),
-                                                        ft.Text("INTERFERON ALFA 2B\n3MUI INJ", text_align=ft.TextAlign.CENTER, size=12),
-                                                        ft.ElevatedButton("ADICIONAR", width=130, bgcolor=ft.colors.BLUE_700, color=ft.colors.WHITE),
-                                                    ], alignment=ft.MainAxisAlignment.CENTER)
-                                                ) for _ in range(3)
-                                            ]
-                                        ], alignment=ft.MainAxisAlignment.CENTER)
-                                    ], spacing=30)
+                                    content=ft.Container(
+                                        width=900,
+                                        padding=30,
+                                        bgcolor=ft.colors.WHITE,
+                                        border_radius=20,
+                                        shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK12, offset=ft.Offset(0, 6)),
+                                        content=ft.Column([
+                                            ft.Row([
+                                                ft.Text("MEDICAMENTOS 🩹", size=26, weight=ft.FontWeight.BOLD, text_align=ft.TextAlign.CENTER, color="#1E3A8A"),
+                                            ], alignment=ft.MainAxisAlignment.CENTER, spacing=20),
+                                            ft.Row([
+                                                ft.OutlinedButton("Mais Buscados"),
+                                                ft.OutlinedButton("Meus Agendamentos"),
+                                                ft.OutlinedButton("Feedback"),
+                                            ], alignment=ft.MainAxisAlignment.CENTER, spacing=20),
+                                            ft.Divider(height=20),
+
+                                            # GRID DE MEDICAMENTOS RESPONSIVO
+                                            ft.ResponsiveRow([
+                                                *[
+                                                    ft.Container(
+                                                        padding=14,
+                                                        bgcolor=ft.colors.BLUE_50,
+                                                        border_radius=16,
+                                                        shadow=ft.BoxShadow(blur_radius=12, color=ft.colors.BLACK12, offset=ft.Offset(0, 4)),
+                                                        col={"xs": 12, "sm": 6, "md": 4},
+                                                        content=ft.Column([
+                                                            ft.Image(src="/images/remedio.png", width=100, height=100),
+                                                            ft.Row([
+                                                                ft.Text(
+                                                                "INTERFERON ALFA 2B\n3MUI INJ",
+                                                                text_align=ft.TextAlign.CENTER,
+                                                                size=13,
+                                                                weight=ft.FontWeight.BOLD,
+                                                                color="#1E3A8A"
+                                                            ),
+                                                            ], alignment=ft.MainAxisAlignment.CENTER, spacing=10),
+                                                            
+                                                            ft.Row([
+                                                                ft.ElevatedButton(
+                                                                "ADICIONAR",
+                                                                width=130,
+                                                                bgcolor="#1E3A8A",
+                                                                color="white",
+                                                                style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10))
+                                                            ),
+                                                            ], alignment=ft.MainAxisAlignment.CENTER, spacing=10)
+                                                        ]
+                                                        ),    
+                                                    ) for _ in range(6)
+                                                ]
+                                            ], spacing=20, run_spacing=20)
+                                        ], spacing=30)
+                                    )
                                 )
-                            )
-                        ], expand=True)
-                    )
-                ], expand=True, vertical_alignment=ft.CrossAxisAlignment.STRETCH)
+                            ], spacing=20)
+                        )
+                    ])
+                )
             ]
         )
+
 
     def route_change(route):
         page.views.clear()
