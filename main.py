@@ -117,8 +117,8 @@ def main(page: ft.Page):
 
         # IMAGEM ILUSTRATIVA COM SUAVIDADE
         phone_image = ft.Container(
-            content=ft.Image(src="img/celular.png", width=420, height=420),
-            rotate=ft.Rotate(angle=0.02),
+            content=ft.Image(src="img/celular2.png", width=750, height=800),
+            rotate=ft.Rotate(angle=0.00),
             shadow=ft.BoxShadow(blur_radius=28, color=ft.colors.BLACK26, offset=ft.Offset(8, 12)),
             animate_rotation=ft.Animation(800, "easeInOut"),
             animate_opacity=ft.Animation(600, "easeInOut")
