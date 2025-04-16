@@ -162,7 +162,7 @@ def main(page: ft.Page):
             ) for icon, name in redes
         ]
 
-        # FOOTER AJUSTADO COM TEXTO CENTRALIZADO.
+        # FOOTER AJUSTADO COM TEXTO CENTRALIZADO
         footer = ft.Container(
             content=ft.Column(
                 [
