@@ -1,107 +1,71 @@
-import mysql.connector
-import os
-from dotenv import load_dotenv
+import sqlite3
+from pathlib import Path
 
-load_dotenv()
-
-config = {
-    'host': os.getenv("DB_HOST"),
-    'user': os.getenv("DB_USER"),
-    'password': os.getenv("DB_PASSWORD"),
-    'database': os.getenv("DB_NAME")
-}
+DB_FILE = Path("farmconnect.db")
 
 def conectar():
-    return mysql.connector.connect(**config)
+    return sqlite3.connect(DB_FILE)
 
 def criar_tabelas():
-    conn = conectar()
-    cursor = conn.cursor()
+    with conectar() as conn:
+        cursor = conn.cursor()
 
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS usuarios (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        nome VARCHAR(100) NOT NULL,
-        email VARCHAR(100) NOT NULL UNIQUE,
-        cpf VARCHAR(14) NOT NULL UNIQUE,
-        nascimento VARCHAR(10) NOT NULL,
-        senha VARCHAR(100) NOT NULL
-    )
-    """)
+        # Usuários
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS usuarios (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nome TEXT NOT NULL,
+            email TEXT NOT NULL UNIQUE,
+            cpf TEXT NOT NULL UNIQUE,
+            nascimento TEXT NOT NULL,
+            senha TEXT NOT NULL
+        )""")
 
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS medicamentos (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        nome VARCHAR(100) NOT NULL,
-        descricao TEXT,
-        imagem TEXT,
-        estoque INT DEFAULT 0
-    )
-    """)
+        # Medicamentos disponíveis
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS medicamentos (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nome TEXT NOT NULL,
+            descricao TEXT,
+            imagem TEXT,
+            estoque INTEGER DEFAULT 0
+        )""")
 
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS farmacias (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        nome VARCHAR(100),
-        endereco TEXT,
-        cidade VARCHAR(50),
-        estado VARCHAR(2),
-        telefone VARCHAR(20)
-    )
-    """)
+        # Agendamentos
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS agendamentos (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            usuario_id INTEGER NOT NULL,
+            medicamento_id INTEGER NOT NULL,
+            data TEXT NOT NULL,
+            horario TEXT NOT NULL,
+            status TEXT DEFAULT 'PENDENTE',  -- PENDENTE | CONCLUÍDO | CANCELADO
+            FOREIGN KEY(usuario_id) REFERENCES usuarios(id),
+            FOREIGN KEY(medicamento_id) REFERENCES medicamentos(id)
+        )""")
 
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS estoque (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        medicamento_id INT NOT NULL,
-        farmacia_id INT NOT NULL,
-        quantidade INT DEFAULT 0,
-        FOREIGN KEY(medicamento_id) REFERENCES medicamentos(id),
-        FOREIGN KEY(farmacia_id) REFERENCES farmacias(id)
-    )
-    """)
+        # Medicamentos reservados
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS medicamentos_reservados (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            usuario_id INTEGER NOT NULL,
+            medicamento_id INTEGER NOT NULL,
+            data_reserva TEXT NOT NULL,
+            validade TEXT, -- por quanto tempo a reserva é válida
+            FOREIGN KEY(usuario_id) REFERENCES usuarios(id),
+            FOREIGN KEY(medicamento_id) REFERENCES medicamentos(id)
+        )""")
 
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS agendamentos (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        usuario_id INT NOT NULL,
-        medicamento_id INT NOT NULL,
-        farmacia_id INT NOT NULL,
-        data DATE NOT NULL,
-        horario TIME NOT NULL,
-        status VARCHAR(20) DEFAULT 'PENDENTE',
-        FOREIGN KEY(usuario_id) REFERENCES usuarios(id),
-        FOREIGN KEY(medicamento_id) REFERENCES medicamentos(id),
-        FOREIGN KEY(farmacia_id) REFERENCES farmacias(id)
-    )
-    """)
+        # Medicamentos retirados
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS medicamentos_retirados (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            usuario_id INTEGER NOT NULL,
+            medicamento_id INTEGER NOT NULL,
+            data_retirada TEXT NOT NULL,
+            observacoes TEXT,
+            FOREIGN KEY(usuario_id) REFERENCES usuarios(id),
+            FOREIGN KEY(medicamento_id) REFERENCES medicamentos(id)
+        )""")
 
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS medicamentos_reservados (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        usuario_id INT NOT NULL,
-        medicamento_id INT NOT NULL,
-        data_reserva DATE NOT NULL,
-        validade DATE,
-        FOREIGN KEY(usuario_id) REFERENCES usuarios(id),
-        FOREIGN KEY(medicamento_id) REFERENCES medicamentos(id)
-    )
-    """)
-
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS medicamentos_retirados (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        usuario_id INT NOT NULL,
-        medicamento_id INT NOT NULL,
-        data_retirada DATE NOT NULL,
-        observacoes TEXT,
-        FOREIGN KEY(usuario_id) REFERENCES usuarios(id),
-        FOREIGN KEY(medicamento_id) REFERENCES medicamentos(id)
-    )
-    """)
-
-    conn.commit()
-    cursor.close()
-    conn.close()
-
-
+        conn.commit()
