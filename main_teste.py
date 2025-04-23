@@ -1,5 +1,9 @@
 import flet as ft
 import asyncio
+from database import criar_tabelas
+
+# Banco de Dados:
+criar_tabelas()
 
 class TelaInicial:
     def __init__(self, page: ft.Page):
