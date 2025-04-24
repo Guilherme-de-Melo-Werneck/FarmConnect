@@ -1,6 +1,6 @@
 import flet as ft
 import asyncio
-from database import criar_tabelas, registrar_usuario
+from database import criar_tabelas, registrar_usuario, verificar_login
 
 # Banco de Dados:
 criar_tabelas()
@@ -183,11 +183,23 @@ class TelaLogin:
     def tela_login(self):
         def login_click(e):
             if email.value.strip() and senha.value.strip():
-                self.page.go("/usuario")
+                valido = verificar_login(email.value.strip(), senha.value.strip())
+                if valido:
+                    self.page.go("/usuario")
+                else:
+                    self.page.snack_bar.content.value = "Email ou senha incorretos."
+                    self.page.snack_bar.open = True
+                    self.page.update()
             else:
-                self.page.snack_bar = ft.SnackBar(ft.Text("Preencha todos os campos."))
+                self.page.snack_bar.content.value = "Preencha todos os campos."
                 self.page.snack_bar.open = True
                 self.page.update()
+
+        self.page.snack_bar = ft.SnackBar(
+            content=ft.Text(""),
+            bgcolor=ft.colors.RED_400,
+            duration=3000
+        )
 
         def voltar_click(e):
             self.page.go("/")
@@ -220,6 +232,7 @@ class TelaLogin:
         return ft.View(
             route="/login",
             controls=[
+                self.page.snack_bar,
                 ft.Container(
                     expand=True,
                     alignment=ft.alignment.center,
@@ -351,6 +364,8 @@ class TelaCadastro:
 
 
 class TelaUsuario:
+    def __init__(self, page: ft.Page):
+        self.page = page
     def tela_usuario(self):
     # Sidebar de Navegação
         sidebar = ft.Container(
