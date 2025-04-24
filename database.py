@@ -150,3 +150,29 @@ def buscar_nome_usuario(email):
     else:
         return None
         
+def listar_medicamentos():
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT id, nome, descricao, imagem FROM medicamentos")
+
+    medicamentos = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return medicamentos
+
+def adicionar_medicamento(nome, descricao, imagem, estoque=0):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        INSERT INTO medicamentos (nome, descricao, imagem, estoque)
+        VALUES (?, ?, ?, ?)
+    """, (nome, descricao, imagem, estoque))
+
+    conn.commit()
+
+    cursor.close()
+    conn.close()

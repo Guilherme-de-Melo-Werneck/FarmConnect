@@ -1,6 +1,9 @@
 import flet as ft
 import asyncio
-from database import criar_tabelas, registrar_usuario, verificar_login, buscar_nome_usuario
+from database import criar_tabelas, registrar_usuario, verificar_login, buscar_nome_usuario, listar_medicamentos, adicionar_medicamento
+
+#Teste
+#adicionar_medicamento(nome="Paracetamol", descricao="Medicamento com efeito analgico", imagem="/img/celular.png", estoque=10)
 
 # Banco de Dados:
 criar_tabelas()
@@ -379,6 +382,7 @@ class TelaUsuario:
         self.page = page
         self.email_usuario = self.page.session.get("usuario_logado")
         self.nome_usuario = buscar_nome_usuario(self.email_usuario)
+        
     def tela_usuario(self):
     # Sidebar de Navegação
         sidebar = ft.Container(
@@ -423,37 +427,37 @@ class TelaUsuario:
         )
 
         # Cards de Medicamentos 
+        medicamentos_db = listar_medicamentos()
+
         medicamentos_cards = ft.ResponsiveRow([
-            *[
-                ft.Container(
-                    padding=14,
-                    bgcolor=ft.colors.BLUE_50,
-                    border_radius=16,
-                    shadow=ft.BoxShadow(blur_radius=12, color=ft.colors.BLACK12, offset=ft.Offset(0, 4)),
-                    col={"xs": 12, "sm": 6, "md": 4},
-                    content=ft.Column([
-                        ft.Image(src="/images/remedio.png", width=100, height=100),
-                        ft.Row([
-                            ft.Text(
-                                "INTERFERON ALFA 2B\n3MUI INJ",
-                                text_align=ft.TextAlign.CENTER,
-                                size=13,
-                                weight=ft.FontWeight.BOLD,
-                                color="#1E3A8A"
-                            ),
-                        ], alignment=ft.MainAxisAlignment.CENTER, spacing=10),
-                        ft.Row([
-                            ft.ElevatedButton(
-                                "ADICIONAR",
-                                width=130,
-                                bgcolor="#1E3A8A",
-                                color="white",
-                                style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10))
-                            ),
-                        ], alignment=ft.MainAxisAlignment.CENTER, spacing=10)
-                    ])
-                ) for _ in range(6)
-            ]
+            ft.Container(
+                padding=14,
+                bgcolor=ft.colors.BLUE_50,
+                border_radius=16,
+                shadow=ft.BoxShadow(blur_radius=12, color=ft.colors.BLACK12, offset=ft.Offset(0, 4)),
+                col={"xs": 12, "sm": 6, "md": 4},
+                content=ft.Column([
+                    ft.Image(src=imagem or "/images/remedio.png", width=100, height=100),
+                    ft.Row([
+                        ft.Text(
+                            nome,
+                            text_align=ft.TextAlign.CENTER,
+                            size=13,
+                            weight=ft.FontWeight.BOLD,
+                            color="#1E3A8A"
+                        ),
+                    ], alignment=ft.MainAxisAlignment.CENTER, spacing=10),
+                    ft.Row([
+                        ft.ElevatedButton(
+                            "ADICIONAR",
+                            width=130,
+                            bgcolor="#1E3A8A",
+                            color="white",
+                            style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10))
+                        ),
+                    ], alignment=ft.MainAxisAlignment.CENTER, spacing=10)
+                ])
+            ) for id, nome, descricao, imagem in medicamentos_db
         ], spacing=20, run_spacing=20)
 
         # Conteúdo Principal
