@@ -133,3 +133,20 @@ def verificar_login(email, senha):
     conn.close()
 
     return usuario is not None #  retorna True se o login for válido e False se estiver errado.
+
+def buscar_nome_usuario(email):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT nome FROM usuarios WHERE email = ?", (email,))
+
+    nome = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    if nome:
+        return nome[0]
+    else:
+        return None
+        
