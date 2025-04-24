@@ -19,9 +19,10 @@ def criar_tabelas():
             cpf TEXT NOT NULL UNIQUE,
             nascimento TEXT NOT NULL,
             senha TEXT NOT NULL
-        )""")
+        )
+        """)
 
-        # Medicamentos disponíveis
+        # Medicamentos
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS medicamentos (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -29,7 +30,32 @@ def criar_tabelas():
             descricao TEXT,
             imagem TEXT,
             estoque INTEGER DEFAULT 0
-        )""")
+        )
+        """)
+
+        # Farmácias
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS farmacias (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nome TEXT NOT NULL,
+            endereco TEXT NOT NULL,
+            cidade TEXT,
+            estado TEXT,
+            telefone TEXT
+        )
+        """)
+
+        # Estoque por farmácia
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS estoque (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            medicamento_id INTEGER NOT NULL,
+            farmacia_id INTEGER NOT NULL,
+            quantidade INTEGER DEFAULT 0,
+            FOREIGN KEY(medicamento_id) REFERENCES medicamentos(id),
+            FOREIGN KEY(farmacia_id) REFERENCES farmacias(id)
+        )
+        """)
 
         # Agendamentos
         cursor.execute("""
@@ -37,26 +63,30 @@ def criar_tabelas():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             usuario_id INTEGER NOT NULL,
             medicamento_id INTEGER NOT NULL,
+            farmacia_id INTEGER NOT NULL,
             data TEXT NOT NULL,
             horario TEXT NOT NULL,
-            status TEXT DEFAULT 'PENDENTE',  -- PENDENTE | CONCLUÍDO | CANCELADO
+            status TEXT DEFAULT 'PENDENTE',
             FOREIGN KEY(usuario_id) REFERENCES usuarios(id),
-            FOREIGN KEY(medicamento_id) REFERENCES medicamentos(id)
-        )""")
+            FOREIGN KEY(medicamento_id) REFERENCES medicamentos(id),
+            FOREIGN KEY(farmacia_id) REFERENCES farmacias(id)
+        )
+        """)
 
-        # Medicamentos reservados
+        # Medicamentos Reservados
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS medicamentos_reservados (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             usuario_id INTEGER NOT NULL,
             medicamento_id INTEGER NOT NULL,
             data_reserva TEXT NOT NULL,
-            validade TEXT, -- por quanto tempo a reserva é válida
+            validade TEXT,
             FOREIGN KEY(usuario_id) REFERENCES usuarios(id),
             FOREIGN KEY(medicamento_id) REFERENCES medicamentos(id)
-        )""")
+        )
+        """)
 
-        # Medicamentos retirados
+        # Medicamentos Retirados
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS medicamentos_retirados (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -66,6 +96,24 @@ def criar_tabelas():
             observacoes TEXT,
             FOREIGN KEY(usuario_id) REFERENCES usuarios(id),
             FOREIGN KEY(medicamento_id) REFERENCES medicamentos(id)
-        )""")
+        )
+        """)
 
         conn.commit()
+
+def registrar_usuario(nome, email, cpf, nascimento, senha):
+    conn = conectar()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            INSERT INTO usuarios (nome, email, cpf, nascimento, senha)
+            VALUES (?, ?, ?, ?, ?)
+        """, (nome, email, cpf, nascimento, senha))
+        conn.commit()
+        return True
+    except sqlite3.IntegrityError as e:
+        print("Erro ao cadastrar usuário:", e)
+        return False
+    finally:
+        cursor.close()
+        conn.close()
