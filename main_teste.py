@@ -264,17 +264,26 @@ class TelaCadastro:
                 )
 
                 if sucesso:
-                    self.page.snack_bar = ft.SnackBar(ft.Text("Cadastro realizado com sucesso!"))
+                    self.page.snack_bar.content.value = "Cadastro realizado com sucesso!"
+                    self.page.snack_bar.bgcolor = ft.colors.GREEN
                     self.page.snack_bar.open = True
+                    self.page
                     self.page.go("/login")
+                    self.page.update()
                 else:
-                    self.page.snack_bar = ft.SnackBar(ft.Text("Erro: Email ou CPF já cadastrados."))
+                    self.page.snack_bar.content.value = "Erro: Email ou CPF já cadastrados."
                     self.page.snack_bar.open = True
                     self.page.update()
             else:
-                self.page.snack_bar = ft.SnackBar(ft.Text("Preencha todos os campos."))
+                self.page.snack_bar.content.value = "Preencha todos os campos."
                 self.page.snack_bar.open = True
                 self.page.update()
+
+        self.page.snack_bar = ft.SnackBar(
+            content=ft.Text(""),            
+            bgcolor=ft.colors.RED_400,
+            duration=3000
+        )
 
         def voltar_click(e):
             self.page.go("/")
@@ -348,6 +357,7 @@ class TelaCadastro:
         return ft.View(
             route="/cadastro",
             controls=[
+                self.page.snack_bar,
                 ft.Container(
                     expand=True,
                     alignment=ft.alignment.center,
