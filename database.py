@@ -117,3 +117,19 @@ def registrar_usuario(nome, email, cpf, nascimento, senha):
     finally:
         cursor.close()
         conn.close()
+
+def verificar_login(email, senha):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT * FROM usuarios
+        WHERE email = ? AND senha = ?
+    """, (email, senha))
+
+    usuario = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    return usuario is not None #  retorna True se o login for válido e False se estiver errado.
