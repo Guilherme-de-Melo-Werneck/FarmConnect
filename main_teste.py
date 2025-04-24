@@ -1,6 +1,6 @@
 import flet as ft
 import asyncio
-from database import criar_tabelas, registrar_usuario, verificar_login
+from database import criar_tabelas, registrar_usuario, verificar_login, buscar_nome_usuario
 
 # Banco de Dados:
 criar_tabelas()
@@ -185,6 +185,7 @@ class TelaLogin:
             if email.value.strip() and senha.value.strip():
                 valido = verificar_login(email.value.strip(), senha.value.strip())
                 if valido:
+                    self.page.session.set("usuario_logado", email.value.strip())
                     self.page.go("/usuario")
                 else:
                     self.page.snack_bar.content.value = "Email ou senha incorretos."
@@ -376,6 +377,8 @@ class TelaCadastro:
 class TelaUsuario:
     def __init__(self, page: ft.Page):
         self.page = page
+        self.email_usuario = self.page.session.get("usuario_logado")
+        self.nome_usuario = buscar_nome_usuario(self.email_usuario)
     def tela_usuario(self):
     # Sidebar de Navegação
         sidebar = ft.Container(
@@ -392,7 +395,7 @@ class TelaUsuario:
                 ft.ElevatedButton("Agendamentos", width=200, style=ft.ButtonStyle(bgcolor="white", color="#1E3A8A")),
                 ft.ElevatedButton("Documentos Necessários", width=200, style=ft.ButtonStyle(bgcolor="white", color="#1E3A8A")),
                 ft.ElevatedButton("Editar Dados", width=200, style=ft.ButtonStyle(bgcolor="white", color="#1E3A8A")),
-                ft.ElevatedButton("Sair", width=200, bgcolor=ft.colors.RED_400, color=ft.colors.WHITE, on_click=lambda e: self.page.go("/")),
+                ft.ElevatedButton("Sair", width=200, bgcolor=ft.colors.RED_400, color=ft.colors.WHITE, on_click=lambda e: (self.page.session.clear(), self.page.go("/"))),
             ], spacing=14, alignment=ft.MainAxisAlignment.START, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
         )
 
@@ -402,6 +405,7 @@ class TelaUsuario:
             border_radius=12,
             padding=ft.padding.symmetric(horizontal=20, vertical=16),
             shadow=ft.BoxShadow(blur_radius=18, color=ft.colors.BLACK12, offset=ft.Offset(0, 4)),
+            
             content=ft.ResponsiveRow([
                 ft.Image(src="logo.png", width=110, col={"xs": 12, "md": 2}),
                 ft.TextField(
@@ -413,7 +417,7 @@ class TelaUsuario:
                 ),
                 ft.Row([
                     ft.CircleAvatar(foreground_image_src="/images/profile.jpg", radius=22),
-                    ft.Text("JOÃO NASCIMENTO", size=13, weight=ft.FontWeight.BOLD, color=ft.colors.WHITE)
+                    ft.Text(self.nome_usuario, size=13, weight=ft.FontWeight.BOLD, color=ft.colors.WHITE)
                 ], spacing=10, col={"xs": 12, "md": 4})
             ])
         )
