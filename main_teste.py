@@ -1,6 +1,6 @@
 import flet as ft
 import asyncio
-from database import criar_tabelas
+from database import criar_tabelas, registrar_usuario
 
 # Banco de Dados:
 criar_tabelas()
@@ -242,9 +242,22 @@ class TelaCadastro:
     def tela_cadastro(self):
         def registrar_click(e):
             if nome.value.strip() and email.value.strip() and cpf.value.strip() and nascimento.value.strip() and senha.value.strip():
-                self.page.snack_bar = ft.SnackBar(ft.Text("Cadastro realizado com sucesso!"))
-                self.page.snack_bar.open = True
-                self.page.go("/login")
+                sucesso = registrar_usuario(
+                    nome=nome.value.strip(),
+                    email=email.value.strip(),
+                    cpf=cpf.value.strip(),
+                    nascimento=nascimento.value.strip(),
+                    senha=senha.value.strip()
+                )
+
+                if sucesso:
+                    self.page.snack_bar = ft.SnackBar(ft.Text("Cadastro realizado com sucesso!"))
+                    self.page.snack_bar.open = True
+                    self.page.go("/login")
+                else:
+                    self.page.snack_bar = ft.SnackBar(ft.Text("Erro: Email ou CPF já cadastrados."))
+                    self.page.snack_bar.open = True
+                    self.page.update()
             else:
                 self.page.snack_bar = ft.SnackBar(ft.Text("Preencha todos os campos."))
                 self.page.snack_bar.open = True
@@ -256,6 +269,7 @@ class TelaCadastro:
         def cpf_change(e):
             texto_original = cpf.value
             numeros = ''.join(filter(str.isdigit, texto_original))[:11]
+
             formatado = ""
             if len(numeros) >= 3:
                 formatado += numeros[:3] + "."
@@ -271,6 +285,7 @@ class TelaCadastro:
                 formatado += numeros[3:6]
             elif len(numeros) > 0:
                 formatado += numeros[0:3]
+
             cpf.value = formatado
             cpf.update()
 
@@ -291,7 +306,7 @@ class TelaCadastro:
 
         nome = ft.TextField(label="Nome completo", prefix_icon=ft.icons.PERSON, border_radius=10, filled=True, bgcolor=ft.colors.WHITE, expand=True)
         email = ft.TextField(label="Email", prefix_icon=ft.icons.EMAIL, border_radius=10, filled=True, bgcolor=ft.colors.WHITE, expand=True)
-        cpf = ft.TextField(label="CPF", prefix_icon=ft.icons.BADGE, border_radius=10, filled=True, bgcolor=ft.colors.WHITE, expand=True, keyboard_type=ft.KeyboardType.NUMBER, hint_text="Apenas números", on_change=cpf_change)
+        cpf = ft.TextField(label="CPF", prefix_icon=ft.icons.BADGE, border_radius=10, filled=True, bgcolor=ft.colors.WHITE, expand=True, keyboard_type=ft.KeyboardType.NUMBER, hint_text="Apenas números", on_blur=cpf_change)
         nascimento = ft.TextField(label="Data de Nascimento", hint_text="DD/MM/AAAA", prefix_icon=ft.icons.CALENDAR_MONTH, border_radius=10, filled=True, bgcolor=ft.colors.WHITE, expand=True, on_blur=nascimento_change)
         senha = ft.TextField(label="Senha", password=True, can_reveal_password=True, prefix_icon=ft.icons.LOCK, border_radius=10, filled=True, bgcolor=ft.colors.WHITE, expand=True)
 
