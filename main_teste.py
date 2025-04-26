@@ -1,6 +1,6 @@
 import flet as ft
 import asyncio
-from database import criar_tabelas, registrar_usuario, verificar_login, buscar_nome_usuario, listar_medicamentos, adicionar_medicamento, solicitar_notificacao
+from database import criar_tabelas, registrar_usuario, verificar_login, buscar_nome_usuario, listar_medicamentos, adicionar_medicamento, solicitar_notificacao, agendar_medicamento
 
 #Teste
 #adicionar_medicamento(nome="Paracetamol", descricao="Medicamento com efeito analgico", imagem="/img/celular.png", estoque=10)
@@ -469,7 +469,7 @@ class TelaUsuario:
                             color="white",
                             style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10)),
                             on_click=lambda e, med_id=id: (
-                                agendar_medicamento(med_id) if estoque > 0 else solicitar_notificacao(self.page.session.get("usuario_logado"), med_id)
+                                agendar_medicamento(self.page.session.get("usuario_logado"),med_id) if estoque > 0 else solicitar_notificacao(self.page.session.get("usuario_logado"), med_id)
                             )
                         ),
                     ], alignment=ft.MainAxisAlignment.CENTER, spacing=10),

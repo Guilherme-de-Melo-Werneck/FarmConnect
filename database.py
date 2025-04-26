@@ -234,6 +234,7 @@ def agendar_medicamento(usuario_email, medicamento_id):
     if user:
         usuario_id = user[0]
 
+        # Pegar a primeira farmacia cadastrada por enquanto
         cursor.execute("SELECT id FROM farmacias LIMIT 1")
         farmacia = cursor.fetchone()
 
