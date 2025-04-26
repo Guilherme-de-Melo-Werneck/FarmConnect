@@ -1,7 +1,7 @@
 import flet as ft
 
 def main(page: ft.Page):
-    page.title = "+SuaVida - Agendamento de Consultas"
+    page.title = "FARMCONNECT"
     page.padding = 0
     page.bgcolor = ft.colors.WHITE
     page.scroll = "auto"
