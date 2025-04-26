@@ -24,7 +24,7 @@ def main(page: ft.Page):
             content=ft.Row(
                 controls=[
                     ft.Image(src="img_home/logo.png", width=100, height=100),
-                    ft.Text("+Farmconnect", size=24, weight="bold", color=PRIMARY_DARK),
+                    ft.Text("Farmconnect", size=24, weight="bold", color=PRIMARY_DARK),
                     ft.Container(expand=True),
                     ft.ElevatedButton(
                         "Baixe o app agora!",
