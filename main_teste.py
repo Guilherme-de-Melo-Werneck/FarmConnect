@@ -556,7 +556,7 @@ class FarmConnectApp:
         self.page.on_route_change = self.route_change
         self.page.go("/")
 
-    def configurar_pagina(self):
+    def page_settings(self):
         self.page.title = "Farmconnect"
         self.page.bgcolor = "#3A936C"
         self.page.theme_mode = ft.ThemeMode.LIGHT
