@@ -29,7 +29,7 @@ def criar_tabelas():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nome TEXT NOT NULL,
             email TEXT NOT NULL UNIQUE,
-            senha TEXT NOT NULL,
+            senha TEXT NOT NULL
         )
         """)
 
@@ -131,9 +131,20 @@ def criar_tabelas():
         )
         """)
 
-        conn.commit()
-        
+        # Notificacoes
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS notificacoes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            usuario_id INTEGER NOT NULL,
+            mensagem TEXT NOT NULL,
+            lida INTEGER DEFAULT 0,
+            data_envio TEXT DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(usuario_id) REFERENCES usuarios(id)
+        )
+        """)
 
+
+        conn.commit()
 
 def registrar_usuario(nome, email, cpf, nascimento, senha):
     conn = conectar()
@@ -188,7 +199,10 @@ def listar_medicamentos():
     conn = conectar()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT id, nome, descricao, imagem FROM medicamentos")
+    cursor.execute("""
+        SELECT id, nome, descricao, imagem, estoque
+        FROM medicamentos
+    """)
 
     medicamentos = cursor.fetchall()
 
@@ -207,6 +221,85 @@ def adicionar_medicamento(nome, descricao, imagem, estoque=0):
     """, (nome, descricao, imagem, estoque))
 
     conn.commit()
+    cursor.close()
+    conn.close()
+
+def agendar_medicamento(usuario_email, medicamento_id):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT id FROM usuarios WHERE email = ?", (usuario_email,))
+    user = cursor.fetchone()
+
+    if user:
+        usuario_id = user[0]
+
+        cursor.execute("SELECT id FROM farmacias LIMIT 1")
+        farmacia = cursor.fetchone()
+
+        if farmacia:
+            farmacia_id = farmacia[0]
+
+            cursor.execute("""
+                INSERT INTO agendamentos (usuario_id, medicamento_id, farmacia_id, data, horario, status)
+                VALUES (?, ?, ?, DATE('now'), TIME('now'), 'PENDENTE')
+            """, (usuario_id, medicamento_id, farmacia_id))
+
+            conn.commit()
 
     cursor.close()
     conn.close()
+
+
+def enviar_notificacao(usuario_id, mensagem):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        INSERT INTO notificacoes (usuario_id, mensagem)
+        VALUES(?, ?)
+    """, (usuario_id, mensagem))
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+    
+def listar_notificacoes(usuario_id):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT id, mensagem, lida, data_envio
+        FROM notificacoes
+        WHERE usuario_id = ?
+        ORDER BY data_envio DESC
+    """, (usuario_id,))
+
+    notificacoes = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return notificacoes
+
+def solicitar_notificacao(usuario_email, medicamento_id):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT id FROM usuarios WHERE email = ?", (usuario_email,))
+    user = cursor.fetchone()
+
+    if user:
+        usuario_id = user[0]
+
+        cursor.execute("""
+            INSERT INTO notificacoes (usuario_id, mensagem)
+            VALUES (?, ?)
+        """, (usuario_id, f"O medicamento que você pediu (ID {medicamento_id}) está disponível!"))
+
+        conn.commit()
+
+    cursor.close()
+    conn.close()
+
+
