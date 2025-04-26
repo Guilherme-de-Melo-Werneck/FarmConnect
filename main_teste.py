@@ -1,6 +1,6 @@
 import flet as ft
 import asyncio
-from database import criar_tabelas, registrar_usuario, verificar_login, buscar_nome_usuario, listar_medicamentos, adicionar_medicamento
+from database import criar_tabelas, registrar_usuario, verificar_login, buscar_nome_usuario, listar_medicamentos, adicionar_medicamento, solicitar_notificacao, agendar_medicamento
 
 #Teste
 #adicionar_medicamento(nome="Paracetamol", descricao="Medicamento com efeito analgico", imagem="/img/celular.png", estoque=10)
@@ -208,8 +208,8 @@ class TelaLogin:
         def voltar_click(e):
             self.page.go("/")
 
-        email = ft.TextField(label="Email", prefix_icon=ft.icons.EMAIL, border_radius=10, filled=True, expand=True)
-        senha = ft.TextField(label="Senha", password=True, can_reveal_password=True, prefix_icon=ft.icons.LOCK, border_radius=10, filled=True, expand=True)
+        email = ft.TextField(label="Email", prefix_icon=ft.icons.EMAIL, border_radius=10, filled=True, expand=True, autofocus=True)
+        senha = ft.TextField(label="Senha", password=True, can_reveal_password=True, prefix_icon=ft.icons.LOCK, border_radius=10, filled=True, expand=True, on_submit=login_click)
 
         campos_login = ft.Column(controls=[email, senha], spacing=10)
 
@@ -296,6 +296,13 @@ class TelaCadastro:
             texto_original = cpf.value
             numeros = ''.join(filter(str.isdigit, texto_original))[:11]
 
+            if len(numeros) == 11:
+                nascimento.focus()
+
+        def cpf_blur(e):
+            texto_original = cpf.value
+            numeros = ''.join(filter(str.isdigit, texto_original))[:11]
+
             formatado = ""
             if len(numeros) >= 3:
                 formatado += numeros[:3] + "."
@@ -318,6 +325,13 @@ class TelaCadastro:
         def nascimento_change(e):
             texto_original = nascimento.value
             numeros = ''.join(filter(str.isdigit, texto_original))[:8]
+
+            if len(numeros) == 8:
+                senha.focus()
+
+        def nascimento_blur(e):
+            texto_original = nascimento.value
+            numeros = ''.join(filter(str.isdigit, texto_original))[:8]
             formatado = ""
             if len(numeros) >= 2:
                 formatado += numeros[:2] + "/"
@@ -330,11 +344,11 @@ class TelaCadastro:
             nascimento.value = formatado
             nascimento.update()
 
-        nome = ft.TextField(label="Nome completo", prefix_icon=ft.icons.PERSON, border_radius=10, filled=True, bgcolor=ft.colors.WHITE, expand=True)
+        nome = ft.TextField(label="Nome completo", prefix_icon=ft.icons.PERSON, border_radius=10, filled=True, bgcolor=ft.colors.WHITE, expand=True, autofocus=True)
         email = ft.TextField(label="Email", prefix_icon=ft.icons.EMAIL, border_radius=10, filled=True, bgcolor=ft.colors.WHITE, expand=True)
-        cpf = ft.TextField(label="CPF", prefix_icon=ft.icons.BADGE, border_radius=10, filled=True, bgcolor=ft.colors.WHITE, expand=True, keyboard_type=ft.KeyboardType.NUMBER, hint_text="Apenas números", on_blur=cpf_change)
-        nascimento = ft.TextField(label="Data de Nascimento", hint_text="DD/MM/AAAA", prefix_icon=ft.icons.CALENDAR_MONTH, border_radius=10, filled=True, bgcolor=ft.colors.WHITE, expand=True, on_blur=nascimento_change)
-        senha = ft.TextField(label="Senha", password=True, can_reveal_password=True, prefix_icon=ft.icons.LOCK, border_radius=10, filled=True, bgcolor=ft.colors.WHITE, expand=True)
+        cpf = ft.TextField(label="CPF", prefix_icon=ft.icons.BADGE, border_radius=10, filled=True, bgcolor=ft.colors.WHITE, expand=True, keyboard_type=ft.KeyboardType.NUMBER, hint_text="Apenas números", on_blur=cpf_blur, on_change=cpf_change)
+        nascimento = ft.TextField(label="Data de Nascimento", hint_text="DD/MM/AAAA", prefix_icon=ft.icons.CALENDAR_MONTH, border_radius=10, filled=True, bgcolor=ft.colors.WHITE, expand=True, on_blur=nascimento_blur, on_change=nascimento_change)
+        senha = ft.TextField(label="Senha", password=True, can_reveal_password=True, prefix_icon=ft.icons.LOCK, border_radius=10, filled=True, bgcolor=ft.colors.WHITE, expand=True, on_submit=registrar_click)
 
         campos = ft.Column(spacing=10, controls=[nome, email, cpf, nascimento, senha])
 
@@ -421,12 +435,12 @@ class TelaUsuario:
                 ),
                 ft.Row([
                     ft.CircleAvatar(foreground_image_src="/images/profile.jpg", radius=22),
-                    ft.Text(self.nome_usuario, size=13, weight=ft.FontWeight.BOLD, color=ft.colors.WHITE)
+                    ft.Text(self.nome_usuario.upper(), size=13, weight=ft.FontWeight.BOLD, color=ft.colors.WHITE)
                 ], spacing=10, col={"xs": 12, "md": 4})
             ])
         )
 
-        # Cards de Medicamentos 
+        # Cards de Medicamentos
         medicamentos_db = listar_medicamentos()
 
         medicamentos_cards = ft.ResponsiveRow([
@@ -437,7 +451,7 @@ class TelaUsuario:
                 shadow=ft.BoxShadow(blur_radius=12, color=ft.colors.BLACK12, offset=ft.Offset(0, 4)),
                 col={"xs": 12, "sm": 6, "md": 4},
                 content=ft.Column([
-                    ft.Image(src=imagem or "/images/remedio.png", width=100, height=100),
+                    ft.Image(src=imagem or "/images/remedio_padrao.png", width=100, height=100),
                     ft.Row([
                         ft.Text(
                             nome,
@@ -449,15 +463,25 @@ class TelaUsuario:
                     ], alignment=ft.MainAxisAlignment.CENTER, spacing=10),
                     ft.Row([
                         ft.ElevatedButton(
-                            "ADICIONAR",
+                            "ADICIONAR" if estoque > 0 else "ME AVISE",
                             width=130,
-                            bgcolor="#1E3A8A",
+                            bgcolor="#1E3A8A" if estoque > 0 else ft.colors.GREY,
                             color="white",
-                            style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10))
+                            style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10)),
+                            on_click=lambda e, med_id=id: (
+                                agendar_medicamento(self.page.session.get("usuario_logado"),med_id) if estoque > 0 else solicitar_notificacao(self.page.session.get("usuario_logado"), med_id)
+                            )
                         ),
-                    ], alignment=ft.MainAxisAlignment.CENTER, spacing=10)
+                    ], alignment=ft.MainAxisAlignment.CENTER, spacing=10),
+                    ft.Row([
+                        ft.Text(
+                            f"Disponível: {estoque} unidade(s)" if estoque > 0 else "Sem estoque no momento",
+                            size=12,
+                            color=ft.colors.RED if estoque == 0 else ft.colors.BLACK54
+                        )
+                    ], alignment=ft.MainAxisAlignment.CENTER)
                 ])
-            ) for id, nome, descricao, imagem in medicamentos_db
+            ) for id, nome, descricao, imagem, estoque in medicamentos_db
         ], spacing=20, run_spacing=20)
 
         # Conteúdo Principal
