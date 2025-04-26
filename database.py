@@ -18,7 +18,8 @@ def criar_tabelas():
             email TEXT NOT NULL UNIQUE,
             cpf TEXT NOT NULL UNIQUE,
             nascimento TEXT NOT NULL,
-            senha TEXT NOT NULL
+            senha TEXT NOT NULL,
+            data_criacao TEXT DEFAULT CURRENT_TIMESTAMP
         )
         """)
 
@@ -28,7 +29,7 @@ def criar_tabelas():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nome TEXT NOT NULL,
             email TEXT NOT NULL UNIQUE,
-            senha TEXT NOT NULL
+            senha TEXT NOT NULL,
         )
         """)
 
@@ -39,7 +40,8 @@ def criar_tabelas():
             nome TEXT NOT NULL,
             descricao TEXT,
             imagem TEXT,
-            estoque INTEGER DEFAULT 0
+            estoque INTEGER DEFAULT 0,
+            data_criacao TEXT DEFAULT CURRENT_TIMESTAMP
         )
         """)
 
@@ -51,7 +53,8 @@ def criar_tabelas():
             endereco TEXT NOT NULL,
             cidade TEXT,
             estado TEXT,
-            telefone TEXT
+            telefone TEXT,
+            data_criacao TEXT DEFAULT CURRENT_TIMESTAMP
         )
         """)
 
@@ -67,6 +70,22 @@ def criar_tabelas():
         )
         """)
 
+        # Logs de alteração nos estoques
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS estoque_logs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        farmacia_id INTEGER NOT NULL,
+        medicamento_id INTEGER NOT NULL,
+        quantidade_anterior INTEGER,
+        quantidade_nova INTEGER,
+        alterado_por TEXT,
+        data_alteracao TEXT DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (farmacia_id) REFERENCES farmacias(id),
+        FOREIGN KEY (medicamento_id) REFERENCES medicamentos(id)
+        )
+        """)
+
+
         # Agendamentos
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS agendamentos (
@@ -77,6 +96,7 @@ def criar_tabelas():
             data TEXT NOT NULL,
             horario TEXT NOT NULL,
             status TEXT DEFAULT 'PENDENTE',
+            data_criacao TEXT DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY(usuario_id) REFERENCES usuarios(id),
             FOREIGN KEY(medicamento_id) REFERENCES medicamentos(id),
             FOREIGN KEY(farmacia_id) REFERENCES farmacias(id)
@@ -91,6 +111,7 @@ def criar_tabelas():
             medicamento_id INTEGER NOT NULL,
             data_reserva TEXT NOT NULL,
             validade TEXT,
+            data_criacao TEXT DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY(usuario_id) REFERENCES usuarios(id),
             FOREIGN KEY(medicamento_id) REFERENCES medicamentos(id)
         )
@@ -104,6 +125,7 @@ def criar_tabelas():
             medicamento_id INTEGER NOT NULL,
             data_retirada TEXT NOT NULL,
             observacoes TEXT,
+            data_criacao TEXT DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY(usuario_id) REFERENCES usuarios(id),
             FOREIGN KEY(medicamento_id) REFERENCES medicamentos(id)
         )
