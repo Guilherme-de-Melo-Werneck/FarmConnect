@@ -1,7 +1,7 @@
 import flet as ft
 
 def main(page: ft.Page):
-    page.title = "+SuaVida - Agendamento de Consultas"
+    page.title = "FARMCONNECT"
     page.padding = 0
     page.bgcolor = ft.colors.WHITE
     page.scroll = "auto"
@@ -23,8 +23,8 @@ def main(page: ft.Page):
             padding=20,
             content=ft.Row(
                 controls=[
-                    ft.Image(src="https://i.imgur.com/7kKQyqA.png", width=60, height=60),
-                    ft.Text("+SuaVida", size=24, weight="bold", color=PRIMARY_DARK),
+                    ft.Image(src="img_home/logo.png", width=100, height=100),
+                    ft.Text("+Farmconnect", size=24, weight="bold", color=PRIMARY_DARK),
                     ft.Container(expand=True),
                     ft.ElevatedButton(
                         "Baixe o app agora!",
@@ -45,18 +45,18 @@ def main(page: ft.Page):
 
     def build_hero_section():
         title = ft.Text(
-            "Simplifique, organize e gerencie as ",
+            "Facilite, conecte e organize a ",
             size=30,
             weight="bold",
             color=TEXT_PRIMARY,
             spans=[
-                ft.TextSpan("consultas", ft.TextStyle(color=ft.colors.BLUE_400, weight="bold"))
+                ft.TextSpan("retirada de medicamentos", ft.TextStyle(color=ft.colors.BLUE_400, weight="bold"))
             ]
         )
         paragraph = ft.Text(
-            "+SuaVida facilita o agendamento e gerenciamento de consultas médicas, colocando o controle nas suas mãos. "
-            "Torne a experiência mais eficiente, acessível e moderna – tanto para pacientes quanto para clínicas.",
-            size=13,
+            "O FarmConnect transforma o agendamento e a retirada de medicamentos especializados, colocando o controle nas mãos dos pacientes. "
+            "Garanta mais agilidade, organização e praticidade no acesso aos tratamentos, fortalecendo a conexão entre farmácias públicas e usuários.",
+            size=15,
             color=TEXT_SECONDARY
         )
         left_column = ft.Column(
@@ -66,9 +66,9 @@ def main(page: ft.Page):
             width=500
         )
         illustration = ft.Image(
-            src="https://i.imgur.com/FqvnEdF.png",
-            width=400,
-            height=300,
+            src="img_home/inicio.png",
+            width=600,
+            height=500,
             fit=ft.ImageFit.CONTAIN
         )
         return section_spacing(ft.Container(
@@ -85,24 +85,25 @@ def main(page: ft.Page):
         about_title = ft.Text("Sobre nós", size=28, weight="bold", color=PRIMARY_DARK, text_align=ft.TextAlign.CENTER)
 
         about_text = ft.Text(
-            "Bem-vindo à +Sua Vida, sua parceira confiável em soluções de gerenciamento de clínica e cuidados médicos. "
-            "Estamos comprometidos em transformar a experiência de saúde para empresas e pacientes, proporcionando eficiência, "
-            "acessibilidade e conveniência.\n\n"
-            "Nossa missão é simplificar o acesso a cuidados de saúde de qualidade. Acreditamos que todos merecem atendimento médico "
-            "acessível e eficiente, e estamos dedicados a tornar essa visão uma realidade. Queremos fortalecer a relação entre clínicas "
-            "e pacientes, oferecendo ferramentas inovadoras para facilitar a comunicação, agendamento de consultas e gestão de informações.\n\n"
-            "Estamos empenhados em continuar aprimorando nossas soluções e expandir nossa oferta para melhor atender às necessidades "
-            "em constante evolução do setor de saúde. Acreditamos que a tecnologia pode desempenhar um papel fundamental na melhoria "
-            "do acesso aos cuidados médicos, e continuaremos a trabalhar incansavelmente para alcançar essa visão.\n\n"
-            "Na +Sua Vida, valorizamos cada paciente e cada clínica que confia em nossos serviços. Junte-se a nós em nossa jornada para "
-            "revolucionar a saúde e tornar o atendimento médico mais acessível e conveniente para todos.",
-            size=13,
-            color=TEXT_SECONDARY,
-            text_align=ft.TextAlign.JUSTIFY
-        )
+            "Bem-vindo à FarmConnect, sua aliada confiável na gestão de agendamentos e retirada de medicamentos especializados. "
+            "Nosso compromisso é transformar a experiência de acesso a medicamentos de alto custo, proporcionando agilidade, organização e praticidade "
+            "para pacientes e farmácias públicas.\n\n"
+            "Nossa missão é facilitar o agendamento e reagendamento de medicamentos, garantindo que cada paciente tenha seu tratamento assegurado de forma rápida e eficiente. "
+            "Acreditamos que o acesso a medicamentos especializados deve ser simples, sem filas, deslocamentos desnecessários ou complicações, e trabalhamos diariamente para tornar essa realidade possível.\n\n"
+            "Buscamos fortalecer a relação entre pacientes e farmácias públicas, oferecendo uma plataforma intuitiva e moderna que otimiza o tempo de todos os envolvidos. "
+            "Com o FarmConnect, os usuários podem acompanhar seus agendamentos, reagendar quando necessário e receber informações atualizadas sobre a disponibilidade dos medicamentos, "
+            "tudo de forma transparente e acessível.\n\n"
+            "Estamos comprometidos em continuar inovando, aprimorando nossos serviços e expandindo nossas funcionalidades para atender às necessidades de um sistema de saúde cada vez mais dinâmico. "
+            "Acreditamos que a tecnologia pode ser uma ponte para garantir tratamentos mais rápidos e eficientes, melhorando a qualidade de vida de milhares de pessoas.\n\n"
+            "Na FarmConnect, cada paciente é nossa prioridade. Junte-se a nós nessa jornada para tornar o acesso aos medicamentos mais humano, ágil e conectado.",
+        size=15,
+        color=TEXT_SECONDARY,
+    )
 
-        benefits_left = ["Análise de dados", "Redução de não conformâncias", "Maior acessibilidade"]
-        benefits_right = ["Conveniência", "Economia de tempo", "Comunicação aprimorada"]
+
+        benefits_left = ["Agendamento facilitado", "Redução de filas e deslocamentos", "Maior controle sobre retiradas"]
+        benefits_right = ["Conveniência para o paciente", "Economia de tempo", "Informações atualizadas em tempo real"]
+
 
         def benefit(texto):
             return ft.Row([
@@ -120,9 +121,9 @@ def main(page: ft.Page):
         )
 
         about_image = ft.Image(
-            src="https://i.imgur.com/bH7iFez.png",
-            width=400,
-            height=320,
+            src="img_home/sobre_nos.png",
+            width=600,
+            height=500,
             fit=ft.ImageFit.CONTAIN
         )
 
@@ -151,14 +152,15 @@ def main(page: ft.Page):
         )
 
     def build_manage_section():
-        title = ft.Text("Pacientes: Gerencie suas consultas", size=24, weight="bold", color=PRIMARY_DARK)
+        title = ft.Text("Pacientes: Gerencie seus agendamentos", size=24, weight="bold", color=PRIMARY_DARK)
         description = ft.Text(
-            "Com recursos como armazenamento de informações do paciente, listagem de médicos, agendamento automatizado "
-            "e avisos automáticos para o comparecimento de consultas. Reduza a carga de trabalho manual, economize tempo "
-            "e melhore a eficiência de sua clínica em um só lugar.",
-            size=13,
+            "Com recursos como agendamento e reagendamento de retirada de medicamentos, controle de disponibilidade, "
+            "e notificações automáticas para retirada. Reduza filas, evite deslocamentos desnecessários "
+            "e torne o processo de retirada de medicamentos mais rápido e eficiente em um só lugar.",
+            size=15,
             color=TEXT_SECONDARY
         )
+
 
         def card(icon_name, title_text, subtitle_text):
             return ft.Container(
@@ -185,23 +187,36 @@ def main(page: ft.Page):
                 )
             )
 
-        cards_row = ft.Row(
-            wrap=False,
-            scroll="auto",
-            spacing=20,
+        cards_row = ft.Column(
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            spacing=30,
             controls=[
-                card(ft.icons.PERSON_OUTLINE, "Pacientes", "Armazene as informações"),
-                card(ft.icons.LOCAL_HOSPITAL_OUTLINED, "Médicos", "Liste todos médicos"),
-                card(ft.icons.CALENDAR_MONTH_OUTLINED, "Agendamento", "Busque informações do paciente"),
-                card(ft.icons.CALENDAR_MONTH_OUTLINED, "Reagendamento", "Reagende facilmente"),
-                card(ft.icons.CHECK_BOX_OUTLINE_BLANK, "Confirmação", "Confirme data e horário")
+                ft.Row(
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    spacing=20,
+                    controls=[
+                        card(ft.icons.PERSON_OUTLINE, "Pacientes", "Gerencie seus agendamentos"),
+                        card(ft.icons.LOCAL_PHARMACY_OUTLINED, "Medicamentos", "Controle a disponibilidade"),
+                        card(ft.icons.CALENDAR_MONTH_OUTLINED, "Agendar Retirada", "Marque a retirada do medicamento"),
+                    ],
+                ),
+                ft.Row(
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    spacing=20,
+                    controls=[
+                        card(ft.icons.CALENDAR_MONTH_OUTLINED, "Reagendar Retirada", "Altere a data com facilidade"),
+                        card(ft.icons.CHECK_CIRCLE_OUTLINE, "Confirmação", "Confirme o agendamento realizado"),
+                    ],
+                ),
             ]
         )
 
+
+
         image = ft.Image(
-            src="https://i.imgur.com/y62xqjW.png",
-            width=400,
-            height=300,
+            src="img_home/paciente.png",
+            width=600,
+            height=500,
             fit=ft.ImageFit.CONTAIN
         )
 
@@ -222,11 +237,12 @@ def main(page: ft.Page):
         ))
 
     def build_admin_section():
-        title = ft.Text("Administradores: Controle total na plataforma", size=24, weight="bold", color=PRIMARY_DARK)
+        title = ft.Text("Administradores: Gerencie agendamentos e estoques", size=24, weight="bold", color=PRIMARY_DARK)
         description = ft.Text(
-            "Tenha acesso completo para aprovar cadastros de usuários, adicionar medicamentos, controlar estoques, "
-            "visualizar registros e manter a organização geral do sistema. Uma plataforma eficiente para uma gestão moderna.",
-            size=13,
+            "Tenha controle completo para aprovar cadastros de pacientes, cadastrar medicamentos, gerenciar estoques, "
+            "acompanhar agendamentos e manter o sistema de retirada organizado e eficiente. "
+            "Tudo em uma plataforma moderna, prática e segura.",
+            size=15,
             color=TEXT_SECONDARY
         )
 
@@ -235,7 +251,7 @@ def main(page: ft.Page):
                 bgcolor=ft.colors.WHITE,
                 border_radius=12,
                 padding=20,
-                width=200,
+                width=180,  # <-- Diminui um pouco para caber tudo
                 height=160,
                 shadow=ft.BoxShadow(
                     spread_radius=1,
@@ -248,30 +264,41 @@ def main(page: ft.Page):
                     spacing=10,
                     controls=[
                         ft.Icon(icon_name, size=40, color=PRIMARY),
-                        ft.Container(height=3, bgcolor=PRIMARY, width=60),
-                        ft.Text(title_text, size=14, weight="bold", color=TEXT_PRIMARY),
-                        ft.Text(subtitle_text, size=12, color=TEXT_SECONDARY)
+                        ft.Container(height=3, bgcolor=PRIMARY, width=50),
+                        ft.Text(title_text, size=14, weight="bold", color=TEXT_PRIMARY, text_align=ft.TextAlign.CENTER),
+                        ft.Text(subtitle_text, size=12, color=TEXT_SECONDARY, text_align=ft.TextAlign.CENTER),
                     ]
                 )
             )
 
-        cards = ft.Row(
-            wrap=False,
-            scroll="auto",
-            spacing=20,
+        cards = ft.Column(
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            spacing=30,
             controls=[
-                admin_card(ft.icons.ADD_BOX_OUTLINED, "Adicionar Medicamentos", "Cadastre novos remédios"),
-                admin_card(ft.icons.CHECK_CIRCLE_OUTLINE, "Aprovar Usuários", "Gerencie os cadastros"),
-                admin_card(ft.icons.INVENTORY_2_OUTLINED, "Estoque", "Controle a disponibilidade"),
-                admin_card(ft.icons.DESCRIPTION_OUTLINED, "Registros", "Visualize o histórico"),
-                admin_card(ft.icons.NOTIFICATIONS_OUTLINED, "Alertas", "Receba notificações automáticas")
+                ft.Row(
+                    alignment=ft.MainAxisAlignment.CENTER,  # <-- CENTRALIZADO agora para os 3 primeiros
+                    spacing=20,
+                    controls=[
+                        admin_card(ft.icons.ADD_BOX_OUTLINED, "Cadastrar Medicamentos", "Adicione medicamentos"),
+                        admin_card(ft.icons.PERSON_ADD_ALT_1_OUTLINED, "Aprovar Pacientes", "Gerencie solicitações de cadastro"),
+                        admin_card(ft.icons.INVENTORY_2_OUTLINED, "Gerenciar Estoque", "Disponibilidade dos medicamentos"),
+                    ],
+                ),
+                ft.Row(
+                    alignment=ft.MainAxisAlignment.CENTER,  # <-- CENTRALIZADO também para os 2 de baixo
+                    spacing=20,
+                    controls=[
+                        admin_card(ft.icons.DESCRIPTION_OUTLINED, "Agendamentos", "Visualize agendamentos e reagendamentos"),
+                        admin_card(ft.icons.NOTIFICATIONS_OUTLINED, "Notificações", "Envie alertas sobre retiradas e prazos"),
+                    ],
+                ),
             ]
         )
 
         image = ft.Image(
-            src="https://i.imgur.com/gAklHPs.png",
-            width=400,
-            height=300,
+            src="img_home/administrador.png",
+            width=600,
+            height=500,
             fit=ft.ImageFit.CONTAIN
         )
 
@@ -279,11 +306,14 @@ def main(page: ft.Page):
             padding=40,
             content=ft.Row(
                 controls=[
+                    image,
                     ft.Container(
-                        width=500,
-                        content=ft.Column([title, description, ft.Container(height=20), cards], spacing=20)
+                        width=550,
+                        content=ft.Column(
+                            [title, description, ft.Container(height=20), cards],
+                            spacing=20
+                        )
                     ),
-                    image
                 ],
                 alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                 vertical_alignment=ft.CrossAxisAlignment.CENTER,
@@ -291,15 +321,50 @@ def main(page: ft.Page):
             )
         ))
 
+
     def build_footer():
         return ft.Container(
-            bgcolor=ft.colors.WHITE,
+            bgcolor=ft.colors.BLUE_50,  # Fundo mais suave (não branco puro)
             padding=40,
-            content=ft.Column([
-                ft.Text("+SuaVida © 2025", size=12, color=TEXT_PRIMARY),
-                ft.Text("Todos os direitos reservados.", size=12, color=TEXT_SECONDARY)
-            ], alignment=ft.MainAxisAlignment.CENTER)
+            content=ft.Column(
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                spacing=20,
+                controls=[
+                    ft.Row(
+                        alignment=ft.MainAxisAlignment.CENTER,
+                        spacing=10,
+                        controls=[
+                            ft.Text("FarmConnect", size=20, weight="bold", color=PRIMARY_DARK),
+                            ft.Icon(ft.icons.LOCAL_PHARMACY_OUTLINED, size=20, color=PRIMARY_DARK),
+                        ]
+                    ),
+                    ft.Text(
+                        "Simplificando o agendamento e retirada de medicamentos especializados.",
+                        size=14,
+                        color=TEXT_SECONDARY,
+                        text_align=ft.TextAlign.CENTER,
+                    ),
+                    ft.Divider(height=20, color=TEXT_SECONDARY),
+                    ft.Row(
+                        alignment=ft.MainAxisAlignment.CENTER,
+                        spacing=30,
+                        controls=[
+                            ft.TextButton("Política de Privacidade", on_click=lambda e: None),
+                            ft.TextButton("Termos de Uso", on_click=lambda e: None),
+                            ft.TextButton("Contato", on_click=lambda e: None),
+                        ],
+                    ),
+                    ft.Text(
+                        "FarmConnect © 2025 - Todos os direitos reservados.",
+                        size=12,
+                        color=TEXT_SECONDARY,
+                        text_align=ft.TextAlign.CENTER,
+                    ),
+                ],
+            )
         )
+
+
 
     page.add(
         build_header(),
