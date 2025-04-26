@@ -396,7 +396,16 @@ class TelaUsuario:
         self.page = page
         self.email_usuario = self.page.session.get("usuario_logado")
         self.nome_usuario = buscar_nome_usuario(self.email_usuario)
-        
+    
+    def mostrar_snackbar(self, mensagem, cor=ft.colors.GREEN):
+        self.page.snack_bar = ft.SnackBar(
+        content=ft.Text(mensagem),
+        bgcolor=cor,
+        duration=3000
+        )
+        self.page.snack_bar.open = True
+        self.page.update()
+
     def tela_usuario(self):
     # Sidebar de Navegação
         sidebar = ft.Container(
@@ -469,7 +478,9 @@ class TelaUsuario:
                             color="white",
                             style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10)),
                             on_click=lambda e, med_id=id: (
-                                agendar_medicamento(self.page.session.get("usuario_logado"),med_id) if estoque > 0 else solicitar_notificacao(self.page.session.get("usuario_logado"), med_id)
+                                agendar_medicamento(self.page.session.get("usuario_logado"), med_id) or self.mostrar_snackbar("Agendamento criado com sucesso!", cor=ft.colors.GREEN)
+                            ) if estoque > 0 else (
+                                solicitar_notificacao(self.page.session.get("usuario_logado"), med_id) or self.mostrar_snackbar("Você será avisado quando o medicamento estiver disponível!", cor=ft.colors.BLUE)
                             )
                         ),
                     ], alignment=ft.MainAxisAlignment.CENTER, spacing=10),
