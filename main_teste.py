@@ -208,7 +208,7 @@ class TelaLogin:
         def voltar_click(e):
             self.page.go("/")
 
-        email = ft.TextField(label="Email", prefix_icon=ft.icons.EMAIL, border_radius=10, filled=True, expand=True)
+        email = ft.TextField(label="Email", prefix_icon=ft.icons.EMAIL, border_radius=10, filled=True, expand=True, autofocus=True)
         senha = ft.TextField(label="Senha", password=True, can_reveal_password=True, prefix_icon=ft.icons.LOCK, border_radius=10, filled=True, expand=True, on_submit=login_click)
 
         campos_login = ft.Column(controls=[email, senha], spacing=10)
@@ -296,6 +296,13 @@ class TelaCadastro:
             texto_original = cpf.value
             numeros = ''.join(filter(str.isdigit, texto_original))[:11]
 
+            if len(numeros) == 11:
+                nascimento.focus()
+
+        def cpf_blur(e):
+            texto_original = cpf.value
+            numeros = ''.join(filter(str.isdigit, texto_original))[:11]
+
             formatado = ""
             if len(numeros) >= 3:
                 formatado += numeros[:3] + "."
@@ -318,6 +325,13 @@ class TelaCadastro:
         def nascimento_change(e):
             texto_original = nascimento.value
             numeros = ''.join(filter(str.isdigit, texto_original))[:8]
+
+            if len(numeros) == 8:
+                senha.focus()
+
+        def nascimento_blur(e):
+            texto_original = nascimento.value
+            numeros = ''.join(filter(str.isdigit, texto_original))[:8]
             formatado = ""
             if len(numeros) >= 2:
                 formatado += numeros[:2] + "/"
@@ -330,10 +344,10 @@ class TelaCadastro:
             nascimento.value = formatado
             nascimento.update()
 
-        nome = ft.TextField(label="Nome completo", prefix_icon=ft.icons.PERSON, border_radius=10, filled=True, bgcolor=ft.colors.WHITE, expand=True)
+        nome = ft.TextField(label="Nome completo", prefix_icon=ft.icons.PERSON, border_radius=10, filled=True, bgcolor=ft.colors.WHITE, expand=True, autofocus=True)
         email = ft.TextField(label="Email", prefix_icon=ft.icons.EMAIL, border_radius=10, filled=True, bgcolor=ft.colors.WHITE, expand=True)
-        cpf = ft.TextField(label="CPF", prefix_icon=ft.icons.BADGE, border_radius=10, filled=True, bgcolor=ft.colors.WHITE, expand=True, keyboard_type=ft.KeyboardType.NUMBER, hint_text="Apenas números", on_blur=cpf_change)
-        nascimento = ft.TextField(label="Data de Nascimento", hint_text="DD/MM/AAAA", prefix_icon=ft.icons.CALENDAR_MONTH, border_radius=10, filled=True, bgcolor=ft.colors.WHITE, expand=True, on_blur=nascimento_change)
+        cpf = ft.TextField(label="CPF", prefix_icon=ft.icons.BADGE, border_radius=10, filled=True, bgcolor=ft.colors.WHITE, expand=True, keyboard_type=ft.KeyboardType.NUMBER, hint_text="Apenas números", on_blur=cpf_blur, on_change=cpf_change)
+        nascimento = ft.TextField(label="Data de Nascimento", hint_text="DD/MM/AAAA", prefix_icon=ft.icons.CALENDAR_MONTH, border_radius=10, filled=True, bgcolor=ft.colors.WHITE, expand=True, on_blur=nascimento_blur, on_change=nascimento_change)
         senha = ft.TextField(label="Senha", password=True, can_reveal_password=True, prefix_icon=ft.icons.LOCK, border_radius=10, filled=True, bgcolor=ft.colors.WHITE, expand=True, on_submit=registrar_click)
 
         campos = ft.Column(spacing=10, controls=[nome, email, cpf, nascimento, senha])
