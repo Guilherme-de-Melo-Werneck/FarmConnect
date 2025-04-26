@@ -398,15 +398,19 @@ class TelaUsuario:
         self.nome_usuario = buscar_nome_usuario(self.email_usuario)
     
     def mostrar_snackbar(self, mensagem, cor=ft.colors.GREEN):
-        self.page.snack_bar = ft.SnackBar(
-        content=ft.Text(mensagem),
-        bgcolor=cor,
-        duration=3000
-        )
+        self.page.snack_bar.content.value = mensagem
+        self.page.snack_bar.bgcolor = cor
         self.page.snack_bar.open = True
         self.page.update()
 
     def tela_usuario(self):
+    # Mostra o Snackbar:
+        self.page.snack_bar = ft.SnackBar(
+            content=ft.Text(""),
+            bgcolor=ft.colors.GREEN,
+            duration=3000
+        )
+
     # Sidebar de Navegação
         sidebar = ft.Container(
             width=280,
@@ -531,6 +535,7 @@ class TelaUsuario:
         return ft.View(
             route="/usuario",
             controls=[
+                self.page.snack_bar,
                 ft.Container(
                     expand=True,
                     gradient=ft.LinearGradient(
