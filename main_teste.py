@@ -421,7 +421,7 @@ class TelaUsuario:
                 ),
                 ft.Row([
                     ft.CircleAvatar(foreground_image_src="/images/profile.jpg", radius=22),
-                    ft.Text(self.nome_usuario, size=13, weight=ft.FontWeight.BOLD, color=ft.colors.WHITE)
+                    ft.Text(self.nome_usuario.upper(), size=13, weight=ft.FontWeight.BOLD, color=ft.colors.WHITE)
                 ], spacing=10, col={"xs": 12, "md": 4})
             ])
         )
