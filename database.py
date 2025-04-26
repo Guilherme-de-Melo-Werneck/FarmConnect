@@ -22,6 +22,16 @@ def criar_tabelas():
         )
         """)
 
+        # Admins
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS administradores (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nome TEXT NOT NULL,
+            email TEXT NOT NULL UNIQUE,
+            senha TEXT NOT NULL
+        )
+        """)
+
         # Medicamentos
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS medicamentos (
@@ -100,6 +110,8 @@ def criar_tabelas():
         """)
 
         conn.commit()
+        
+
 
 def registrar_usuario(nome, email, cpf, nascimento, senha):
     conn = conectar()
