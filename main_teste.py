@@ -552,7 +552,7 @@ class TelaUsuario:
 class FarmConnectApp:
     def __init__(self, page: ft.Page):
         self.page = page
-        self.configurar_pagina()
+        self.page.settings()
         self.page.on_route_change = self.route_change
         self.page.go("/")
 
