@@ -317,4 +317,25 @@ def reduzir_estoque_medicamento(medicamento_id):
     cursor.close()
     conn.close()
 
+def registrar_medicamento_reservado(usuario_email, medicamento_id):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT id FROM usuarios WHERE email = ?", (usuario_email,))
+    user = cursor.fetchone()
+
+    if user:
+        usuario_id = user[0]
+
+        cursor.execute("""
+            INSERT INTO medicamentos_reservados (usuario_id, medicamento_id, data_reserva)
+            VALUES (?, ?, DATE('now'))
+        """, (usuario_id, medicamento_id))
+
+        conn.commit()
+
+    cursor.close()
+    conn.close()
+
+
 
