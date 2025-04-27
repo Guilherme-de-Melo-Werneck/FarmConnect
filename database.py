@@ -303,4 +303,18 @@ def solicitar_notificacao(usuario_email, medicamento_id):
     cursor.close()
     conn.close()
 
+def reduzir_estoque_medicamento(medicamento_id):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE medicamentos
+        SET estoque = CASE WHEN estoque > 0 THEN estoque - 1 ELSE 0 END
+        WHERE id = ?
+    """, (medicamento_id,))
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
 
