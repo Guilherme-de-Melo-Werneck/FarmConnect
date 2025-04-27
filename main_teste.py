@@ -1,6 +1,6 @@
 import flet as ft
 import asyncio
-from database import criar_tabelas, registrar_usuario, verificar_login, buscar_nome_usuario, listar_medicamentos, adicionar_medicamento, solicitar_notificacao, agendar_medicamento, reduzir_estoque_medicamento
+from database import criar_tabelas, registrar_usuario, verificar_login, buscar_nome_usuario, listar_medicamentos, adicionar_medicamento, solicitar_notificacao, agendar_medicamento, reduzir_estoque_medicamento, registrar_medicamento_reservado
 
 #Teste
 #adicionar_medicamento(nome="Paracetamol", descricao="Medicamento com efeito analgico", imagem="/img/celular.png", estoque=10)
@@ -405,9 +405,12 @@ class TelaUsuario:
         self.page.update()
 
     def adicionar_medicamento_click(self, medicamento_id):
-        agendar_medicamento(self.page.session.get("usuario_logado"), medicamento_id)
-        
+
+        usuario_email = self.page.session.get("usuario_logado")
+
+        agendar_medicamento(usuario_email, medicamento_id)
         reduzir_estoque_medicamento(medicamento_id)
+        registrar_medicamento_reservado(usuario_email, medicamento_id)
 
         botao, texto_estoque = self.cards_medicamentos.get(medicamento_id)
 
@@ -427,7 +430,7 @@ class TelaUsuario:
         botao.update()
         texto_estoque.update()
 
-        self.mostrar_snackbar("Agendamento realizado e estoque atualizado!")
+        self.mostrar_snackbar("Medicamento adicionado!")
 
     def buscar_estoque_medicamento(self, medicamento_id):
         medicamentos = listar_medicamentos()
