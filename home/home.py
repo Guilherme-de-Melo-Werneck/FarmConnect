@@ -23,7 +23,7 @@ def main(page: ft.Page):
             padding=20,
             content=ft.Row(
                 controls=[
-                    ft.Image(src="img_home/logo.png", width=100, height=100),
+                    ft.Image(src="home/img_home/logo.png", width=100, height=100),
                     ft.Text("Farmconnect", size=24, weight="bold", color=PRIMARY_DARK),
                     ft.Container(expand=True),
                     ft.ElevatedButton(
@@ -66,7 +66,7 @@ def main(page: ft.Page):
             width=500
         )
         illustration = ft.Image(
-            src="img_home/inicio.png",
+            src="home/img_home/inicio.png",
             width=600,
             height=500,
             fit=ft.ImageFit.CONTAIN
@@ -121,7 +121,7 @@ def main(page: ft.Page):
         )
 
         about_image = ft.Image(
-            src="img_home/sobre_nos.png",
+            src="home/img_home/sobre_nos.png",
             width=600,
             height=500,
             fit=ft.ImageFit.CONTAIN
@@ -214,7 +214,7 @@ def main(page: ft.Page):
 
 
         image = ft.Image(
-            src="img_home/paciente.png",
+            src="home/img_home/paciente.png",
             width=600,
             height=500,
             fit=ft.ImageFit.CONTAIN
@@ -296,7 +296,7 @@ def main(page: ft.Page):
         )
 
         image = ft.Image(
-            src="img_home/administrador.png",
+            src="home/img_home/administrador.png",
             width=600,
             height=500,
             fit=ft.ImageFit.CONTAIN
