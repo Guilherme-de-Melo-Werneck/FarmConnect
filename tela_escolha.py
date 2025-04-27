@@ -11,7 +11,7 @@ def tela_escolha_usuario(page: ft.Page):
         page.go("/login_admin")
 
     logo = ft.Image(
-        src="img_home/logo.png",  # Ícone bonito 3D de saúde
+        src="img_home/logo.png",  
         width=100,
         height=100,
     )
@@ -105,7 +105,7 @@ def tela_escolha_usuario(page: ft.Page):
 
     tela = ft.Container(
         expand=True,
-        bgcolor=ft.colors.WHITE,  # Fundo agora é totalmente branco
+        bgcolor=ft.colors.WHITE,  
         content=ft.Row(
             [
                 ft.Column(
@@ -129,7 +129,7 @@ def tela_escolha_usuario(page: ft.Page):
 def main(page: ft.Page):
     page.title = "FarmConnect - Escolha de Perfil"
     page.scroll = "auto"
-    page.bgcolor = ft.colors.WHITE  # Fundo branco para toda a aplicação
+    page.bgcolor = ft.colors.WHITE  
 
     def route_change(e):
         page.views.clear()
