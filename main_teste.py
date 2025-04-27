@@ -3,7 +3,7 @@ import asyncio
 from database import criar_tabelas, registrar_usuario, verificar_login, buscar_nome_usuario, listar_medicamentos, adicionar_medicamento, solicitar_notificacao, agendar_medicamento, reduzir_estoque_medicamento, registrar_medicamento_reservado
 
 #Teste
-#adicionar_medicamento(nome="Paracetamol", descricao="Medicamento com efeito analgico", imagem="/img/celular.png", estoque=10)
+adicionar_medicamento(nome="Paracetamol", descricao="Medicamento com efeito analgico", imagem="/img/celular.png", estoque=10)
 
 # Banco de Dados:
 criar_tabelas()
@@ -430,7 +430,7 @@ class TelaUsuario:
         botao.update()
         texto_estoque.update()
 
-        self.mostrar_snackbar("Medicamento!")
+        self.mostrar_snackbar("Medicamento adicionado!")
 
     def buscar_estoque_medicamento(self, medicamento_id):
         medicamentos = listar_medicamentos()
