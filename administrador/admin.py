@@ -109,7 +109,7 @@ def main(page: ft.Page):
         )
 
         phone_image = ft.Container(
-            content=ft.Image(src="img_adm/tela_adm.png", width=700, height=700),
+            content=ft.Image(src="administrador/img_adm/tela_adm.png", width=700, height=700),
             rotate=ft.Rotate(angle=0.00),
             shadow=ft.BoxShadow(blur_radius=24, color=ft.colors.BLACK26, offset=ft.Offset(6, 10)),
             animate_rotation=ft.Animation(700, "easeInOut"),
