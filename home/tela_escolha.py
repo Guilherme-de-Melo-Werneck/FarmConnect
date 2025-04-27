@@ -11,7 +11,7 @@ def tela_escolha_usuario(page: ft.Page):
         page.go("/login_admin")
 
     logo = ft.Image(
-        src="img_home/logo.png",  
+        src="home/img_home/logo.png",  
         width=100,
         height=100,
     )
