@@ -1,6 +1,6 @@
 import flet as ft
 import asyncio
-from database import criar_tabelas, registrar_usuario, verificar_login, buscar_nome_usuario, listar_medicamentos, adicionar_medicamento, solicitar_notificacao, agendar_medicamento
+from database import criar_tabelas, registrar_usuario, verificar_login, buscar_nome_usuario, listar_medicamentos, adicionar_medicamento, solicitar_notificacao, agendar_medicamento, reduzir_estoque_medicamento
 
 #Teste
 #adicionar_medicamento(nome="Paracetamol", descricao="Medicamento com efeito analgico", imagem="/img/celular.png", estoque=10)
@@ -396,12 +396,45 @@ class TelaUsuario:
         self.page = page
         self.email_usuario = self.page.session.get("usuario_logado")
         self.nome_usuario = buscar_nome_usuario(self.email_usuario)
+        self.cards_medicamentos = {}
     
     def mostrar_snackbar(self, mensagem, cor=ft.colors.GREEN):
         self.page.snack_bar.content.value = mensagem
         self.page.snack_bar.bgcolor = cor
         self.page.snack_bar.open = True
         self.page.update()
+
+    def adicionar_medicamento_click(self, medicamento_id):
+        agendar_medicamento(self.page.session.get("usuario_logado"), medicamento_id)
+        
+        reduzir_estoque_medicamento(medicamento_id)
+
+        botao, texto_estoque = self.cards_medicamentos.get(medicamento_id)
+
+        estoque_atualizado = self.buscar_estoque_medicamento(medicamento_id)
+
+        if estoque_atualizado > 0:
+            texto_estoque.value = f"Disponível: {estoque_atualizado} unidade(s)"
+            botao.text = "ADICIONAR"
+            botao.bgcolor = "#1E3A8A"
+            botao.disabled = False
+        else:
+            texto_estoque.value = "Sem estoque no momento"
+            botao.text = "ME AVISE"
+            botao.bgcolor = ft.colors.GREY
+            botao.disabled = True
+
+        botao.update()
+        texto_estoque.update()
+
+        self.mostrar_snackbar("Agendamento realizado e estoque atualizado!")
+
+    def buscar_estoque_medicamento(self, medicamento_id):
+        medicamentos = listar_medicamentos()
+        for id, nome, descricao, imagem, estoque in medicamentos:
+            if id == medicamento_id:
+                return estoque
+        return 0
 
     def tela_usuario(self):
     # Mostra o Snackbar:
@@ -456,8 +489,25 @@ class TelaUsuario:
         # Cards de Medicamentos
         medicamentos_db = listar_medicamentos()
 
-        medicamentos_cards = ft.ResponsiveRow([
-            ft.Container(
+        medicamentos_cards = []
+
+        for id, nome, descricao, imagem, estoque in medicamentos_db:
+            botao = ft.ElevatedButton(
+                "ADICIONAR" if estoque > 0 else "ME AVISE",
+                width=130,
+                bgcolor="#1E3A8A" if estoque > 0 else ft.colors.GREY,
+                color="white",
+                style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10)),
+                on_click=lambda e, med_id=id: self.adicionar_medicamento_click(med_id)
+            )
+
+            texto_estoque = ft.Text(
+                f"Disponível: {estoque} unidade(s)" if estoque > 0 else "Sem estoque no momento",
+                size=12,
+                color=ft.colors.RED if estoque == 0 else ft.colors.BLACK54
+            )
+
+            card = ft.Container(
                 padding=14,
                 bgcolor=ft.colors.BLUE_50,
                 border_radius=16,
@@ -465,39 +515,16 @@ class TelaUsuario:
                 col={"xs": 12, "sm": 6, "md": 4},
                 content=ft.Column([
                     ft.Image(src=imagem or "/images/remedio_padrao.png", width=100, height=100),
-                    ft.Row([
-                        ft.Text(
-                            nome,
-                            text_align=ft.TextAlign.CENTER,
-                            size=13,
-                            weight=ft.FontWeight.BOLD,
-                            color="#1E3A8A"
-                        ),
-                    ], alignment=ft.MainAxisAlignment.CENTER, spacing=10),
-                    ft.Row([
-                        ft.ElevatedButton(
-                            "ADICIONAR" if estoque > 0 else "ME AVISE",
-                            width=130,
-                            bgcolor="#1E3A8A" if estoque > 0 else ft.colors.GREY,
-                            color="white",
-                            style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10)),
-                            on_click=lambda e, med_id=id: (
-                                agendar_medicamento(self.page.session.get("usuario_logado"), med_id) or self.mostrar_snackbar("Agendamento criado com sucesso!", cor=ft.colors.GREEN)
-                            ) if estoque > 0 else (
-                                solicitar_notificacao(self.page.session.get("usuario_logado"), med_id) or self.mostrar_snackbar("Você será avisado quando o medicamento estiver disponível!", cor=ft.colors.BLUE)
-                            )
-                        ),
-                    ], alignment=ft.MainAxisAlignment.CENTER, spacing=10),
-                    ft.Row([
-                        ft.Text(
-                            f"Disponível: {estoque} unidade(s)" if estoque > 0 else "Sem estoque no momento",
-                            size=12,
-                            color=ft.colors.RED if estoque == 0 else ft.colors.BLACK54
-                        )
-                    ], alignment=ft.MainAxisAlignment.CENTER)
+                    ft.Row([ft.Text(nome, text_align=ft.TextAlign.CENTER, size=13, weight=ft.FontWeight.BOLD, color="#1E3A8A")], alignment=ft.MainAxisAlignment.CENTER),
+                    ft.Row([botao], alignment=ft.MainAxisAlignment.CENTER, spacing=10),
+                    ft.Row([texto_estoque], alignment=ft.MainAxisAlignment.CENTER)
                 ])
-            ) for id, nome, descricao, imagem, estoque in medicamentos_db
-        ], spacing=20, run_spacing=20)
+            )
+
+            medicamentos_cards.append(card)
+
+            self.cards_medicamentos[id] = (botao, texto_estoque)
+
 
         # Conteúdo Principal
         conteudo = ft.Column([
@@ -522,7 +549,7 @@ class TelaUsuario:
                             ft.OutlinedButton("Feedback"),
                         ], alignment=ft.MainAxisAlignment.CENTER, spacing=20),
                         ft.Divider(height=20),
-                        medicamentos_cards
+                        ft.ResponsiveRow(controls=medicamentos_cards, spacing=20, run_spacing=20)
                     ], spacing=30)
                 )
             )
