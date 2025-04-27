@@ -430,7 +430,7 @@ class TelaUsuario:
         botao.update()
         texto_estoque.update()
 
-        self.mostrar_snackbar("Medicamento adicionado!")
+        self.mostrar_snackbar("Medicamento!")
 
     def buscar_estoque_medicamento(self, medicamento_id):
         medicamentos = listar_medicamentos()
