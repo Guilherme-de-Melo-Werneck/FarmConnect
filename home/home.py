@@ -1,41 +1,45 @@
 import flet as ft
 
-def main(page: ft.Page):
-    page.title = "FARMCONNECT"
-    page.padding = 0
-    page.bgcolor = ft.colors.WHITE
-    page.scroll = "auto"
+class Home:
+    def __init__(self, page: ft.Page):
+        self.page = page
+        self.page.title = "FARMCONNECT"
+        self.page.padding = 0
+        self.page.bgcolor = ft.colors.WHITE
+        self.page.scroll = "auto"
 
-    PRIMARY = ft.colors.BLUE_600
-    PRIMARY_DARK = ft.colors.BLUE_900
-    TEXT_PRIMARY = ft.colors.BLACK87
-    TEXT_SECONDARY = ft.colors.GREY_700
+        self.PRIMARY = ft.colors.BLUE_600
+        self.PRIMARY_DARK = ft.colors.BLUE_900
+        self.TEXT_PRIMARY = ft.colors.BLACK87
+        self.TEXT_SECONDARY = ft.colors.GREY_700
 
-    def section_spacing(content):
+        self.build()
+
+    def section_spacing(self, content):
         return ft.Container(
             margin=ft.Margin(0, 0, 0, 50),
             content=content
         )
 
-    def build_header():
+    def build_header(self):
         return ft.Container(
             bgcolor=ft.colors.WHITE,
             padding=20,
             content=ft.Row(
                 controls=[
                     ft.Image(src="home/img_home/logo.png", width=100, height=100),
-                    ft.Text("Farmconnect", size=24, weight="bold", color=PRIMARY_DARK),
+                    ft.Text("Farmconnect", size=24, weight="bold", color=self.PRIMARY_DARK),
                     ft.Container(expand=True),
                     ft.ElevatedButton(
                         "Baixe o app agora!",
-                        bgcolor=PRIMARY,
+                        bgcolor=self.PRIMARY,
                         color=ft.colors.WHITE,
                         style=ft.ButtonStyle(padding=15),
                     ),
                     ft.TextButton(
                         "Entrar",
                         on_click=lambda _: print("Entrar clicado"),
-                        style=ft.ButtonStyle(padding=15, color=PRIMARY)
+                        style=ft.ButtonStyle(padding=15, color=self.PRIMARY)
                     )
                 ],
                 spacing=15,
@@ -43,12 +47,12 @@ def main(page: ft.Page):
             )
         )
 
-    def build_hero_section():
+    def build_hero_section(self):
         title = ft.Text(
             "Facilite, conecte e organize a ",
             size=30,
             weight="bold",
-            color=TEXT_PRIMARY,
+            color=self.TEXT_PRIMARY,
             spans=[
                 ft.TextSpan("retirada de medicamentos", ft.TextStyle(color=ft.colors.BLUE_400, weight="bold"))
             ]
@@ -57,7 +61,7 @@ def main(page: ft.Page):
             "O FarmConnect transforma o agendamento e a retirada de medicamentos especializados, colocando o controle nas mãos dos pacientes. "
             "Garanta mais agilidade, organização e praticidade no acesso aos tratamentos, fortalecendo a conexão entre farmácias públicas e usuários.",
             size=15,
-            color=TEXT_SECONDARY
+            color=self.TEXT_SECONDARY
         )
         left_column = ft.Column(
             [title, paragraph],
@@ -71,7 +75,7 @@ def main(page: ft.Page):
             height=500,
             fit=ft.ImageFit.CONTAIN
         )
-        return section_spacing(ft.Container(
+        return self.section_spacing(ft.Container(
             padding=40,
             content=ft.Row(
                 controls=[left_column, illustration],
@@ -81,8 +85,8 @@ def main(page: ft.Page):
             )
         ))
 
-    def build_about_section():
-        about_title = ft.Text("Sobre nós", size=28, weight="bold", color=PRIMARY_DARK, text_align=ft.TextAlign.CENTER)
+    def build_about_section(self):
+        about_title = ft.Text("Sobre nós", size=28, weight="bold", color=self.PRIMARY_DARK, text_align=ft.TextAlign.CENTER)
 
         about_text = ft.Text(
             "Bem-vindo à FarmConnect, sua aliada confiável na gestão de agendamentos e retirada de medicamentos especializados. "
@@ -96,19 +100,17 @@ def main(page: ft.Page):
             "Estamos comprometidos em continuar inovando, aprimorando nossos serviços e expandindo nossas funcionalidades para atender às necessidades de um sistema de saúde cada vez mais dinâmico. "
             "Acreditamos que a tecnologia pode ser uma ponte para garantir tratamentos mais rápidos e eficientes, melhorando a qualidade de vida de milhares de pessoas.\n\n"
             "Na FarmConnect, cada paciente é nossa prioridade. Junte-se a nós nessa jornada para tornar o acesso aos medicamentos mais humano, ágil e conectado.",
-        size=15,
-        color=TEXT_SECONDARY,
-    )
-
+            size=15,
+            color=self.TEXT_SECONDARY,
+        )
 
         benefits_left = ["Agendamento facilitado", "Redução de filas e deslocamentos", "Maior controle sobre retiradas"]
         benefits_right = ["Conveniência para o paciente", "Economia de tempo", "Informações atualizadas em tempo real"]
 
-
         def benefit(texto):
             return ft.Row([
-                ft.Icon(name=ft.icons.CHECK_CIRCLE_OUTLINED, color=PRIMARY),
-                ft.Text(texto, size=13, weight="bold", color=TEXT_PRIMARY)
+                ft.Icon(name=ft.icons.CHECK_CIRCLE_OUTLINED, color=self.PRIMARY),
+                ft.Text(texto, size=13, weight="bold", color=self.TEXT_PRIMARY)
             ], spacing=8)
 
         benefits_grid = ft.Row(
@@ -127,7 +129,7 @@ def main(page: ft.Page):
             fit=ft.ImageFit.CONTAIN
         )
 
-        return section_spacing(
+        return self.section_spacing(
             ft.Container(
                 padding=40,
                 content=ft.Row(
@@ -151,16 +153,15 @@ def main(page: ft.Page):
             )
         )
 
-    def build_manage_section():
-        title = ft.Text("Pacientes: Gerencie seus agendamentos", size=24, weight="bold", color=PRIMARY_DARK)
+    def build_manage_section(self):
+        title = ft.Text("Pacientes: Gerencie seus agendamentos", size=24, weight="bold", color=self.PRIMARY_DARK)
         description = ft.Text(
             "Com recursos como agendamento e reagendamento de retirada de medicamentos, controle de disponibilidade, "
             "e notificações automáticas para retirada. Reduza filas, evite deslocamentos desnecessários "
             "e torne o processo de retirada de medicamentos mais rápido e eficiente em um só lugar.",
             size=15,
-            color=TEXT_SECONDARY
+            color=self.TEXT_SECONDARY
         )
-
 
         def card(icon_name, title_text, subtitle_text):
             return ft.Container(
@@ -179,10 +180,10 @@ def main(page: ft.Page):
                 content=ft.Column(
                     spacing=10,
                     controls=[
-                        ft.Icon(icon_name, size=40, color=PRIMARY),
-                        ft.Container(height=3, bgcolor=PRIMARY, width=60),
-                        ft.Text(title_text, size=14, weight="bold", color=TEXT_PRIMARY),
-                        ft.Text(subtitle_text, size=12, color=TEXT_SECONDARY)
+                        ft.Icon(icon_name, size=40, color=self.PRIMARY),
+                        ft.Container(height=3, bgcolor=self.PRIMARY, width=60),
+                        ft.Text(title_text, size=14, weight="bold", color=self.TEXT_PRIMARY),
+                        ft.Text(subtitle_text, size=12, color=self.TEXT_SECONDARY)
                     ]
                 )
             )
@@ -211,8 +212,6 @@ def main(page: ft.Page):
             ]
         )
 
-
-
         image = ft.Image(
             src="home/img_home/paciente.png",
             width=600,
@@ -220,7 +219,7 @@ def main(page: ft.Page):
             fit=ft.ImageFit.CONTAIN
         )
 
-        return section_spacing(ft.Container(
+        return self.section_spacing(ft.Container(
             padding=40,
             content=ft.Row(
                 controls=[
@@ -236,14 +235,14 @@ def main(page: ft.Page):
             )
         ))
 
-    def build_admin_section():
-        title = ft.Text("Administradores: Gerencie agendamentos e estoques", size=24, weight="bold", color=PRIMARY_DARK)
+    def build_admin_section(self):
+        title = ft.Text("Administradores: Gerencie agendamentos e estoques", size=24, weight="bold", color=self.PRIMARY_DARK)
         description = ft.Text(
             "Tenha controle completo para aprovar cadastros de pacientes, cadastrar medicamentos, gerenciar estoques, "
             "acompanhar agendamentos e manter o sistema de retirada organizado e eficiente. "
             "Tudo em uma plataforma moderna, prática e segura.",
             size=15,
-            color=TEXT_SECONDARY
+            color=self.TEXT_SECONDARY
         )
 
         def admin_card(icon_name, title_text, subtitle_text):
@@ -251,7 +250,7 @@ def main(page: ft.Page):
                 bgcolor=ft.colors.WHITE,
                 border_radius=12,
                 padding=20,
-                width=180,  
+                width=180,
                 height=160,
                 shadow=ft.BoxShadow(
                     spread_radius=1,
@@ -263,10 +262,10 @@ def main(page: ft.Page):
                 content=ft.Column(
                     spacing=10,
                     controls=[
-                        ft.Icon(icon_name, size=40, color=PRIMARY),
-                        ft.Container(height=3, bgcolor=PRIMARY, width=50),
-                        ft.Text(title_text, size=14, weight="bold", color=TEXT_PRIMARY, text_align=ft.TextAlign.CENTER),
-                        ft.Text(subtitle_text, size=12, color=TEXT_SECONDARY, text_align=ft.TextAlign.CENTER),
+                        ft.Icon(icon_name, size=40, color=self.PRIMARY),
+                        ft.Container(height=3, bgcolor=self.PRIMARY, width=50),
+                        ft.Text(title_text, size=14, weight="bold", color=self.TEXT_PRIMARY, text_align=ft.TextAlign.CENTER),
+                        ft.Text(subtitle_text, size=12, color=self.TEXT_SECONDARY, text_align=ft.TextAlign.CENTER),
                     ]
                 )
             )
@@ -276,7 +275,7 @@ def main(page: ft.Page):
             spacing=30,
             controls=[
                 ft.Row(
-                    alignment=ft.MainAxisAlignment.CENTER,  
+                    alignment=ft.MainAxisAlignment.CENTER,
                     spacing=20,
                     controls=[
                         admin_card(ft.icons.ADD_BOX_OUTLINED, "Cadastrar Medicamentos", "Adicione medicamentos"),
@@ -285,7 +284,7 @@ def main(page: ft.Page):
                     ],
                 ),
                 ft.Row(
-                    alignment=ft.MainAxisAlignment.CENTER,  
+                    alignment=ft.MainAxisAlignment.CENTER,
                     spacing=20,
                     controls=[
                         admin_card(ft.icons.DESCRIPTION_OUTLINED, "Agendamentos", "Visualize agendamentos e reagendamentos"),
@@ -302,7 +301,7 @@ def main(page: ft.Page):
             fit=ft.ImageFit.CONTAIN
         )
 
-        return section_spacing(ft.Container(
+        return self.section_spacing(ft.Container(
             padding=40,
             content=ft.Row(
                 controls=[
@@ -321,10 +320,9 @@ def main(page: ft.Page):
             )
         ))
 
-
-    def build_footer():
+    def build_footer(self):
         return ft.Container(
-            bgcolor=ft.colors.BLUE_50,  
+            bgcolor=ft.colors.BLUE_50,
             padding=40,
             content=ft.Column(
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
@@ -334,17 +332,17 @@ def main(page: ft.Page):
                         alignment=ft.MainAxisAlignment.CENTER,
                         spacing=10,
                         controls=[
-                            ft.Text("FarmConnect", size=20, weight="bold", color=PRIMARY_DARK),
-                            ft.Icon(ft.icons.LOCAL_PHARMACY_OUTLINED, size=20, color=PRIMARY_DARK),
+                            ft.Text("FarmConnect", size=20, weight="bold", color=self.PRIMARY_DARK),
+                            ft.Icon(ft.icons.LOCAL_PHARMACY_OUTLINED, size=20, color=self.PRIMARY_DARK),
                         ]
                     ),
                     ft.Text(
                         "Simplificando o agendamento e retirada de medicamentos especializados.",
                         size=14,
-                        color=TEXT_SECONDARY,
+                        color=self.TEXT_SECONDARY,
                         text_align=ft.TextAlign.CENTER,
                     ),
-                    ft.Divider(height=20, color=TEXT_SECONDARY),
+                    ft.Divider(height=20, color=self.TEXT_SECONDARY),
                     ft.Row(
                         alignment=ft.MainAxisAlignment.CENTER,
                         spacing=30,
@@ -357,23 +355,25 @@ def main(page: ft.Page):
                     ft.Text(
                         "FarmConnect © 2025 - Todos os direitos reservados.",
                         size=12,
-                        color=TEXT_SECONDARY,
+                        color=self.TEXT_SECONDARY,
                         text_align=ft.TextAlign.CENTER,
                     ),
                 ],
             )
         )
 
+    def build(self):
+        self.page.add(
+            self.build_header(),
+            self.build_hero_section(),
+            self.build_about_section(),
+            self.build_manage_section(),
+            self.build_admin_section(),
+            self.build_footer()
+        )
 
+def main(page: ft.Page):
+    Home(page)
 
-    page.add(
-        build_header(),
-        build_hero_section(),
-        build_about_section(),
-        build_manage_section(),
-        build_admin_section(),
-        build_footer()
-    )
 
 ft.app(target=main)
-
