@@ -138,7 +138,7 @@ def main(page: ft.Page):
             content=ft.Column(
                 [
                     ft.Text("FarmConnect Admin", size=18, weight=ft.FontWeight.BOLD, color="white"),
-                    ft.Text("Soluções inteligentes para gestão de medicamentos", size=14, color=ft.colors.WHITE70),
+                    ft.Text("Soluções inteligentes para gestão de medicamentos.", size=14, color=ft.colors.WHITE70),
                     ft.Row([
                         ft.Icon(ft.icons.LOCAL_HOSPITAL, color=ft.colors.WHITE, size=26),
                         ft.Icon(ft.icons.HEALTH_AND_SAFETY, color=ft.colors.WHITE, size=26),
