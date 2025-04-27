@@ -251,7 +251,7 @@ def main(page: ft.Page):
                 bgcolor=ft.colors.WHITE,
                 border_radius=12,
                 padding=20,
-                width=180,  # <-- Diminui um pouco para caber tudo
+                width=180,  
                 height=160,
                 shadow=ft.BoxShadow(
                     spread_radius=1,
@@ -276,7 +276,7 @@ def main(page: ft.Page):
             spacing=30,
             controls=[
                 ft.Row(
-                    alignment=ft.MainAxisAlignment.CENTER,  # <-- CENTRALIZADO agora para os 3 primeiros
+                    alignment=ft.MainAxisAlignment.CENTER,  
                     spacing=20,
                     controls=[
                         admin_card(ft.icons.ADD_BOX_OUTLINED, "Cadastrar Medicamentos", "Adicione medicamentos"),
@@ -285,7 +285,7 @@ def main(page: ft.Page):
                     ],
                 ),
                 ft.Row(
-                    alignment=ft.MainAxisAlignment.CENTER,  # <-- CENTRALIZADO também para os 2 de baixo
+                    alignment=ft.MainAxisAlignment.CENTER,  
                     spacing=20,
                     controls=[
                         admin_card(ft.icons.DESCRIPTION_OUTLINED, "Agendamentos", "Visualize agendamentos e reagendamentos"),
@@ -324,7 +324,7 @@ def main(page: ft.Page):
 
     def build_footer():
         return ft.Container(
-            bgcolor=ft.colors.BLUE_50,  # Fundo mais suave (não branco puro)
+            bgcolor=ft.colors.BLUE_50,  
             padding=40,
             content=ft.Column(
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
