@@ -506,6 +506,7 @@ class TelaUsuario:
                 width=130,
                 bgcolor="#1E3A8A" if estoque > 0 else ft.colors.GREY,
                 color="white",
+                disabled=(estoque == 0),
                 style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10)),
                 on_click=lambda e, med_id=id: self.adicionar_medicamento_click(med_id)
             )
