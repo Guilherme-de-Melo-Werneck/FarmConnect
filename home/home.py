@@ -377,3 +377,12 @@ class HomeApp:
         ],
         scroll=ft.ScrollMode.ADAPTIVE
     )
+
+# Teste Local:
+if __name__ == "__main__":
+    def main(page: ft.Page):
+        tela_home = HomeApp(page)
+        page.views.append(tela_home.build())
+        page.update()
+
+    ft.app(target=main)

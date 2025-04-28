@@ -612,3 +612,12 @@ class FarmConnectApp:
         elif self.page.route == "/usuario":
             self.page.views.append(TelaUsuario(self.page).tela_usuario())
         self.page.update()
+
+# Teste Local:
+if __name__ == "__main__":
+    def main(page: ft.Page):
+        tela_inicial = FarmConnectApp(page)
+        page.views.append(tela_inicial.tela_inicial())
+        page.update()
+
+    ft.app(target=main)
