@@ -5,6 +5,12 @@ from database import criar_tabelas, registrar_usuario, verificar_login, buscar_n
 #Teste
 # adicionar_medicamento(nome="Paracetamol", descricao="Medicamento com efeito analgico", imagem="/img/celular.png", estoque=10)
 
+# Cores:
+PRIMARY = ft.colors.BLUE_600
+PRIMARY_DARK = ft.colors.BLUE_900
+TEXT_PRIMARY = ft.colors.BLACK87
+TEXT_SECONDARY = ft.colors.GREY_700
+
 # Banco de Dados:
 criar_tabelas()
 
