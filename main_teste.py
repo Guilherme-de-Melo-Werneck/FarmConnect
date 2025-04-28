@@ -563,6 +563,7 @@ class TelaUsuario:
 
 
         return ft.View(
+            scroll=ft.ScrollMode.ADAPTIVE,
             route="/usuario",
             controls=[
                 self.page.snack_bar,
