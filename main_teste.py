@@ -604,10 +604,3 @@ class FarmConnectApp:
         elif self.page.route == "/usuario":
             self.page.views.append(TelaUsuario(self.page).tela_usuario())
         self.page.update()
-
-
-def main(page: ft.Page):
-    FarmConnectApp(page)
-
-
-ft.app(target=main)
