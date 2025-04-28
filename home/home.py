@@ -4,11 +4,11 @@ import flet as ft
 class HomeApp:
     def __init__(self, page: ft.Page):
         self.page = page
-        self.page.title = "FARMCONNECT"
+        self.page.title = "FarmConnect"
         self.page.padding = 0
         self.page.bgcolor = ft.colors.WHITE
         self.page.theme_mode = ft.ThemeMode.LIGHT
-        self.page.scroll = "auto"
+        self.page.scroll = ft.ScrollMode.ADAPTIVE
 
         self.PRIMARY = ft.colors.BLUE_600
         self.PRIMARY_DARK = ft.colors.BLUE_900
@@ -30,7 +30,7 @@ class HomeApp:
             content=ft.Row(
                 controls=[
                     ft.Image(src="home/img_home/logo.png", width=100, height=100),
-                    ft.Text("Farmconnect", size=24, weight="bold", color=self.PRIMARY_DARK),
+                    ft.Text("FarmConnect", size=24, weight="bold", color=self.PRIMARY_DARK),
                     ft.Container(expand=True),
                     ft.ElevatedButton(
                         "Baixe o app agora!",
@@ -56,7 +56,7 @@ class HomeApp:
             weight="bold",
             color=self.TEXT_PRIMARY,
             spans=[
-                ft.TextSpan("retirada de medicamentos", ft.TextStyle(color=ft.colors.BLUE_400, weight="bold"))
+                ft.TextSpan("retirada de medicamentos", ft.TextStyle(color=ft.colors.BLUE_600, weight="bold"))
             ]
         )
         paragraph = ft.Text(
