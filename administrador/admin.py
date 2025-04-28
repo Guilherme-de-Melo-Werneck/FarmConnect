@@ -63,7 +63,7 @@ def main(page: ft.Page):
             border_radius=20,
             shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK12, offset=ft.Offset(0, 6)),
             content=ft.Column([
-                ft.Text("Cadastro ADM", size=24, weight="bold", color="#10B981"),
+                ft.Text("Cadastro ", size=24, weight="bold", color="#10B981"),
                 ft.TextField(label="Nome completo", prefix_icon=ft.icons.PERSON, border_radius=10, filled=True, bgcolor=ft.colors.GREEN_50),
                 ft.TextField(label="Email", prefix_icon=ft.icons.EMAIL, border_radius=10, filled=True, bgcolor=ft.colors.GREEN_50),
                 ft.TextField(label="Senha", password=True, can_reveal_password=True, prefix_icon=ft.icons.LOCK, border_radius=10, filled=True, bgcolor=ft.colors.GREEN_50),
