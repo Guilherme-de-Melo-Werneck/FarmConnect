@@ -8,13 +8,14 @@ def main(page: ft.Page):
     page.theme_mode = ft.ThemeMode.LIGHT
 
     sidebar_open = True
+    current_view = ft.Column(expand=True)
 
     def toggle_sidebar(e):
         nonlocal sidebar_open
         sidebar_open = not sidebar_open
         page.update()
 
-    def menu_item(icon, text):
+    def menu_item(icon, text, on_click=None):
         item = ft.Container(
             content=ft.Row(
                 [
@@ -29,6 +30,7 @@ def main(page: ft.Page):
             border_radius=10,
             ink=True,
             animate=ft.Animation(200, "easeInOut"),
+            on_click=on_click
         )
 
         def on_hover(e):
@@ -53,11 +55,11 @@ def main(page: ft.Page):
                         tooltip="Expandir/Fechar Menu",
                     ),
                     ft.Divider(),
-                    menu_item(ft.icons.HOME_OUTLINED, "Início"),
+                    menu_item(ft.icons.HOME_OUTLINED, "Início", lambda e: load_dashboard()),
                     menu_item(ft.icons.CALENDAR_MONTH_OUTLINED, "Agendamentos"),
                     menu_item(ft.icons.PERSON_OUTLINED, "Pacientes"),
                     menu_item(ft.icons.LOCAL_HOSPITAL_OUTLINED, "Farmácias"),
-                    menu_item(ft.icons.MEDICAL_SERVICES_OUTLINED, "Medicamentos"),
+                    menu_item(ft.icons.MEDICAL_SERVICES_OUTLINED, "Medicamentos", lambda e: load_medicamentos()),
                 ],
                 spacing=15,
                 alignment=ft.MainAxisAlignment.START,
@@ -146,50 +148,32 @@ def main(page: ft.Page):
                             ft.Text("Medicamentos mais solicitados", size=16, weight="bold", color="#065F46"),
                             ft.Column(
                                 [
-                                    ft.Row(
-                                        [
-                                            ft.Container(width=50, height=20, bgcolor="#047857", border_radius=5),
-                                            ft.Text("Medicamento 1", size=13)
-                                        ],
-                                        spacing=8
-                                    ),
-                                    ft.Row(
-                                        [
-                                            ft.Container(width=45, height=20, bgcolor="#059669", border_radius=5),
-                                            ft.Text("Medicamento 2", size=13)
-                                        ],
-                                        spacing=8
-                                    ),
-                                    ft.Row(
-                                        [
-                                            ft.Container(width=40, height=20, bgcolor="#10B981", border_radius=5),
-                                            ft.Text("Medicamento 3", size=13)
-                                        ],
-                                        spacing=8
-                                    ),
-                                    ft.Row(
-                                        [
-                                            ft.Container(width=35, height=20, bgcolor="#3B82F6", border_radius=5),
-                                            ft.Text("Medicamento 4", size=13)
-                                        ],
-                                        spacing=8
-                                    ),
-                                    ft.Row(
-                                        [
-                                            ft.Container(width=30, height=20, bgcolor="#6366F1", border_radius=5),
-                                            ft.Text("Medicamento 5", size=13)
-                                        ],
-                                        spacing=8
-                                    ),
-                                ],
-                                spacing=6
+                                    ft.Row([
+                                        ft.Container(width=50, height=20, bgcolor="#047857", border_radius=5),
+                                        ft.Text("Medicamento 1", size=13)
+                                    ], spacing=8),
+                                    ft.Row([
+                                        ft.Container(width=45, height=20, bgcolor="#059669", border_radius=5),
+                                        ft.Text("Medicamento 2", size=13)
+                                    ], spacing=8),
+                                    ft.Row([
+                                        ft.Container(width=40, height=20, bgcolor="#10B981", border_radius=5),
+                                        ft.Text("Medicamento 3", size=13)
+                                    ], spacing=8),
+                                    ft.Row([
+                                        ft.Container(width=35, height=20, bgcolor="#3B82F6", border_radius=5),
+                                        ft.Text("Medicamento 4", size=13)
+                                    ], spacing=8),
+                                    ft.Row([
+                                        ft.Container(width=30, height=20, bgcolor="#6366F1", border_radius=5),
+                                        ft.Text("Medicamento 5", size=13)
+                                    ], spacing=8),
+                                ], spacing=6
                             )
-                        ],
-                        spacing=10,
+                        ], spacing=10,
                     ),
                 ),
-            ],
-            spacing=20
+            ], spacing=20
         )
 
     def metric_cards():
@@ -207,9 +191,7 @@ def main(page: ft.Page):
                             ft.Text("0", size=34, weight="bold", color="#111827"),
                             ft.Text("Valor dinâmico", size=12, color="#6B7280"),
                             ft.OutlinedButton("+ Adicionar Paciente", style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=8))),
-                        ],
-                        spacing=10,
-                        alignment=ft.MainAxisAlignment.CENTER,
+                        ], spacing=10, alignment=ft.MainAxisAlignment.CENTER,
                     ),
                 ),
                 ft.Container(
@@ -224,9 +206,7 @@ def main(page: ft.Page):
                             ft.Text("0", size=34, weight="bold", color="#111827"),
                             ft.Text("Valor dinâmico", size=12, color="#10B981"),
                             ft.OutlinedButton("+ Novo Agendamento", style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=8))),
-                        ],
-                        spacing=10,
-                        alignment=ft.MainAxisAlignment.CENTER,
+                        ], spacing=10, alignment=ft.MainAxisAlignment.CENTER,
                     ),
                 ),
                 ft.Container(
@@ -241,43 +221,262 @@ def main(page: ft.Page):
                             ft.Text("0", size=34, weight="bold", color="#111827"),
                             ft.Text("Valor dinâmico", size=12, color="#6B7280"),
                             ft.OutlinedButton("+ Adicionar Medicamento", style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=8))),
-                        ],
-                        spacing=10,
-                        alignment=ft.MainAxisAlignment.CENTER,
+                        ], spacing=10, alignment=ft.MainAxisAlignment.CENTER,
                     ),
                 ),
-            ],
-            spacing=20
+            ], spacing=20
         )
 
-    page.add(
-        ft.Row(
-            [
-                side_menu(),
-                ft.Column(
+    def load_dashboard():
+        current_view.controls = [
+            ft.Container(
+                padding=20,
+                content=ft.Column([
+                    graph_cards(),
+                    ft.Container(height=20),
+                    metric_cards(),
+                ], spacing=20, expand=True)
+            )
+        ]
+        page.update()
+
+    def load_medicamentos(e=None):
+        current_view.controls.clear()
+        current_view.controls.append(
+            ft.Container(
+                padding=20,
+                content=ft.Column(
                     [
-                        header(),
-                        ft.Container(
-                            padding=20,
-                            content=ft.Column(
-                                [
-                                    graph_cards(),
-                                    ft.Container(height=20),
-                                    metric_cards(),
-                                ],
-                                spacing=20,
-                                expand=True,
-                            ),
+                        ft.Text(
+                            "Gerenciamento de Medicamentos",
+                            size=24,
+                            weight="bold",
+                            color="#065F46",
+                        ),
+                        ft.Container(height=20),
+                        ft.Row(
+                            [
+                                ft.Container(
+                                    content=ft.TextField(
+                                        hint_text="Buscar medicamento...",
+                                        prefix_icon=ft.icons.SEARCH,
+                                        border_radius=30,
+                                        bgcolor="#FFFFFF",
+                                        height=50,
+                                    ),
+                                    expand=True,
+                                ),
+                                ft.Container(width=10),
+                                ft.FloatingActionButton(
+                                    icon=ft.icons.ADD,
+                                    bgcolor="#059669",
+                                    tooltip="Adicionar novo medicamento",
+                                    on_click=load_cadastro_medicamento,  # TROQUEI AQUI
+                                ),
+                            ],
+                            alignment=ft.MainAxisAlignment.START,
+                        ),
+                        ft.Container(height=20),
+                        ft.Row(
+                            [
+                                ft.Container(
+                                    bgcolor="white",
+                                    border_radius=10,
+                                    padding=10,
+                                    shadow=ft.BoxShadow(blur_radius=6, color="#CBD5E1"),
+                                    expand=2,
+                                    content=ft.Column(
+                                        [
+                                            ft.Container(
+                                                height=400,
+                                                content=ft.ListView(
+                                                    controls=[
+                                                        ft.DataTable(
+                                                            columns=[
+                                                                ft.DataColumn(ft.Text("ID")),
+                                                                ft.DataColumn(ft.Text("Nome")),
+                                                                ft.DataColumn(ft.Text("Categoria")),
+                                                                ft.DataColumn(ft.Text("Fabricante")),
+                                                                ft.DataColumn(ft.Text("Estoque")),
+                                                                ft.DataColumn(ft.Text("Ações")),
+                                                            ],
+                                                            rows=[
+                                                                # suas linhas exemplo aqui
+                                                            ],
+                                                        )
+                                                    ],
+                                                    auto_scroll=True,
+                                                ),
+                                            ),
+                                        ],
+                                        spacing=10,
+                                    ),
+                                ),
+                                ft.Container(width=20),
+                                ft.Container(
+                                    bgcolor="white",
+                                    border_radius=10,
+                                    padding=20,
+                                    shadow=ft.BoxShadow(blur_radius=6, color="#CBD5E1"),
+                                    expand=1,
+                                    content=ft.Column(
+                                        [
+                                            ft.Text(
+                                                "Detalhes do Medicamento",
+                                                size=20,
+                                                weight="bold",
+                                                color="#059669",
+                                            ),
+                                            ft.Divider(),
+                                            ft.TextField(label="Nome do Medicamento"),
+                                            ft.TextField(label="Categoria"),
+                                            ft.TextField(label="Fabricante"),
+                                            ft.TextField(label="Estoque Atual", keyboard_type=ft.KeyboardType.NUMBER),
+                                            ft.TextField(
+                                                label="Observações",
+                                                multiline=True,
+                                                min_lines=3,
+                                                max_lines=5,
+                                            ),
+                                            ft.Row(
+                                                [
+                                                    ft.ElevatedButton(
+                                                        "Salvar",
+                                                        bgcolor="#059669",
+                                                        color="white",
+                                                        expand=True,
+                                                    ),
+                                                    ft.OutlinedButton(
+                                                        "Limpar",
+                                                        expand=True,
+                                                    ),
+                                                ],
+                                                spacing=10,
+                                            ),
+                                        ],
+                                        spacing=10,
+                                    ),
+                                ),
+                            ],
+                            spacing=20,
                         ),
                     ],
-                    expand=True
-                )
-            ],
-            expand=True,
+                    spacing=20,
+                    expand=True,
+                ),
+            )
         )
+        current_view.opacity = 0
+        page.update()
+        current_view.opacity = 1
+        page.update()
+
+    # 🟰🟰 AQUI ENTRA A NOVA TELA DE CADASTRO 🟰🟰
+    def load_cadastro_medicamento(e=None):
+        current_view.controls.clear()
+        current_view.controls.append(
+            ft.Container(
+                padding=30,
+                content=ft.Column(
+                    [
+                        ft.Text(
+                            "Cadastrar Novo Medicamento",
+                            size=28,
+                            weight="bold",
+                            color="#059669",
+                        ),
+                        ft.Container(height=20),
+                        ft.Container(
+                            padding=30,
+                            bgcolor="#FFFFFF",
+                            border_radius=20,
+                            shadow=ft.BoxShadow(
+                                blur_radius=20,
+                                spread_radius=2,
+                                color="#CBD5E1",
+                                offset=ft.Offset(0, 8),
+                            ),
+                            content=ft.Column(
+                                [
+                                    ft.TextField(
+                                        label="Nome do Medicamento",
+                                        border_radius=10,
+                                        bgcolor="#F0FDF4",
+                                    ),
+                                    ft.TextField(
+                                        label="Categoria",
+                                        border_radius=10,
+                                        bgcolor="#F0FDF4",
+                                    ),
+                                    ft.TextField(
+                                        label="Fabricante",
+                                        border_radius=10,
+                                        bgcolor="#F0FDF4",
+                                    ),
+                                    ft.TextField(
+                                        label="Quantidade em Estoque",
+                                        keyboard_type=ft.KeyboardType.NUMBER,
+                                        border_radius=10,
+                                        bgcolor="#F0FDF4",
+                                    ),
+                                    ft.TextField(
+                                        label="Observações",
+                                        multiline=True,
+                                        min_lines=3,
+                                        max_lines=5,
+                                        border_radius=10,
+                                        bgcolor="#F0FDF4",
+                                    ),
+                                    ft.Container(height=20),
+                                    ft.Row(
+                                        [
+                                            ft.ElevatedButton(
+                                                "Salvar Medicamento",
+                                                bgcolor="#059669",
+                                                color="white",
+                                                height=50,
+                                                style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12)),
+                                                expand=True,
+                                            ),
+                                            ft.OutlinedButton(
+                                                "Cancelar",
+                                                expand=True,
+                                                height=50,
+                                                style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12)),
+                                                on_click=lambda e: load_medicamentos(),
+                                            ),
+                                        ],
+                                        spacing=20,
+                                    )
+                                ],
+                                spacing=15,
+                            ),
+                        )
+                    ],
+                    spacing=20,
+                    expand=True,
+                    alignment=ft.MainAxisAlignment.CENTER,
+                ),
+            )
+        )
+        current_view.opacity = 0
+        page.update()
+        current_view.opacity = 1
+        page.update()
+
+    # Adicionando os componentes principais
+    page.add(
+        ft.Row([
+            side_menu(),
+            ft.Column([header(), current_view], expand=True)
+        ], expand=True)
     )
 
+    load_dashboard()
+
 ft.app(target=main)
+
+
 
 
 
