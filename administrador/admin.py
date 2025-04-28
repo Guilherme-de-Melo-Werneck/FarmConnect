@@ -3,19 +3,16 @@ import asyncio
 
 def main(page: ft.Page):
     page.title = "FarmConnect - Admin"
-    page.bgcolor = "#ECFDF5"  # Fundo ainda mais claro e suave
+    page.bgcolor = "#ECFDF5"
     page.theme_mode = ft.ThemeMode.LIGHT
     page.scroll = ft.ScrollMode.ADAPTIVE
     page.padding = 0
 
     def tela_inicial():
-        def on_login(e):
-            page.go("/login")
-
-        def on_register(e):
-            page.go("/cadastro")
-
-        typing_text = ft.Text("Gerencie agendamentos e estoques de medicamentos especializados", size=22, color="#065F46", weight="bold")
+        typing_text = ft.Text(
+            "Gerencie agendamentos e estoques de medicamentos especializados",
+            size=22, color="#065F46", weight="bold"
+        )
 
         async def start_typing_effect():
             full_text = "Administre com eficiência e segurança."
@@ -30,35 +27,8 @@ def main(page: ft.Page):
         header = ft.Container(
             content=ft.Row(
                 [
-                    ft.Image(src="logo.png", width=120, height=50),
-                    ft.Row(
-                        [
-                            ft.TextButton("Painel", style=ft.ButtonStyle(color=ft.colors.WHITE)),
-                            ft.TextButton("Suporte", style=ft.ButtonStyle(color=ft.colors.WHITE)),
-                            ft.ElevatedButton(
-                                content=ft.Row([ft.Icon(ft.icons.ADMIN_PANEL_SETTINGS), ft.Text("Registrar ADM")]),
-                                on_click=on_register,
-                                style=ft.ButtonStyle(
-                                    bgcolor="white",
-                                    color="#059669",
-                                    shape=ft.RoundedRectangleBorder(radius=20),
-                                    overlay_color="#6EE7B7"
-                                )
-                            ),
-                            ft.OutlinedButton(
-                                content=ft.Row([ft.Icon(ft.icons.LOGIN), ft.Text("Entrar")]),
-                                on_click=on_login,
-                                style=ft.ButtonStyle(
-                                    side=ft.BorderSide(1, ft.colors.WHITE),
-                                    shape=ft.RoundedRectangleBorder(radius=20),
-                                    color=ft.colors.WHITE,
-                                    overlay_color="#6EE7B7"
-                                )
-                            ),
-                        ],
-                        alignment=ft.MainAxisAlignment.END,
-                        spacing=16
-                    )
+                    ft.Image(src="home/img_home/icone.png", width=150, height=100),
+                    ft.Text("FarmConnect Admin", size=20, weight="bold", color=ft.colors.WHITE)
                 ],
                 alignment=ft.MainAxisAlignment.SPACE_BETWEEN
             ),
@@ -68,69 +38,54 @@ def main(page: ft.Page):
             animate=ft.Animation(600, "easeInOut")
         )
 
-        left_card = ft.Container(
-            padding=40,
+        login_card = ft.Container(
+            padding=30,
             bgcolor="white",
-            border_radius=30,
-            shadow=ft.BoxShadow(blur_radius=25, color=ft.colors.BLACK12, offset=ft.Offset(0, 8)),
-            content=ft.Column(
-                [
-                    ft.Text("Painel Administrativo", size=42, weight=ft.FontWeight.BOLD, color="#10B981"),
-                    typing_text,
-                    ft.Container(
-                        margin=ft.margin.only(top=30),
-                        content=ft.Row([
-                            ft.Icon(ft.icons.SEARCH, color="#10B981"),
-                            ft.TextField(
-                                hint_text="Digite sua sugestão...",
-                                expand=True,
-                                border_color="#10B981",
-                                border_radius=12
-                            ),
-                            ft.ElevatedButton(
-                                "Enviar",
-                                bgcolor="#10B981",
-                                color="white",
-                                style=ft.ButtonStyle(
-                                    shape=ft.RoundedRectangleBorder(radius=12),
-                                    overlay_color="#6EE7B7"
-                                )
-                            )
-                        ], spacing=10),
-                        border_radius=12,
-                        padding=16,
-                        bgcolor=ft.colors.GREEN_50
-                    )
-                ],
-                spacing=32
-            ),
-            animate_opacity=500,
-            animate_scale=ft.Animation(600, "easeInOut")
+            border_radius=20,
+            shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK12, offset=ft.Offset(0, 6)),
+            content=ft.Column([
+                ft.Text("Login", size=24, weight="bold", color="#10B981"),
+                ft.TextField(label="Email", prefix_icon=ft.icons.EMAIL, border_radius=10, filled=True, bgcolor=ft.colors.GREEN_50),
+                ft.TextField(label="Senha", password=True, can_reveal_password=True, prefix_icon=ft.icons.LOCK, border_radius=10, filled=True, bgcolor=ft.colors.GREEN_50),
+                ft.ElevatedButton("Entrar", bgcolor="#10B981", color="white",
+                                  style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10), overlay_color="#6EE7B7")),
+                ft.TextButton(
+                    "Esqueceu a senha?",
+                    on_click=lambda _: print("Redirecionar para recuperação de senha"),
+                    style=ft.ButtonStyle(color="#10B981", padding=ft.padding.only(top=10))
+                )
+            ], spacing=20, scroll=ft.ScrollMode.ADAPTIVE)  # <-- Scroll no card
         )
 
-        phone_image = ft.Container(
-            content=ft.Image(src="administrador/img_adm/tela_adm.png", width=700, height=700),
-            rotate=ft.Rotate(angle=0.00),
-            shadow=ft.BoxShadow(blur_radius=24, color=ft.colors.BLACK26, offset=ft.Offset(6, 10)),
-            animate_rotation=ft.Animation(700, "easeInOut"),
-            animate_opacity=ft.Animation(500, "easeInOut")
+        cadastro_card = ft.Container(
+            padding=30,
+            bgcolor="white",
+            border_radius=20,
+            shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK12, offset=ft.Offset(0, 6)),
+            content=ft.Column([
+                ft.Text("Cadastro ADM", size=24, weight="bold", color="#10B981"),
+                ft.TextField(label="Nome completo", prefix_icon=ft.icons.PERSON, border_radius=10, filled=True, bgcolor=ft.colors.GREEN_50),
+                ft.TextField(label="Email", prefix_icon=ft.icons.EMAIL, border_radius=10, filled=True, bgcolor=ft.colors.GREEN_50),
+                ft.TextField(label="Senha", password=True, can_reveal_password=True, prefix_icon=ft.icons.LOCK, border_radius=10, filled=True, bgcolor=ft.colors.GREEN_50),
+                ft.TextField(label="Confirmar Senha", password=True, can_reveal_password=True, prefix_icon=ft.icons.LOCK_OUTLINE, border_radius=10, filled=True, bgcolor=ft.colors.GREEN_50),
+                ft.TextField(label="CNPJ da Farmácia", prefix_icon=ft.icons.BUSINESS, border_radius=10, filled=True, bgcolor=ft.colors.GREEN_50),
+                ft.TextField(label="Nome da Farmácia", prefix_icon=ft.icons.LOCAL_PHARMACY, border_radius=10, filled=True, bgcolor=ft.colors.GREEN_50),
+                ft.ElevatedButton("Registrar", bgcolor="#10B981", color="white",
+                                  style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10), overlay_color="#6EE7B7"))
+            ], spacing=20, scroll=ft.ScrollMode.ADAPTIVE)  # <-- Scroll no card
         )
 
-        main_section = ft.Container(
+        cards_section = ft.Container(
             padding=50,
             expand=True,
-            gradient=ft.LinearGradient(
-                begin=ft.alignment.top_left,
-                end=ft.alignment.bottom_right,
-                colors=["#D1FAE5", "#A7F3D0"]
-            ),
             content=ft.ResponsiveRow(
                 columns=12,
                 controls=[
-                    ft.Container(col={"sm": 12, "md": 6}, content=left_card),
-                    ft.Container(col={"sm": 12, "md": 6}, content=phone_image, alignment=ft.alignment.center)
+                    ft.Container(col={"sm": 12, "md": 6}, content=login_card, alignment=ft.alignment.center),
+                    ft.Container(col={"sm": 12, "md": 6}, content=cadastro_card, alignment=ft.alignment.center)
                 ],
-                vertical_alignment=ft.CrossAxisAlignment.CENTER
+                vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                spacing=40
             )
         )
 
@@ -158,7 +113,7 @@ def main(page: ft.Page):
         return ft.View(
             route="/",
             controls=[
-                ft.Column([header, main_section, footer], spacing=0, expand=True)
+                ft.Column([header, cards_section, footer], spacing=0, expand=True)
             ]
         )
 
