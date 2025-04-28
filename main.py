@@ -25,6 +25,8 @@ def main(page: ft.Page):
             page.views.append(TelaCadastro(page).tela_cadastro())
         elif page.route == "/usuario":
             page.views.append(TelaUsuario(page).tela_usuario())
+        elif page.route == "/admin":
+            pass
 
         page.update()
 
