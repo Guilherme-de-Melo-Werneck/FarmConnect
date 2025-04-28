@@ -144,7 +144,3 @@ class TelaEscolhaUsuario:
             self.page.views.append(self.build_tela())
         self.page.update()
 
-def main(page: ft.Page):
-    TelaEscolhaUsuario(page)
-
-ft.app(target=main)

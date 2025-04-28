@@ -1,12 +1,13 @@
 import flet as ft
 
 
-class Home:
+class HomeApp:
     def __init__(self, page: ft.Page):
         self.page = page
         self.page.title = "FARMCONNECT"
         self.page.padding = 0
         self.page.bgcolor = ft.colors.WHITE
+        self.page.theme_mode = ft.ThemeMode.LIGHT
         self.page.scroll = "auto"
 
         self.PRIMARY = ft.colors.BLUE_600
@@ -14,7 +15,7 @@ class Home:
         self.TEXT_PRIMARY = ft.colors.BLACK87
         self.TEXT_SECONDARY = ft.colors.GREY_700
 
-        self.build()
+        self.page.views.append(self.build())
 
     def section_spacing(self, content):
         return ft.Container(
@@ -364,16 +365,15 @@ class Home:
         )
 
     def build(self):
-        self.page.add(
+        return ft.View(
+        route="/",
+        controls=[
             self.build_header(),
             self.build_hero_section(),
             self.build_about_section(),
             self.build_manage_section(),
             self.build_admin_section(),
             self.build_footer()
-        )
-
-def main(page: ft.Page):
-    Home(page)
-
-ft.app(target=main)
+        ],
+        scroll=ft.ScrollMode.ADAPTIVE
+    )
