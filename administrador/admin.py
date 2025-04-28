@@ -1,28 +1,34 @@
 import flet as ft
 import asyncio
 
-def main(page: ft.Page):
-    page.title = "FarmConnect - Admin"
-    page.bgcolor = "#ECFDF5"
-    page.theme_mode = ft.ThemeMode.LIGHT
-    page.scroll = ft.ScrollMode.ADAPTIVE
-    page.padding = 0
+class TelaLoginAdmin:
+    def __init__(self, page: ft.Page):
+        self.page = page
+        self.page_settings()
+        self.page.on_view_pop = lambda _: self.start_typing_effect()
 
-    def tela_inicial():
-        typing_text = ft.Text(
+    def page_settings(self):
+        self.page.title = "FarmConnect - Admin"
+        self.page.bgcolor = "#ECFDF5"
+        self.page.theme_mode = ft.ThemeMode.LIGHT
+        self.page.scroll = ft.ScrollMode.ADAPTIVE
+        self.page.padding = 0
+
+    async def start_typing_effect(self):
+        full_text = "Administre com eficiência e segurança."
+        self.typing_text.value = ""
+        for char in full_text:
+            self.typing_text.value += char
+            await self.page.update_async()
+            await asyncio.sleep(0.04)
+
+    def build_tela(self):
+        self.typing_text = ft.Text(
             "Gerencie agendamentos e estoques de medicamentos especializados",
-            size=22, color="#065F46", weight="bold"
+            size=22,
+            color="#065F46",
+            weight="bold"
         )
-
-        async def start_typing_effect():
-            full_text = "Administre com eficiência e segurança."
-            typing_text.value = ""
-            for char in full_text:
-                typing_text.value += char
-                await page.update_async()
-                await asyncio.sleep(0.04)
-
-        page.on_view_pop = lambda _: start_typing_effect()
 
         header = ft.Container(
             content=ft.Row(
@@ -54,7 +60,7 @@ def main(page: ft.Page):
                     on_click=lambda _: print("Redirecionar para recuperação de senha"),
                     style=ft.ButtonStyle(color="#10B981", padding=ft.padding.only(top=10))
                 )
-            ], spacing=20, scroll=ft.ScrollMode.ADAPTIVE)  # <-- Scroll no card
+            ], spacing=20, scroll=ft.ScrollMode.ADAPTIVE)
         )
 
         cadastro_card = ft.Container(
@@ -63,7 +69,7 @@ def main(page: ft.Page):
             border_radius=20,
             shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK12, offset=ft.Offset(0, 6)),
             content=ft.Column([
-                ft.Text("Cadastro ", size=24, weight="bold", color="#10B981"),
+                ft.Text("Cadastro", size=24, weight="bold", color="#10B981"),
                 ft.TextField(label="Nome completo", prefix_icon=ft.icons.PERSON, border_radius=10, filled=True, bgcolor=ft.colors.GREEN_50),
                 ft.TextField(label="Email", prefix_icon=ft.icons.EMAIL, border_radius=10, filled=True, bgcolor=ft.colors.GREEN_50),
                 ft.TextField(label="Senha", password=True, can_reveal_password=True, prefix_icon=ft.icons.LOCK, border_radius=10, filled=True, bgcolor=ft.colors.GREEN_50),
@@ -72,7 +78,7 @@ def main(page: ft.Page):
                 ft.TextField(label="Nome da Farmácia", prefix_icon=ft.icons.LOCAL_PHARMACY, border_radius=10, filled=True, bgcolor=ft.colors.GREEN_50),
                 ft.ElevatedButton("Registrar", bgcolor="#10B981", color="white",
                                   style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10), overlay_color="#6EE7B7"))
-            ], spacing=20, scroll=ft.ScrollMode.ADAPTIVE)  # <-- Scroll no card
+            ], spacing=20, scroll=ft.ScrollMode.ADAPTIVE)
         )
 
         cards_section = ft.Container(
@@ -106,24 +112,21 @@ def main(page: ft.Page):
             ),
             padding=24,
             bgcolor="#10B981",
-            border_radius=0,
             shadow=ft.BoxShadow(blur_radius=16, color=ft.colors.BLACK26, offset=ft.Offset(0, -6))
         )
 
         return ft.View(
-            route="/",
+            route="/login_admin",
             controls=[
                 ft.Column([header, cards_section, footer], spacing=0, expand=True)
             ]
         )
 
-    def route_change(route):
-        page.views.clear()
-        if page.route == "/":
-            page.views.append(tela_inicial())
+# Teste Local:
+if __name__ == "__main__":
+    def main(page: ft.Page):
+        tela_admin = TelaLoginAdmin(page)
+        page.views.append(tela_admin.build_tela())
         page.update()
 
-    page.on_route_change = route_change
-    page.go("/")
-
-ft.app(target=main)
+    ft.app(target=main)
