@@ -27,7 +27,7 @@ def main(page: ft.Page):
         header = ft.Container(
             content=ft.Row(
                 [
-                    ft.Image(src="home/img_home/icone.png", width=150, height=100),
+                    ft.Image(src="administrador/img_adm/logo_verde.png", width=120, height=80),
                     ft.Text("FarmConnect Admin", size=20, weight="bold", color=ft.colors.WHITE)
                 ],
                 alignment=ft.MainAxisAlignment.SPACE_BETWEEN
