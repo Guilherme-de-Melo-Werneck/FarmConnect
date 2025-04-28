@@ -411,15 +411,15 @@ class TelaUsuario:
         self.page.update()
 
     def adicionar_medicamento_click(self, medicamento_id):
-
         usuario_email = self.page.session.get("usuario_logado")
+        estoque_atual = self.buscar_estoque_medicamento(medicamento_id)
 
-        agendar_medicamento(usuario_email, medicamento_id)
-        reduzir_estoque_medicamento(medicamento_id)
-        registrar_medicamento_reservado(usuario_email, medicamento_id)
+        if estoque_atual > 0:
+            agendar_medicamento(usuario_email, medicamento_id)
+            reduzir_estoque_medicamento(medicamento_id)
+            registrar_medicamento_reservado(usuario_email, medicamento_id)
 
         botao, texto_estoque = self.cards_medicamentos.get(medicamento_id)
-
         estoque_atualizado = self.buscar_estoque_medicamento(medicamento_id)
 
         if estoque_atualizado > 0:
