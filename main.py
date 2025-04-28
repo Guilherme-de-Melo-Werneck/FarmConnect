@@ -8,7 +8,7 @@ from main_teste import TelaInicial, TelaLogin, TelaCadastro, TelaUsuario
 def main(page: ft.Page):
     page.title = "FarmConnect"
     page.padding = 0
-    page.bgcolor = ft.colors.WHITE
+    page.bgcolor = ft.Colors.WHITE
     page.theme_mode = ft.ThemeMode.LIGHT
     page.scroll = ft.ScrollMode.ADAPTIVE
 
