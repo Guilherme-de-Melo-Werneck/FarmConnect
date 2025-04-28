@@ -1,5 +1,6 @@
 import flet as ft
 
+
 class Home:
     def __init__(self, page: ft.Page):
         self.page = page
@@ -38,7 +39,7 @@ class Home:
                     ),
                     ft.TextButton(
                         "Entrar",
-                        on_click=lambda _: print("Entrar clicado"),
+                        on_click=lambda e: self.page.go("/escolha_usuario"),
                         style=ft.ButtonStyle(padding=15, color=self.PRIMARY)
                     )
                 ],
@@ -374,6 +375,5 @@ class Home:
 
 def main(page: ft.Page):
     Home(page)
-
 
 ft.app(target=main)
