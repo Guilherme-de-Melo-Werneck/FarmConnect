@@ -10,9 +10,6 @@ class TelaEscolhaUsuario:
         self.page.scroll = "auto"
         self.page.bgcolor = ft.colors.WHITE
 
-        self.page.on_route_change = self.route_change
-        self.page.go("/")
-
     def entrar_como_paciente(self, e):
         self.page.go("/login")
 
@@ -135,12 +132,4 @@ class TelaEscolhaUsuario:
             route="/escolha_usuario",
             controls=[tela]
         )
-
-    def route_change(self, e):
-        self.page.views.clear()
-        if self.page.route == "/":
-            self.page.go("/escolha_usuario")
-        if self.page.route == "/escolha_usuario":
-            self.page.views.append(self.build_tela())
-        self.page.update()
 

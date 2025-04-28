@@ -18,7 +18,7 @@ def main(page: ft.Page):
         if page.route == "/":
             HomeApp(page)
         elif page.route == "/escolha_usuario":
-            TelaEscolhaUsuario(page)
+             page.views.append(TelaEscolhaUsuario(page).build_tela())
         elif page.route == "/login":
             page.views.append(TelaLogin(page).tela_login()) 
         elif page.route == "/cadastro":
