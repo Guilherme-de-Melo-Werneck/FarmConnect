@@ -338,5 +338,22 @@ def registrar_medicamento_reservado(usuario_email, medicamento_id):
     cursor.close()
     conn.close()
 
+def verificar_login_admin(email, senha):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT * FROM administradores
+        WHERE email = ? AND senha = ?
+    """, (email, senha))
+
+    admin = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    return admin is not None
+
+
 
 
