@@ -111,7 +111,7 @@ class HomeApp:
 
         def benefit(texto):
             return ft.Row([
-                ft.Icon(name=ft.icons.CHECK_CIRCLE_OUTLINED, color=self.PRIMARY),
+                ft.Icon(name=ft.Icons.CHECK_CIRCLE_OUTLINED, color=self.PRIMARY),
                 ft.Text(texto, size=13, weight="bold", color=self.TEXT_PRIMARY)
             ], spacing=8)
 
@@ -198,17 +198,17 @@ class HomeApp:
                     alignment=ft.MainAxisAlignment.CENTER,
                     spacing=20,
                     controls=[
-                        card(ft.icons.PERSON_OUTLINE, "Pacientes", "Gerencie seus agendamentos"),
-                        card(ft.icons.LOCAL_PHARMACY_OUTLINED, "Medicamentos", "Controle a disponibilidade"),
-                        card(ft.icons.CALENDAR_MONTH_OUTLINED, "Agendar Retirada", "Marque a retirada do medicamento"),
+                        card(ft.Icons.PERSON_OUTLINE, "Pacientes", "Gerencie seus agendamentos"),
+                        card(ft.Icons.LOCAL_PHARMACY_OUTLINED, "Medicamentos", "Controle a disponibilidade"),
+                        card(ft.Icons.CALENDAR_MONTH_OUTLINED, "Agendar Retirada", "Marque a retirada do medicamento"),
                     ],
                 ),
                 ft.Row(
                     alignment=ft.MainAxisAlignment.CENTER,
                     spacing=20,
                     controls=[
-                        card(ft.icons.CALENDAR_MONTH_OUTLINED, "Reagendar Retirada", "Altere a data com facilidade"),
-                        card(ft.icons.CHECK_CIRCLE_OUTLINE, "Confirmação", "Confirme o agendamento realizado"),
+                        card(ft.Icons.CALENDAR_MONTH_OUTLINED, "Reagendar Retirada", "Altere a data com facilidade"),
+                        card(ft.Icons.CHECK_CIRCLE_OUTLINE, "Confirmação", "Confirme o agendamento realizado"),
                     ],
                 ),
             ]
@@ -280,17 +280,17 @@ class HomeApp:
                     alignment=ft.MainAxisAlignment.CENTER,
                     spacing=20,
                     controls=[
-                        admin_card(ft.icons.ADD_BOX_OUTLINED, "Cadastrar Medicamentos", "Adicione medicamentos"),
-                        admin_card(ft.icons.PERSON_ADD_ALT_1_OUTLINED, "Aprovar Pacientes", "Gerencie solicitações de cadastro"),
-                        admin_card(ft.icons.INVENTORY_2_OUTLINED, "Gerenciar Estoque", "Disponibilidade dos medicamentos"),
+                        admin_card(ft.Icons.ADD_BOX_OUTLINED, "Cadastrar Medicamentos", "Adicione medicamentos"),
+                        admin_card(ft.Icons.PERSON_ADD_ALT_1_OUTLINED, "Aprovar Pacientes", "Gerencie solicitações de cadastro"),
+                        admin_card(ft.Icons.INVENTORY_2_OUTLINED, "Gerenciar Estoque", "Disponibilidade dos medicamentos"),
                     ],
                 ),
                 ft.Row(
                     alignment=ft.MainAxisAlignment.CENTER,
                     spacing=20,
                     controls=[
-                        admin_card(ft.icons.DESCRIPTION_OUTLINED, "Agendamentos", "Visualize agendamentos e reagendamentos"),
-                        admin_card(ft.icons.NOTIFICATIONS_OUTLINED, "Notificações", "Envie alertas sobre retiradas e prazos"),
+                        admin_card(ft.Icons.DESCRIPTION_OUTLINED, "Agendamentos", "Visualize agendamentos e reagendamentos"),
+                        admin_card(ft.Icons.NOTIFICATIONS_OUTLINED, "Notificações", "Envie alertas sobre retiradas e prazos"),
                     ],
                 ),
             ]
@@ -335,7 +335,7 @@ class HomeApp:
                         spacing=10,
                         controls=[
                             ft.Text("FarmConnect", size=20, weight="bold", color=self.PRIMARY_DARK),
-                            ft.Icon(ft.icons.LOCAL_PHARMACY_OUTLINED, size=20, color=self.PRIMARY_DARK),
+                            ft.Icon(ft.Icons.LOCAL_PHARMACY_OUTLINED, size=20, color=self.PRIMARY_DARK),
                         ]
                     ),
                     ft.Text(

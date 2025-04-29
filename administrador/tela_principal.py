@@ -49,17 +49,17 @@ def main(page: ft.Page):
             content=ft.Column(
                 [
                     ft.IconButton(
-                        icon=ft.icons.ARROW_BACK if sidebar_open else ft.icons.ARROW_FORWARD,
+                        icon=ft.Icons.ARROW_BACK if sidebar_open else ft.Icons.ARROW_FORWARD,
                         icon_color="#10B981",
                         on_click=toggle_sidebar,
                         tooltip="Expandir/Fechar Menu",
                     ),
                     ft.Divider(),
-                    menu_item(ft.icons.HOME_OUTLINED, "Início", lambda e: load_dashboard()),
-                    menu_item(ft.icons.CALENDAR_MONTH_OUTLINED, "Agendamentos"),
-                    menu_item(ft.icons.PERSON_OUTLINED, "Pacientes"),
-                    menu_item(ft.icons.LOCAL_HOSPITAL_OUTLINED, "Farmácias"),
-                    menu_item(ft.icons.MEDICAL_SERVICES_OUTLINED, "Medicamentos", lambda e: load_medicamentos()),
+                    menu_item(ft.Icons.HOME_OUTLINED, "Início", lambda e: load_dashboard()),
+                    menu_item(ft.Icons.CALENDAR_MONTH_OUTLINED, "Agendamentos"),
+                    menu_item(ft.Icons.PERSON_OUTLINED, "Pacientes"),
+                    menu_item(ft.Icons.LOCAL_HOSPITAL_OUTLINED, "Farmácias"),
+                    menu_item(ft.Icons.MEDICAL_SERVICES_OUTLINED, "Medicamentos", lambda e: load_medicamentos()),
                 ],
                 spacing=15,
                 alignment=ft.MainAxisAlignment.START,
@@ -79,11 +79,11 @@ def main(page: ft.Page):
                     ft.Container(expand=True),
                     ft.Row(
                         [
-                            ft.IconButton(ft.icons.DARK_MODE_OUTLINED, icon_color="#065F46"),
-                            ft.IconButton(ft.icons.SCHEDULE_OUTLINED, icon_color="#065F46"),
+                            ft.IconButton(ft.Icons.DARK_MODE_OUTLINED, icon_color="#065F46"),
+                            ft.IconButton(ft.Icons.SCHEDULE_OUTLINED, icon_color="#065F46"),
                             ft.Text("Bem-vindo!", size=12, color="#065F46"),
                             ft.Text("DESENVOLVIMENTO", size=12, weight="bold", color="#065F46"),
-                            ft.IconButton(ft.icons.REFRESH, icon_color="#065F46"),
+                            ft.IconButton(ft.Icons.REFRESH, icon_color="#065F46"),
                         ],
                         spacing=10
                     )
@@ -259,7 +259,7 @@ def main(page: ft.Page):
                                 ft.Container(
                                     content=ft.TextField(
                                         hint_text="Buscar medicamento...",
-                                        prefix_icon=ft.icons.SEARCH,
+                                        prefix_icon=ft.Icons.SEARCH,
                                         border_radius=30,
                                         bgcolor="#FFFFFF",
                                         height=50,
@@ -268,7 +268,7 @@ def main(page: ft.Page):
                                 ),
                                 ft.Container(width=10),
                                 ft.FloatingActionButton(
-                                    icon=ft.icons.ADD,
+                                    icon=ft.Icons.ADD,
                                     bgcolor="#059669",
                                     tooltip="Adicionar novo medicamento",
                                     on_click=load_cadastro_medicamento,  # TROQUEI AQUI

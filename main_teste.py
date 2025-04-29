@@ -47,7 +47,7 @@ class TelaInicial:
                     ft.TextButton("Ajuda", style=ft.ButtonStyle(color=ft.Colors.WHITE70)),
                     ft.TextButton("Contato", style=ft.ButtonStyle(color=ft.Colors.WHITE70)),
                     ft.ElevatedButton(
-                        content=ft.Row([ft.Icon(ft.icons.PERSON_ADD), ft.Text("Registrar")]),
+                        content=ft.Row([ft.Icon(ft.Icons.PERSON_ADD), ft.Text("Registrar")]),
                         on_click=on_register,
                         style=ft.ButtonStyle(
                             bgcolor="white",
@@ -58,7 +58,7 @@ class TelaInicial:
                         )
                     ),
                     ft.OutlinedButton(
-                        content=ft.Row([ft.Icon(ft.icons.LOGIN), ft.Text("Entrar")]),
+                        content=ft.Row([ft.Icon(ft.Icons.LOGIN), ft.Text("Entrar")]),
                         on_click=on_login,
                         style=ft.ButtonStyle(
                             side=ft.BorderSide(1, ft.Colors.WHITE),
@@ -87,7 +87,7 @@ class TelaInicial:
                 ft.Container(
                     margin=ft.margin.only(top=30),
                     content=ft.Row([
-                        ft.Icon(ft.icons.SEARCH, color="#1E3A8A"),
+                        ft.Icon(ft.Icons.SEARCH, color="#1E3A8A"),
                         ft.TextField(
                             hint_text="Digite sua sugestão...",
                             expand=True,
@@ -151,7 +151,7 @@ class TelaInicial:
                 ),
                 ft.Row([
                     ft.Container(
-                        content=ft.Image(src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png", width=22),
+                        content=ft.Image(src="https://cdn-Icons-png.flaticon.com/512/2111/2111463.png", width=22),
                         padding=6,
                         border_radius=50,
                         bgcolor=ft.Colors.WHITE,
@@ -159,7 +159,7 @@ class TelaInicial:
                         on_click=lambda _: print("Instagram")
                     ),
                     ft.Container(
-                        content=ft.Image(src="https://cdn-icons-png.flaticon.com/512/733/733547.png", width=22),
+                        content=ft.Image(src="https://cdn-Icons-png.flaticon.com/512/733/733547.png", width=22),
                         padding=6,
                         border_radius=50,
                         bgcolor=ft.Colors.WHITE,
@@ -167,7 +167,7 @@ class TelaInicial:
                         on_click=lambda _: print("Facebook")
                     ),
                     ft.Container(
-                        content=ft.Image(src="https://cdn-icons-png.flaticon.com/512/733/733585.png", width=22),
+                        content=ft.Image(src="https://cdn-Icons-png.flaticon.com/512/733/733585.png", width=22),
                         padding=6,
                         border_radius=50,
                         bgcolor=ft.Colors.WHITE,
@@ -214,8 +214,8 @@ class TelaLogin:
         def voltar_click(e):
             self.page.go("/")
 
-        email = ft.TextField(label="Email", prefix_icon=ft.icons.EMAIL, border_radius=10, filled=True, expand=True, autofocus=True)
-        senha = ft.TextField(label="Senha", password=True, can_reveal_password=True, prefix_icon=ft.icons.LOCK, border_radius=10, filled=True, expand=True, on_submit=login_click)
+        email = ft.TextField(label="Email", prefix_icon=ft.Icons.EMAIL, border_radius=10, filled=True, expand=True, autofocus=True)
+        senha = ft.TextField(label="Senha", password=True, can_reveal_password=True, prefix_icon=ft.Icons.LOCK, border_radius=10, filled=True, expand=True, on_submit=login_click)
 
         campos_login = ft.Column(controls=[email, senha], spacing=10)
 
@@ -350,11 +350,11 @@ class TelaCadastro:
             nascimento.value = formatado
             nascimento.update()
 
-        nome = ft.TextField(label="Nome completo", prefix_icon=ft.icons.PERSON, border_radius=10, filled=True, bgcolor=ft.Colors.WHITE, expand=True, autofocus=True)
-        email = ft.TextField(label="Email", prefix_icon=ft.icons.EMAIL, border_radius=10, filled=True, bgcolor=ft.Colors.WHITE, expand=True)
-        cpf = ft.TextField(label="CPF", prefix_icon=ft.icons.BADGE, border_radius=10, filled=True, bgcolor=ft.Colors.WHITE, expand=True, keyboard_type=ft.KeyboardType.NUMBER, hint_text="Apenas números", on_blur=cpf_blur, on_change=cpf_change)
-        nascimento = ft.TextField(label="Data de Nascimento", hint_text="DD/MM/AAAA", prefix_icon=ft.icons.CALENDAR_MONTH, border_radius=10, filled=True, bgcolor=ft.Colors.WHITE, expand=True, on_blur=nascimento_blur, on_change=nascimento_change)
-        senha = ft.TextField(label="Senha", password=True, can_reveal_password=True, prefix_icon=ft.icons.LOCK, border_radius=10, filled=True, bgcolor=ft.Colors.WHITE, expand=True, on_submit=registrar_click)
+        nome = ft.TextField(label="Nome completo", prefix_icon=ft.Icons.PERSON, border_radius=10, filled=True, bgcolor=ft.Colors.WHITE, expand=True, autofocus=True)
+        email = ft.TextField(label="Email", prefix_icon=ft.Icons.EMAIL, border_radius=10, filled=True, bgcolor=ft.Colors.WHITE, expand=True)
+        cpf = ft.TextField(label="CPF", prefix_icon=ft.Icons.BADGE, border_radius=10, filled=True, bgcolor=ft.Colors.WHITE, expand=True, keyboard_type=ft.KeyboardType.NUMBER, hint_text="Apenas números", on_blur=cpf_blur, on_change=cpf_change)
+        nascimento = ft.TextField(label="Data de Nascimento", hint_text="DD/MM/AAAA", prefix_icon=ft.Icons.CALENDAR_MONTH, border_radius=10, filled=True, bgcolor=ft.Colors.WHITE, expand=True, on_blur=nascimento_blur, on_change=nascimento_change)
+        senha = ft.TextField(label="Senha", password=True, can_reveal_password=True, prefix_icon=ft.Icons.LOCK, border_radius=10, filled=True, bgcolor=ft.Colors.WHITE, expand=True, on_submit=registrar_click)
 
         campos = ft.Column(spacing=10, controls=[nome, email, cpf, nascimento, senha])
 
@@ -483,7 +483,7 @@ class TelaUsuario:
                 ft.Image(src="logo.png", width=110, col={"xs": 12, "md": 2}),
                 ft.TextField(
                     hint_text="Buscar",
-                    prefix_icon=ft.icons.SEARCH,
+                    prefix_icon=ft.Icons.SEARCH,
                     border_radius=12,
                     bgcolor=ft.Colors.WHITE,
                     col={"xs": 12, "md": 6}

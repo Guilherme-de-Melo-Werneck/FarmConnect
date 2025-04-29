@@ -42,7 +42,7 @@ class TelaEscolhaUsuario:
 
         botao_paciente = ft.ElevatedButton(
             content=ft.Row([
-                ft.Icon(name=ft.icons.PERSON_OUTLINE),
+                ft.Icon(name=ft.Icons.PERSON_OUTLINE),
                 ft.Text("Sou Paciente", size=16)
             ],
             alignment=ft.MainAxisAlignment.CENTER,
@@ -59,7 +59,7 @@ class TelaEscolhaUsuario:
 
         botao_admin = ft.ElevatedButton(
             content=ft.Row([
-                ft.Icon(name=ft.icons.ADMIN_PANEL_SETTINGS_OUTLINED),
+                ft.Icon(name=ft.Icons.ADMIN_PANEL_SETTINGS_OUTLINED),
                 ft.Text("Sou Administrador", size=16)
             ],
             alignment=ft.MainAxisAlignment.CENTER,
