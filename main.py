@@ -30,13 +30,11 @@ def main(page: ft.Page):
         elif page.route == "/login_admin":
             page.views.append(TelaLoginAdmin(page).build_tela())
         elif page.route == "/admin_dashboard":
-            app = TelaAdminDashboard(page)
-            app.build()
-            return
+            page.views.append(TelaAdminDashboard(page).build_tela())
 
         page.update()
 
     page.on_route_change = route_change
-    page.go("/")
+    page.go(page.route)
 
 ft.app(target=main)

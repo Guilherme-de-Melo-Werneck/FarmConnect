@@ -315,14 +315,20 @@ class TelaAdminDashboard:
         )
         self.page.update()
 
-    def build(self):
-        self.page.add(
+    def build_tela(self):
+        return ft.View(
+        route="/admin_dashboard",
+        controls=[
             ft.Row([
                 self.side_menu(),
-                ft.Column([self.header(), self.current_view], expand=True)
+                ft.Column([
+                    self.header(),
+                    self.current_view
+                ], expand=True)
             ], expand=True)
-        )
-        self.load_dashboard()
+        ],
+        scroll=ft.ScrollMode.ADAPTIVE
+    )
 
 if __name__ == "__main__":
     def main(page: ft.Page):
