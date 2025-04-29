@@ -1,6 +1,6 @@
 import flet as ft
 import asyncio
-from database import criar_tabelas, registrar_usuario, verificar_login, buscar_nome_usuario, listar_medicamentos, adicionar_medicamento, solicitar_notificacao, agendar_medicamento
+from farmconnect.database import criar_tabelas, registrar_usuario, verificar_login, buscar_nome_usuario, listar_medicamentos, adicionar_medicamento, solicitar_notificacao, agendar_medicamento
 
 #Teste
 #adicionar_medicamento(nome="Paracetamol", descricao="Medicamento com efeito analgico", imagem="/img/celular.png", estoque=10)

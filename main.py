@@ -1,9 +1,9 @@
 import flet as ft
-from home.home import HomeApp
-from home.tela_escolha import TelaEscolhaUsuario
+from farmconnect.home.home import HomeApp
+from farmconnect.home.tela_escolha import TelaEscolhaUsuario
 from main_teste import TelaInicial, TelaLogin, TelaCadastro, TelaUsuario
-from administrador.admin import TelaLoginAdmin
-from administrador.tela_principal import TelaAdminDashboard
+from farmconnect.administrador.admin import TelaLoginAdmin
+from farmconnect.administrador.tela_principal import TelaAdminDashboard
 
 # Arquivo PRINCIPAL para criação das rotas
 

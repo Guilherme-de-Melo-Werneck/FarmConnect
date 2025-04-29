@@ -1,6 +1,6 @@
 import flet as ft
 import asyncio
-from database import criar_tabelas, registrar_usuario, verificar_login, buscar_nome_usuario, listar_medicamentos, adicionar_medicamento, solicitar_notificacao, agendar_medicamento, reduzir_estoque_medicamento, registrar_medicamento_reservado
+from farmconnect.database import criar_tabelas, registrar_usuario, verificar_login, buscar_nome_usuario, listar_medicamentos, adicionar_medicamento, solicitar_notificacao, agendar_medicamento, reduzir_estoque_medicamento, registrar_medicamento_reservado
 
 #Teste
 # adicionar_medicamento(nome="Paracetamol", descricao="Medicamento com efeito analgico", imagem="/img/celular.png", estoque=10)
@@ -115,7 +115,7 @@ class TelaInicial:
         )
 
         phone_image = ft.Container(
-            content=ft.Image(src="img/celular2.png", width=750, height=800),
+            content=ft.Image(src="farmconnect/home/img/celular2.png", width=750, height=800),
             rotate=ft.Rotate(angle=0.00),
             shadow=ft.BoxShadow(blur_radius=28, color=ft.Colors.BLACK26, offset=ft.Offset(8, 12)),
             animate_rotation=ft.Animation(800, "easeInOut"),

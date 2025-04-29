@@ -29,7 +29,7 @@ class HomeApp:
             padding=20,
             content=ft.Row(
                 controls=[
-                    ft.Image(src="home/img_home/logo.png", width=100, height=100),
+                    ft.Image(src="farmconnect/home/img_home/logo.png", width=100, height=100),
                     ft.Text("FarmConnect", size=24, weight="bold", color=self.PRIMARY_DARK),
                     ft.Container(expand=True),
                     ft.ElevatedButton(
@@ -72,7 +72,7 @@ class HomeApp:
             width=500
         )
         illustration = ft.Image(
-            src="home/img_home/inicio.png",
+            src="farmconnect/home/img_home/inicio.png",
             width=600,
             height=500,
             fit=ft.ImageFit.CONTAIN
@@ -125,7 +125,7 @@ class HomeApp:
         )
 
         about_image = ft.Image(
-            src="home/img_home/sobre_nos.png",
+            src="farmconnect/home/img_home/sobre_nos.png",
             width=600,
             height=500,
             fit=ft.ImageFit.CONTAIN
@@ -215,7 +215,7 @@ class HomeApp:
         )
 
         image = ft.Image(
-            src="home/img_home/paciente.png",
+            src="farmconnect/home/img_home/paciente.png",
             width=600,
             height=500,
             fit=ft.ImageFit.CONTAIN
@@ -297,7 +297,7 @@ class HomeApp:
         )
 
         image = ft.Image(
-            src="home/img_home/administrador.png",
+            src="farmconnect/home/img_home/administrador.png",
             width=600,
             height=500,
             fit=ft.ImageFit.CONTAIN

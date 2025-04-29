@@ -338,6 +338,23 @@ def registrar_medicamento_reservado(usuario_email, medicamento_id):
     cursor.close()
     conn.close()
 
+def registrar_admin(nome, email, senha):
+    conn = conectar()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            INSERT INTO administradores (nome, email, senha)
+            VALUES (?, ?, ?)
+        """, (nome, email, senha))
+        conn.commit()
+        return True
+    except sqlite3.IntegrityError as e:
+        print("Erro ao cadastrar administrador:", e)
+        return False
+    finally:
+        cursor.close()
+        conn.close()
+
 def verificar_login_admin(email, senha):
     conn = conectar()
     cursor = conn.cursor()
@@ -353,6 +370,7 @@ def verificar_login_admin(email, senha):
     conn.close()
 
     return admin is not None
+
 
 
 
