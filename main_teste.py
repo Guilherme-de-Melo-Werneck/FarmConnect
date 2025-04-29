@@ -128,7 +128,7 @@ class TelaInicial:
             gradient=ft.LinearGradient(
                 begin=ft.alignment.top_left,
                 end=ft.alignment.bottom_right,
-                Colors=["#F0F9FF", "#E0F2FE"]
+                colors=["#F0F9FF", "#E0F2FE"]
             ),
             content=ft.ResponsiveRow(
                 columns=12,
@@ -246,7 +246,7 @@ class TelaLogin:
                 ft.Container(
                     expand=True,
                     alignment=ft.alignment.center,
-                    gradient=ft.LinearGradient(begin=ft.alignment.top_center, end=ft.alignment.bottom_center, Colors=["#F8FAFC", "#E3F2FD"]),
+                    gradient=ft.LinearGradient(begin=ft.alignment.top_center, end=ft.alignment.bottom_center, colors=["#F8FAFC", "#E3F2FD"]),
                     content=ft.ResponsiveRow(
                         columns=12,
                         alignment=ft.MainAxisAlignment.CENTER,
@@ -385,7 +385,7 @@ class TelaCadastro:
                 ft.Container(
                     expand=True,
                     alignment=ft.alignment.center,
-                    gradient=ft.LinearGradient(begin=ft.alignment.top_center, end=ft.alignment.bottom_center, Colors=["#F8FAFC", "#E3F2FD"]),
+                    gradient=ft.LinearGradient(begin=ft.alignment.top_center, end=ft.alignment.bottom_center, colors=["#F8FAFC", "#E3F2FD"]),
                     content=ft.ResponsiveRow(
                         columns=12,
                         alignment=ft.MainAxisAlignment.CENTER,
@@ -579,7 +579,7 @@ class TelaUsuario:
                     gradient=ft.LinearGradient(
                         begin=ft.alignment.top_left,
                         end=ft.alignment.bottom_right,
-                        Colors=["#F0F9FF", "#E0F2FE"]
+                        colors=["#F0F9FF", "#E0F2FE"]
                     ),
                     content=layout
                 )
