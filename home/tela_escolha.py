@@ -1,14 +1,14 @@
 import flet as ft
 
-PRIMARY_COLOR = ft.colors.BLUE_600
-SECONDARY_COLOR = ft.colors.BLUE_900
+PRIMARY_COLOR = ft.Colors.BLUE_600
+SECONDARY_COLOR = ft.Colors.BLUE_900
 
 class TelaEscolhaUsuario:
     def __init__(self, page: ft.Page):
         self.page = page
         self.page.title = "FarmConnect - Escolha de Perfil"
         self.page.scroll = "auto"
-        self.page.bgcolor = ft.colors.WHITE
+        self.page.bgcolor = ft.Colors.WHITE
 
     def entrar_como_paciente(self, e):
         self.page.go("/login")
@@ -36,7 +36,7 @@ class TelaEscolhaUsuario:
             "Escolha como deseja acessar",
             size=20,
             text_align=ft.TextAlign.CENTER,
-            color=ft.colors.GREY_700,
+            color=ft.Colors.GREY_700,
             animate_opacity=400
         )
 
@@ -50,9 +50,9 @@ class TelaEscolhaUsuario:
             width=280,
             style=ft.ButtonStyle(
                 bgcolor=PRIMARY_COLOR,
-                color=ft.colors.WHITE,
+                color=ft.Colors.WHITE,
                 shape=ft.RoundedRectangleBorder(radius=15),
-                overlay_color=ft.colors.BLUE_700,
+                overlay_color=ft.Colors.BLUE_700,
             ),
             on_click=self.entrar_como_paciente,
         )
@@ -67,9 +67,9 @@ class TelaEscolhaUsuario:
             width=280,
             style=ft.ButtonStyle(
                 bgcolor=SECONDARY_COLOR,
-                color=ft.colors.WHITE,
+                color=ft.Colors.WHITE,
                 shape=ft.RoundedRectangleBorder(radius=15),
-                overlay_color=ft.colors.BLUE_800,
+                overlay_color=ft.Colors.BLUE_800,
             ),
             on_click=self.entrar_como_admin,
         )
@@ -84,10 +84,10 @@ class TelaEscolhaUsuario:
         conteudo_cartao = ft.Column(
             controls=[
                 logo,
-                ft.Divider(height=10, color=ft.colors.TRANSPARENT),
+                ft.Divider(height=10, color=ft.Colors.TRANSPARENT),
                 titulo,
                 subtitulo,
-                ft.Divider(height=30, color=ft.colors.TRANSPARENT),
+                ft.Divider(height=30, color=ft.Colors.TRANSPARENT),
                 botoes
             ],
             alignment=ft.MainAxisAlignment.CENTER,
@@ -99,12 +99,12 @@ class TelaEscolhaUsuario:
             content=conteudo_cartao,
             padding=40,
             width=420,
-            bgcolor=ft.colors.WHITE,
+            bgcolor=ft.Colors.WHITE,
             border_radius=20,
             shadow=ft.BoxShadow(
                 spread_radius=5,
                 blur_radius=30,
-                color=ft.colors.BLACK26,
+                color=ft.Colors.BLACK26,
                 offset=ft.Offset(0, 8),
             ),
             animate_opacity=500
@@ -112,7 +112,7 @@ class TelaEscolhaUsuario:
 
         tela = ft.Container(
             expand=True,
-            bgcolor=ft.colors.WHITE,
+            bgcolor=ft.Colors.WHITE,
             content=ft.Row(
                 [
                     ft.Column(
