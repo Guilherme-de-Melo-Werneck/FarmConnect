@@ -51,6 +51,7 @@ def criar_tabelas():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nome TEXT NOT NULL,
             endereco TEXT NOT NULL,
+            cnpj TEXT NOT NULL UNIQUE,
             cidade TEXT,
             estado TEXT,
             telefone TEXT,
