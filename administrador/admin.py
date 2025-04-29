@@ -117,6 +117,7 @@ class TelaLoginAdmin:
 
         return ft.View(
             route="/login_admin",
+            scroll=ft.ScrollMode.ADAPTIVE,
             controls=[
                 ft.Column([header, cards_section, footer], spacing=0, expand=True)
             ]
