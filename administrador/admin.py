@@ -34,13 +34,13 @@ class TelaLoginAdmin:
             content=ft.Row(
                 [
                     ft.Image(src="administrador/img_adm/logo_verde.png", width=120, height=80),
-                    ft.Text("FarmConnect Admin", size=20, weight="bold", color=ft.colors.WHITE)
+                    ft.Text("FarmConnect Admin", size=20, weight="bold", color=ft.Colors.WHITE)
                 ],
                 alignment=ft.MainAxisAlignment.SPACE_BETWEEN
             ),
             padding=ft.padding.symmetric(horizontal=40, vertical=24),
             bgcolor="#10B981",
-            shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK38, offset=ft.Offset(0, 8)),
+            shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK38, offset=ft.Offset(0, 8)),
             animate=ft.Animation(600, "easeInOut")
         )
 
@@ -48,11 +48,11 @@ class TelaLoginAdmin:
             padding=30,
             bgcolor="white",
             border_radius=20,
-            shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK12, offset=ft.Offset(0, 6)),
+            shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK12, offset=ft.Offset(0, 6)),
             content=ft.Column([
                 ft.Text("Login", size=24, weight="bold", color="#10B981"),
-                ft.TextField(label="Email", prefix_icon=ft.icons.EMAIL, border_radius=10, filled=True, bgcolor=ft.colors.GREEN_50),
-                ft.TextField(label="Senha", password=True, can_reveal_password=True, prefix_icon=ft.icons.LOCK, border_radius=10, filled=True, bgcolor=ft.colors.GREEN_50),
+                ft.TextField(label="Email", prefix_icon=ft.icons.EMAIL, border_radius=10, filled=True, bgcolor=ft.Colors.GREEN_50),
+                ft.TextField(label="Senha", password=True, can_reveal_password=True, prefix_icon=ft.icons.LOCK, border_radius=10, filled=True, bgcolor=ft.Colors.GREEN_50),
                 ft.ElevatedButton("Entrar", bgcolor="#10B981", color="white",
                                   style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10), overlay_color="#6EE7B7")),
                 ft.TextButton(
@@ -67,15 +67,15 @@ class TelaLoginAdmin:
             padding=30,
             bgcolor="white",
             border_radius=20,
-            shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK12, offset=ft.Offset(0, 6)),
+            shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK12, offset=ft.Offset(0, 6)),
             content=ft.Column([
                 ft.Text("Cadastro", size=24, weight="bold", color="#10B981"),
-                ft.TextField(label="Nome completo", prefix_icon=ft.icons.PERSON, border_radius=10, filled=True, bgcolor=ft.colors.GREEN_50),
-                ft.TextField(label="Email", prefix_icon=ft.icons.EMAIL, border_radius=10, filled=True, bgcolor=ft.colors.GREEN_50),
-                ft.TextField(label="Senha", password=True, can_reveal_password=True, prefix_icon=ft.icons.LOCK, border_radius=10, filled=True, bgcolor=ft.colors.GREEN_50),
-                ft.TextField(label="Confirmar Senha", password=True, can_reveal_password=True, prefix_icon=ft.icons.LOCK_OUTLINE, border_radius=10, filled=True, bgcolor=ft.colors.GREEN_50),
-                ft.TextField(label="CNPJ da Farmácia", prefix_icon=ft.icons.BUSINESS, border_radius=10, filled=True, bgcolor=ft.colors.GREEN_50),
-                ft.TextField(label="Nome da Farmácia", prefix_icon=ft.icons.LOCAL_PHARMACY, border_radius=10, filled=True, bgcolor=ft.colors.GREEN_50),
+                ft.TextField(label="Nome completo", prefix_icon=ft.icons.PERSON, border_radius=10, filled=True, bgcolor=ft.Colors.GREEN_50),
+                ft.TextField(label="Email", prefix_icon=ft.icons.EMAIL, border_radius=10, filled=True, bgcolor=ft.Colors.GREEN_50),
+                ft.TextField(label="Senha", password=True, can_reveal_password=True, prefix_icon=ft.icons.LOCK, border_radius=10, filled=True, bgcolor=ft.Colors.GREEN_50),
+                ft.TextField(label="Confirmar Senha", password=True, can_reveal_password=True, prefix_icon=ft.icons.LOCK_OUTLINE, border_radius=10, filled=True, bgcolor=ft.Colors.GREEN_50),
+                ft.TextField(label="CNPJ da Farmácia", prefix_icon=ft.icons.BUSINESS, border_radius=10, filled=True, bgcolor=ft.Colors.GREEN_50),
+                ft.TextField(label="Nome da Farmácia", prefix_icon=ft.icons.LOCAL_PHARMACY, border_radius=10, filled=True, bgcolor=ft.Colors.GREEN_50),
                 ft.ElevatedButton("Registrar", bgcolor="#10B981", color="white",
                                   style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10), overlay_color="#6EE7B7"))
             ], spacing=20, scroll=ft.ScrollMode.ADAPTIVE)
@@ -99,11 +99,11 @@ class TelaLoginAdmin:
             content=ft.Column(
                 [
                     ft.Text("FarmConnect Admin", size=18, weight=ft.FontWeight.BOLD, color="white"),
-                    ft.Text("Soluções inteligentes para gestão de medicamentos.", size=14, color=ft.colors.WHITE70),
+                    ft.Text("Soluções inteligentes para gestão de medicamentos.", size=14, color=ft.Colors.WHITE70),
                     ft.Row([
-                        ft.Icon(ft.icons.LOCAL_HOSPITAL, color=ft.colors.WHITE, size=26),
-                        ft.Icon(ft.icons.HEALTH_AND_SAFETY, color=ft.colors.WHITE, size=26),
-                        ft.Icon(ft.icons.GROUP, color=ft.colors.WHITE, size=26)
+                        ft.Icon(ft.icons.LOCAL_HOSPITAL, color=ft.Colors.WHITE, size=26),
+                        ft.Icon(ft.icons.HEALTH_AND_SAFETY, color=ft.Colors.WHITE, size=26),
+                        ft.Icon(ft.icons.GROUP, color=ft.Colors.WHITE, size=26)
                     ], alignment=ft.MainAxisAlignment.CENTER, spacing=14)
                 ],
                 alignment=ft.MainAxisAlignment.CENTER,
@@ -112,7 +112,7 @@ class TelaLoginAdmin:
             ),
             padding=24,
             bgcolor="#10B981",
-            shadow=ft.BoxShadow(blur_radius=16, color=ft.colors.BLACK26, offset=ft.Offset(0, -6))
+            shadow=ft.BoxShadow(blur_radius=16, color=ft.Colors.BLACK26, offset=ft.Offset(0, -6))
         )
 
         return ft.View(

@@ -6,14 +6,14 @@ class HomeApp:
         self.page = page
         self.page.title = "FarmConnect"
         self.page.padding = 0
-        self.page.bgcolor = ft.colors.WHITE
+        self.page.bgcolor = ft.Colors.WHITE
         self.page.theme_mode = ft.ThemeMode.LIGHT
         self.page.scroll = ft.ScrollMode.ADAPTIVE
 
-        self.PRIMARY = ft.colors.BLUE_600
-        self.PRIMARY_DARK = ft.colors.BLUE_900
-        self.TEXT_PRIMARY = ft.colors.BLACK87
-        self.TEXT_SECONDARY = ft.colors.GREY_700
+        self.PRIMARY = ft.Colors.BLUE_600
+        self.PRIMARY_DARK = ft.Colors.BLUE_900
+        self.TEXT_PRIMARY = ft.Colors.BLACK87
+        self.TEXT_SECONDARY = ft.Colors.GREY_700
 
         self.page.views.append(self.build())
 
@@ -25,7 +25,7 @@ class HomeApp:
 
     def build_header(self):
         return ft.Container(
-            bgcolor=ft.colors.WHITE,
+            bgcolor=ft.Colors.WHITE,
             padding=20,
             content=ft.Row(
                 controls=[
@@ -35,7 +35,7 @@ class HomeApp:
                     ft.ElevatedButton(
                         "Baixe o app agora!",
                         bgcolor=self.PRIMARY,
-                        color=ft.colors.WHITE,
+                        color=ft.Colors.WHITE,
                         style=ft.ButtonStyle(padding=15),
                     ),
                     ft.TextButton(
@@ -56,7 +56,7 @@ class HomeApp:
             weight="bold",
             color=self.TEXT_PRIMARY,
             spans=[
-                ft.TextSpan("retirada de medicamentos", ft.TextStyle(color=ft.colors.BLUE_600, weight="bold"))
+                ft.TextSpan("retirada de medicamentos", ft.TextStyle(color=ft.Colors.BLUE_600, weight="bold"))
             ]
         )
         paragraph = ft.Text(
@@ -167,7 +167,7 @@ class HomeApp:
 
         def card(icon_name, title_text, subtitle_text):
             return ft.Container(
-                bgcolor=ft.colors.WHITE,
+                bgcolor=ft.Colors.WHITE,
                 border_radius=12,
                 padding=20,
                 width=200,
@@ -175,7 +175,7 @@ class HomeApp:
                 shadow=ft.BoxShadow(
                     spread_radius=1,
                     blur_radius=10,
-                    color=ft.colors.GREY_200,
+                    color=ft.Colors.GREY_200,
                     offset=ft.Offset(0, 3),
                     blur_style=ft.ShadowBlurStyle.NORMAL
                 ),
@@ -249,7 +249,7 @@ class HomeApp:
 
         def admin_card(icon_name, title_text, subtitle_text):
             return ft.Container(
-                bgcolor=ft.colors.WHITE,
+                bgcolor=ft.Colors.WHITE,
                 border_radius=12,
                 padding=20,
                 width=180,
@@ -257,7 +257,7 @@ class HomeApp:
                 shadow=ft.BoxShadow(
                     spread_radius=1,
                     blur_radius=10,
-                    color=ft.colors.GREY_200,
+                    color=ft.Colors.GREY_200,
                     offset=ft.Offset(0, 3),
                     blur_style=ft.ShadowBlurStyle.NORMAL
                 ),
@@ -324,7 +324,7 @@ class HomeApp:
 
     def build_footer(self):
         return ft.Container(
-            bgcolor=ft.colors.BLUE_50,
+            bgcolor=ft.Colors.BLUE_50,
             padding=40,
             content=ft.Column(
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,

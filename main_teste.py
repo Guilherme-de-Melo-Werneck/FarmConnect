@@ -6,10 +6,10 @@ from database import criar_tabelas, registrar_usuario, verificar_login, buscar_n
 # adicionar_medicamento(nome="Paracetamol", descricao="Medicamento com efeito analgico", imagem="/img/celular.png", estoque=10)
 
 # Cores:
-PRIMARY = ft.colors.BLUE_600
-PRIMARY_DARK = ft.colors.BLUE_900
-TEXT_PRIMARY = ft.colors.BLACK87
-TEXT_SECONDARY = ft.colors.GREY_700
+PRIMARY = ft.Colors.BLUE_600
+PRIMARY_DARK = ft.Colors.BLUE_900
+TEXT_PRIMARY = ft.Colors.BLACK87
+TEXT_SECONDARY = ft.Colors.GREY_700
 
 # Banco de Dados:
 criar_tabelas()
@@ -19,7 +19,7 @@ class TelaInicial:
         self.page = page
         self.typing_text = ft.Text(
             "Facilitar seus agendamentos e busca para medicamentos especializados",
-            size=20, color=ft.colors.BLACK87
+            size=20, color=ft.Colors.BLACK87
         )
 
     async def start_typing_effect(self):
@@ -43,9 +43,9 @@ class TelaInicial:
             content=ft.Row([
                 ft.Image(src="logo.png", width=110, height=40),
                 ft.Row([
-                    ft.TextButton("Feedback", style=ft.ButtonStyle(color=ft.colors.WHITE70)),
-                    ft.TextButton("Ajuda", style=ft.ButtonStyle(color=ft.colors.WHITE70)),
-                    ft.TextButton("Contato", style=ft.ButtonStyle(color=ft.colors.WHITE70)),
+                    ft.TextButton("Feedback", style=ft.ButtonStyle(color=ft.Colors.WHITE70)),
+                    ft.TextButton("Ajuda", style=ft.ButtonStyle(color=ft.Colors.WHITE70)),
+                    ft.TextButton("Contato", style=ft.ButtonStyle(color=ft.Colors.WHITE70)),
                     ft.ElevatedButton(
                         content=ft.Row([ft.Icon(ft.icons.PERSON_ADD), ft.Text("Registrar")]),
                         on_click=on_register,
@@ -61,10 +61,10 @@ class TelaInicial:
                         content=ft.Row([ft.Icon(ft.icons.LOGIN), ft.Text("Entrar")]),
                         on_click=on_login,
                         style=ft.ButtonStyle(
-                            side=ft.BorderSide(1, ft.colors.WHITE),
+                            side=ft.BorderSide(1, ft.Colors.WHITE),
                             shape=ft.RoundedRectangleBorder(radius=20),
                             padding=ft.padding.symmetric(horizontal=16, vertical=10),
-                            color=ft.colors.WHITE,
+                            color=ft.Colors.WHITE,
                             overlay_color="#93C5FD"
                         )
                     ),
@@ -72,7 +72,7 @@ class TelaInicial:
             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
             padding=ft.padding.symmetric(horizontal=32, vertical=20),
             bgcolor="#1E3A8A",
-            shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK38, offset=ft.Offset(0, 6)),
+            shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK38, offset=ft.Offset(0, 6)),
             animate=ft.Animation(600, "easeInOut")
         )
 
@@ -80,7 +80,7 @@ class TelaInicial:
             padding=40,
             bgcolor="white",
             border_radius=30,
-            shadow=ft.BoxShadow(blur_radius=35, color=ft.colors.BLACK12, offset=ft.Offset(0, 10)),
+            shadow=ft.BoxShadow(blur_radius=35, color=ft.Colors.BLACK12, offset=ft.Offset(0, 10)),
             content=ft.Column([
                 ft.Text("FarmConnect", size=48, weight=ft.FontWeight.BOLD, color="#1E3A8A"),
                 self.typing_text,
@@ -107,7 +107,7 @@ class TelaInicial:
                     ], spacing=10),
                     border_radius=12,
                     padding=16,
-                    bgcolor=ft.colors.BLUE_50
+                    bgcolor=ft.Colors.BLUE_50
                 )
             ], spacing=28),
             animate_opacity=400,
@@ -117,7 +117,7 @@ class TelaInicial:
         phone_image = ft.Container(
             content=ft.Image(src="img/celular2.png", width=750, height=800),
             rotate=ft.Rotate(angle=0.00),
-            shadow=ft.BoxShadow(blur_radius=28, color=ft.colors.BLACK26, offset=ft.Offset(8, 12)),
+            shadow=ft.BoxShadow(blur_radius=28, color=ft.Colors.BLACK26, offset=ft.Offset(8, 12)),
             animate_rotation=ft.Animation(800, "easeInOut"),
             animate_opacity=ft.Animation(600, "easeInOut")
         )
@@ -128,7 +128,7 @@ class TelaInicial:
             gradient=ft.LinearGradient(
                 begin=ft.alignment.top_left,
                 end=ft.alignment.bottom_right,
-                colors=["#F0F9FF", "#E0F2FE"]
+                Colors=["#F0F9FF", "#E0F2FE"]
             ),
             content=ft.ResponsiveRow(
                 columns=12,
@@ -154,7 +154,7 @@ class TelaInicial:
                         content=ft.Image(src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png", width=22),
                         padding=6,
                         border_radius=50,
-                        bgcolor=ft.colors.WHITE,
+                        bgcolor=ft.Colors.WHITE,
                         tooltip="Instagram",
                         on_click=lambda _: print("Instagram")
                     ),
@@ -162,7 +162,7 @@ class TelaInicial:
                         content=ft.Image(src="https://cdn-icons-png.flaticon.com/512/733/733547.png", width=22),
                         padding=6,
                         border_radius=50,
-                        bgcolor=ft.colors.WHITE,
+                        bgcolor=ft.Colors.WHITE,
                         tooltip="Facebook",
                         on_click=lambda _: print("Facebook")
                     ),
@@ -170,7 +170,7 @@ class TelaInicial:
                         content=ft.Image(src="https://cdn-icons-png.flaticon.com/512/733/733585.png", width=22),
                         padding=6,
                         border_radius=50,
-                        bgcolor=ft.colors.WHITE,
+                        bgcolor=ft.Colors.WHITE,
                         tooltip="Twitter",
                         on_click=lambda _: print("Twitter")
                     )
@@ -178,7 +178,7 @@ class TelaInicial:
             ], alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=8),
             padding=16,
             bgcolor="#1E3A8A",
-            shadow=ft.BoxShadow(blur_radius=12, color=ft.colors.BLACK26, offset=ft.Offset(0, -4)),
+            shadow=ft.BoxShadow(blur_radius=12, color=ft.Colors.BLACK26, offset=ft.Offset(0, -4)),
             border_radius=0
         )
 
@@ -207,7 +207,7 @@ class TelaLogin:
 
         self.page.snack_bar = ft.SnackBar(
             content=ft.Text(""),
-            bgcolor=ft.colors.RED_400,
+            bgcolor=ft.Colors.RED_400,
             duration=3000
         )
 
@@ -222,16 +222,16 @@ class TelaLogin:
         card_container = ft.Container(
             width=380,
             padding=20,
-            bgcolor=ft.colors.WHITE,
+            bgcolor=ft.Colors.WHITE,
             border_radius=18,
             height=360,
-            shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK26, offset=ft.Offset(0, 6)),
+            shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26, offset=ft.Offset(0, 6)),
             content=ft.Column(
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 spacing=16,
                 controls=[
                     ft.Text("Bem-vindo!👋", size=22, weight=ft.FontWeight.BOLD, color="#1E3A8A"),
-                    ft.Text("Acesse sua conta para continuar", size=13, color=ft.colors.GREY_700),
+                    ft.Text("Acesse sua conta para continuar", size=13, color=ft.Colors.GREY_700),
                     campos_login,
                     ft.ElevatedButton("Entrar", width=180, height=42, bgcolor="#1E3A8A", color="white", style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10), elevation=3), on_click=login_click),
                     ft.TextButton("Voltar à tela inicial", on_click=voltar_click, style=ft.ButtonStyle(color="#1E3A8A"))
@@ -246,7 +246,7 @@ class TelaLogin:
                 ft.Container(
                     expand=True,
                     alignment=ft.alignment.center,
-                    gradient=ft.LinearGradient(begin=ft.alignment.top_center, end=ft.alignment.bottom_center, colors=["#F8FAFC", "#E3F2FD"]),
+                    gradient=ft.LinearGradient(begin=ft.alignment.top_center, end=ft.alignment.bottom_center, Colors=["#F8FAFC", "#E3F2FD"]),
                     content=ft.ResponsiveRow(
                         columns=12,
                         alignment=ft.MainAxisAlignment.CENTER,
@@ -275,7 +275,7 @@ class TelaCadastro:
 
                 if sucesso:
                     self.page.snack_bar.content.value = "Cadastro realizado com sucesso!"
-                    self.page.snack_bar.bgcolor = ft.colors.GREEN
+                    self.page.snack_bar.bgcolor = ft.Colors.GREEN
                     self.page.snack_bar.open = True
                     self.page
                     self.page.go("/login")
@@ -291,7 +291,7 @@ class TelaCadastro:
 
         self.page.snack_bar = ft.SnackBar(
             content=ft.Text(""),            
-            bgcolor=ft.colors.RED_400,
+            bgcolor=ft.Colors.RED_400,
             duration=3000
         )
 
@@ -350,11 +350,11 @@ class TelaCadastro:
             nascimento.value = formatado
             nascimento.update()
 
-        nome = ft.TextField(label="Nome completo", prefix_icon=ft.icons.PERSON, border_radius=10, filled=True, bgcolor=ft.colors.WHITE, expand=True, autofocus=True)
-        email = ft.TextField(label="Email", prefix_icon=ft.icons.EMAIL, border_radius=10, filled=True, bgcolor=ft.colors.WHITE, expand=True)
-        cpf = ft.TextField(label="CPF", prefix_icon=ft.icons.BADGE, border_radius=10, filled=True, bgcolor=ft.colors.WHITE, expand=True, keyboard_type=ft.KeyboardType.NUMBER, hint_text="Apenas números", on_blur=cpf_blur, on_change=cpf_change)
-        nascimento = ft.TextField(label="Data de Nascimento", hint_text="DD/MM/AAAA", prefix_icon=ft.icons.CALENDAR_MONTH, border_radius=10, filled=True, bgcolor=ft.colors.WHITE, expand=True, on_blur=nascimento_blur, on_change=nascimento_change)
-        senha = ft.TextField(label="Senha", password=True, can_reveal_password=True, prefix_icon=ft.icons.LOCK, border_radius=10, filled=True, bgcolor=ft.colors.WHITE, expand=True, on_submit=registrar_click)
+        nome = ft.TextField(label="Nome completo", prefix_icon=ft.icons.PERSON, border_radius=10, filled=True, bgcolor=ft.Colors.WHITE, expand=True, autofocus=True)
+        email = ft.TextField(label="Email", prefix_icon=ft.icons.EMAIL, border_radius=10, filled=True, bgcolor=ft.Colors.WHITE, expand=True)
+        cpf = ft.TextField(label="CPF", prefix_icon=ft.icons.BADGE, border_radius=10, filled=True, bgcolor=ft.Colors.WHITE, expand=True, keyboard_type=ft.KeyboardType.NUMBER, hint_text="Apenas números", on_blur=cpf_blur, on_change=cpf_change)
+        nascimento = ft.TextField(label="Data de Nascimento", hint_text="DD/MM/AAAA", prefix_icon=ft.icons.CALENDAR_MONTH, border_radius=10, filled=True, bgcolor=ft.Colors.WHITE, expand=True, on_blur=nascimento_blur, on_change=nascimento_change)
+        senha = ft.TextField(label="Senha", password=True, can_reveal_password=True, prefix_icon=ft.icons.LOCK, border_radius=10, filled=True, bgcolor=ft.Colors.WHITE, expand=True, on_submit=registrar_click)
 
         campos = ft.Column(spacing=10, controls=[nome, email, cpf, nascimento, senha])
 
@@ -362,15 +362,15 @@ class TelaCadastro:
             width=420,
             padding=25,
             height=500,
-            bgcolor=ft.colors.WHITE,
+            bgcolor=ft.Colors.WHITE,
             border_radius=18,
-            shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK26, offset=ft.Offset(0, 6)),
+            shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26, offset=ft.Offset(0, 6)),
             content=ft.Column(
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 spacing=16,
                 controls=[
                     ft.Text("Crie sua conta", size=22, weight=ft.FontWeight.BOLD, color="#1E3A8A"),
-                    ft.Text("Preencha os dados abaixo", size=13, color=ft.colors.GREY_700),
+                    ft.Text("Preencha os dados abaixo", size=13, color=ft.Colors.GREY_700),
                     campos,
                     ft.ElevatedButton("Cadastrar", width=180, height=42, bgcolor="#1E3A8A", color="white", style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10), elevation=3), on_click=registrar_click),
                     ft.TextButton("Voltar à tela inicial", on_click=voltar_click, style=ft.ButtonStyle(color="#1E3A8A"))
@@ -385,7 +385,7 @@ class TelaCadastro:
                 ft.Container(
                     expand=True,
                     alignment=ft.alignment.center,
-                    gradient=ft.LinearGradient(begin=ft.alignment.top_center, end=ft.alignment.bottom_center, colors=["#F8FAFC", "#E3F2FD"]),
+                    gradient=ft.LinearGradient(begin=ft.alignment.top_center, end=ft.alignment.bottom_center, Colors=["#F8FAFC", "#E3F2FD"]),
                     content=ft.ResponsiveRow(
                         columns=12,
                         alignment=ft.MainAxisAlignment.CENTER,
@@ -404,7 +404,7 @@ class TelaUsuario:
         self.nome_usuario = buscar_nome_usuario(self.email_usuario)
         self.cards_medicamentos = {}
     
-    def mostrar_snackbar(self, mensagem, cor=ft.colors.GREEN):
+    def mostrar_snackbar(self, mensagem, cor=ft.Colors.GREEN):
         self.page.snack_bar.content.value = mensagem
         self.page.snack_bar.bgcolor = cor
         self.page.snack_bar.open = True
@@ -430,7 +430,7 @@ class TelaUsuario:
         else:
             texto_estoque.value = "Sem estoque no momento"
             botao.text = "ME AVISE"
-            botao.bgcolor = ft.colors.GREY
+            botao.bgcolor = ft.Colors.GREY
             botao.disabled = True
 
         botao.update()
@@ -449,7 +449,7 @@ class TelaUsuario:
     # Mostra o Snackbar:
         self.page.snack_bar = ft.SnackBar(
             content=ft.Text(""),
-            bgcolor=ft.colors.GREEN,
+            bgcolor=ft.Colors.GREEN,
             duration=3000
         )
 
@@ -462,13 +462,13 @@ class TelaUsuario:
             col={"xs": 12, "md": 3, "lg": 2},
             content=ft.Column([
                 ft.Image(src="logo.png", width=140, height=50),
-                ft.Divider(height=20, color=ft.colors.TRANSPARENT),
+                ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
                 ft.ElevatedButton("Ver Perfil", width=200, style=ft.ButtonStyle(bgcolor="white", color="#1E3A8A")),
                 ft.ElevatedButton("Medicamentos Retirados", width=200, style=ft.ButtonStyle(bgcolor="white", color="#1E3A8A")),
                 ft.ElevatedButton("Agendamentos", width=200, style=ft.ButtonStyle(bgcolor="white", color="#1E3A8A")),
                 ft.ElevatedButton("Documentos Necessários", width=200, style=ft.ButtonStyle(bgcolor="white", color="#1E3A8A")),
                 ft.ElevatedButton("Editar Dados", width=200, style=ft.ButtonStyle(bgcolor="white", color="#1E3A8A")),
-                ft.ElevatedButton("Sair", width=200, bgcolor=ft.colors.RED_400, color=ft.colors.WHITE, on_click=lambda e: (self.page.session.clear(), self.page.go("/"))),
+                ft.ElevatedButton("Sair", width=200, bgcolor=ft.Colors.RED_400, color=ft.Colors.WHITE, on_click=lambda e: (self.page.session.clear(), self.page.go("/"))),
             ], spacing=14, alignment=ft.MainAxisAlignment.START, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
         )
 
@@ -477,7 +477,7 @@ class TelaUsuario:
             bgcolor="#1E40AF",
             border_radius=12,
             padding=ft.padding.symmetric(horizontal=20, vertical=16),
-            shadow=ft.BoxShadow(blur_radius=18, color=ft.colors.BLACK12, offset=ft.Offset(0, 4)),
+            shadow=ft.BoxShadow(blur_radius=18, color=ft.Colors.BLACK12, offset=ft.Offset(0, 4)),
             
             content=ft.ResponsiveRow([
                 ft.Image(src="logo.png", width=110, col={"xs": 12, "md": 2}),
@@ -485,12 +485,12 @@ class TelaUsuario:
                     hint_text="Buscar",
                     prefix_icon=ft.icons.SEARCH,
                     border_radius=12,
-                    bgcolor=ft.colors.WHITE,
+                    bgcolor=ft.Colors.WHITE,
                     col={"xs": 12, "md": 6}
                 ),
                 ft.Row([
                     ft.CircleAvatar(foreground_image_src="/images/profile.jpg", radius=22),
-                    ft.Text(self.nome_usuario.upper(), size=13, weight=ft.FontWeight.BOLD, color=ft.colors.WHITE)
+                    ft.Text(self.nome_usuario.upper(), size=13, weight=ft.FontWeight.BOLD, color=ft.Colors.WHITE)
                 ], spacing=10, col={"xs": 12, "md": 4})
             ])
         )
@@ -504,7 +504,7 @@ class TelaUsuario:
             botao = ft.ElevatedButton(
                 "ADICIONAR" if estoque > 0 else "ME AVISE",
                 width=130,
-                bgcolor="#1E3A8A" if estoque > 0 else ft.colors.GREY,
+                bgcolor="#1E3A8A" if estoque > 0 else ft.Colors.GREY,
                 color="white",
                 disabled=(estoque == 0),
                 style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10)),
@@ -514,14 +514,14 @@ class TelaUsuario:
             texto_estoque = ft.Text(
                 f"Disponível: {estoque} unidade(s)" if estoque > 0 else "Sem estoque no momento",
                 size=12,
-                color=ft.colors.RED if estoque == 0 else ft.colors.BLACK54
+                color=ft.Colors.RED if estoque == 0 else ft.Colors.BLACK54
             )
 
             card = ft.Container(
                 padding=14,
-                bgcolor=ft.colors.BLUE_50,
+                bgcolor=ft.Colors.BLUE_50,
                 border_radius=16,
-                shadow=ft.BoxShadow(blur_radius=12, color=ft.colors.BLACK12, offset=ft.Offset(0, 4)),
+                shadow=ft.BoxShadow(blur_radius=12, color=ft.Colors.BLACK12, offset=ft.Offset(0, 4)),
                 col={"xs": 12, "sm": 6, "md": 4},
                 content=ft.Column([
                     ft.Image(src=imagem or "/images/remedio_padrao.png", width=100, height=100),
@@ -546,9 +546,9 @@ class TelaUsuario:
                 content=ft.Container(
                     width=900,
                     padding=30,
-                    bgcolor=ft.colors.WHITE,
+                    bgcolor=ft.Colors.WHITE,
                     border_radius=20,
-                    shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK12, offset=ft.Offset(0, 6)),
+                    shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK12, offset=ft.Offset(0, 6)),
                     content=ft.Column([
                         ft.Row([
                             ft.Text("MEDICAMENTOS 🩹", size=26, weight=ft.FontWeight.BOLD, text_align=ft.TextAlign.CENTER, color="#1E3A8A"),
@@ -579,7 +579,7 @@ class TelaUsuario:
                     gradient=ft.LinearGradient(
                         begin=ft.alignment.top_left,
                         end=ft.alignment.bottom_right,
-                        colors=["#F0F9FF", "#E0F2FE"]
+                        Colors=["#F0F9FF", "#E0F2FE"]
                     ),
                     content=layout
                 )
