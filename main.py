@@ -2,6 +2,7 @@ import flet as ft
 from home.home import HomeApp
 from home.tela_escolha import TelaEscolhaUsuario
 from main_teste import TelaInicial, TelaLogin, TelaCadastro, TelaUsuario
+from administrador.admin import TelaLoginAdmin
 
 # Arquivo PRINCIPAL para criação das rotas
 
@@ -25,8 +26,8 @@ def main(page: ft.Page):
             page.views.append(TelaCadastro(page).tela_cadastro())
         elif page.route == "/usuario":
             page.views.append(TelaUsuario(page).tela_usuario())
-        elif page.route == "/admin":
-            pass
+        elif page.route == "/login_admin":
+            page.views.append(TelaLoginAdmin(page).build_tela())
 
         page.update()
 
