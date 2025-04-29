@@ -3,6 +3,7 @@ from home.home import HomeApp
 from home.tela_escolha import TelaEscolhaUsuario
 from main_teste import TelaInicial, TelaLogin, TelaCadastro, TelaUsuario
 from administrador.admin import TelaLoginAdmin
+from administrador.tela_principal import TelaAdminDashboard
 
 # Arquivo PRINCIPAL para criação das rotas
 
@@ -28,6 +29,10 @@ def main(page: ft.Page):
             page.views.append(TelaUsuario(page).tela_usuario())
         elif page.route == "/login_admin":
             page.views.append(TelaLoginAdmin(page).build_tela())
+        elif page.route == "/admin_dashboard":
+            app = TelaAdminDashboard(page)
+            app.build()
+            return
 
         page.update()
 
