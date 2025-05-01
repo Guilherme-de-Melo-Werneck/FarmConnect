@@ -759,7 +759,7 @@ class TelaAdminDashboard:
 if __name__ == "__main__":
     def main(page: ft.Page):
         app = TelaAdminDashboard(page)
-        app.build_tela()
+        page.views.append(app.build_tela()) # app.build_tela()
         page.update()
 
-    ft.app(target=main)
+ft.app(target=main)
