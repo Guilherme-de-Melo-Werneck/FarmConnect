@@ -1,4 +1,5 @@
 import flet as ft
+from farmconnect.database import listar_medicamentos, editar_medicamento, adicionar_medicamento, listar_categorias, listar_fabricantes
 
 class TelaAdminDashboard:
     def __init__(self, page: ft.Page):
@@ -269,11 +270,16 @@ class TelaAdminDashboard:
         self.page.update()
 
     def load_medicamentos(self, e=None, medicamento=None):
-        self.current_view.controls.clear()
+        from farmconnect.database import listar_medicamentos
 
+        self.current_view.controls.clear()
         self.editando_medicamento = medicamento is not None
 
-        # Tabela de medicamentos
+        if medicamento:
+            self.medicamento_atual = medicamento
+
+        medicamentos = listar_medicamentos()
+
         tabela_medicamentos = ft.DataTable(
             columns=[
                 ft.DataColumn(ft.Text("ID")),
@@ -286,26 +292,45 @@ class TelaAdminDashboard:
             rows=[
                 ft.DataRow(
                     cells=[
-                        ft.DataCell(ft.Text("1")),
-                        ft.DataCell(ft.Text("Paracetamol")),
-                        ft.DataCell(ft.Text("Analgésico")),
-                        ft.DataCell(ft.Text("Farmacêutica XYZ")),
-                        ft.DataCell(ft.Text("120")),
+                        ft.DataCell(ft.Text(str(med[0]))),  # ID
+                        ft.DataCell(ft.Text(med[1])),       # Nome
+                        ft.DataCell(ft.Text(med[5] or "-")),# Categoria
+                        ft.DataCell(ft.Text(med[6] or "-")),# Fabricante
+                        ft.DataCell(ft.Text(str(med[4]))),  # Estoque
                         ft.DataCell(
                             ft.Row([
                                 ft.IconButton(
                                     icon=ft.icons.EDIT,
                                     icon_color="#10B981",
                                     tooltip="Editar",
-                                    on_click=lambda e: self.load_medicamentos(medicamento={"id": 1})
+                                    on_click=lambda e, m=med: (
+                                        setattr(self, "medicamento_atual", {
+                                            "id": m[0],
+                                            "nome": m[1],
+                                            "descricao": m[2] or "",
+                                            "imagem": m[3] or "",
+                                            "estoque": m[4],
+                                            "categoria": m[5] or "",
+                                            "fabricante": m[6] or ""
+                                        }),
+                                        self.load_medicamentos(medicamento=self.medicamento_atual)
+                                    )
                                 ),
                                 ft.IconButton(icon=ft.icons.DELETE, icon_color="red", tooltip="Excluir")
                             ], spacing=5)
                         ),
                     ]
-                ),
-            ],
+                ) for med in medicamentos
+            ]
         )
+
+        # Campos editáveis
+        self.campo_nome = ft.TextField(label="Nome do Medicamento", value=medicamento.get("nome") if medicamento else "")
+        self.campo_fabricante = ft.TextField(label="Fabricante", value=medicamento.get("fabricante") if medicamento else "")
+        self.campo_categoria = ft.TextField(label="Categoria", value=medicamento.get("categoria") if medicamento else "")
+        self.campo_descricao = ft.TextField(label="Descrição", value=medicamento.get("descricao") if medicamento else "")
+        self.campo_imagem = ft.TextField(label="Imagem", value=medicamento.get("imagem") if medicamento else "")
+        self.campo_estoque = ft.TextField(label="Estoque Atual", keyboard_type=ft.KeyboardType.NUMBER, value=str(medicamento.get("estoque")) if medicamento else "")
 
         # Painel lateral: Detalhes do medicamento (aparece só se estiver editando)
         detalhes_medicamento = ft.Container(
@@ -320,10 +345,12 @@ class TelaAdminDashboard:
             content=ft.Column([
                 ft.Text("Detalhes do Medicamento", size=20, weight="bold", color="#059669"),
                 ft.Divider(),
-                ft.TextField(label="Nome do Medicamento", value=medicamento.get("nome") if medicamento else ""),
-                ft.TextField(label="Categoria"),
-                ft.TextField(label="Fabricante"),
-                ft.TextField(label="Estoque Atual", keyboard_type=ft.KeyboardType.NUMBER),
+                self.campo_nome,
+                self.campo_fabricante,
+                self.campo_categoria,
+                self.campo_descricao,
+                self.campo_imagem,
+                self.campo_estoque,
                 ft.TextField(label="Observações", multiline=True, min_lines=3, max_lines=5),
                 ft.Container(height=20),
                 ft.Row([
@@ -333,7 +360,7 @@ class TelaAdminDashboard:
                         color="white",
                         expand=True,
                         style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12)),
-                        on_click=lambda e: print("Salvar medicamento"),
+                        on_click=self.salvar_medicamento
                     ),
                     ft.OutlinedButton(
                         "Cancelar",
@@ -396,49 +423,99 @@ class TelaAdminDashboard:
 
         self.page.update()
 
+    def salvar_medicamento(self, e=None):
+        nome = self.campo_nome.value.strip()
+        descricao = self.campo_descricao.value.strip()
+        imagem = self.campo_imagem.value.strip()
+        estoque_str = self.campo_estoque.value.strip()
+        categoria_id = self.campo_categoria.value.strip()
+        fabricante_id = self.campo_fabricante.value.strip()
+
+        # Validação
+        if not nome:
+            self.page.snack_bar = ft.SnackBar(content=ft.Text("O nome do medicamento é obrigatório."), bgcolor="red")
+            self.page.snack_bar.open = True
+            self.page.update()
+            return
+
+        try:
+            estoque = int(estoque_str)
+        except ValueError:
+            self.page.snack_bar = ft.SnackBar(content=ft.Text("Estoque deve ser um número válido."), bgcolor="red")
+            self.page.snack_bar.open = True
+            self.page.update()
+            return
+
+        # Edição ou adição
+        if self.editando_medicamento and hasattr(self, "medicamento_atual"):
+            editar_medicamento(
+                self.medicamento_atual["id"],
+                nome,
+                fabricante_id,
+                categoria_id,
+                descricao,
+                imagem,
+                estoque
+            )
+        else:
+            adicionar_medicamento(
+                nome,
+                fabricante_id,
+                categoria_id,
+                descricao,
+                imagem,
+                estoque
+            )
+
+        # Voltar para lista
+        self.load_medicamentos()
+
+
     def load_cadastro_medicamento(self, e=None):
         self.current_view.controls.clear()
+
+        # Carregar categorias e fabricantes do banco
+        categorias = listar_categorias()
+        fabricantes = listar_fabricantes()
+
+        # Dropdowns salvos como atributos para uso posterior
+        self.dropdown_categoria = ft.Dropdown(
+            label="Categoria",
+            border_radius=10,
+            bgcolor="#F0FDF4",
+            options=[ft.dropdown.Option(str(c[0]), c[1]) for c in categorias],
+            expand=True
+        )
+
+        self.dropdown_fabricante = ft.Dropdown(
+            label="Fabricante",
+            border_radius=10,
+            bgcolor="#F0FDF4",
+            options=[ft.dropdown.Option(str(f[0]), f[1]) for f in fabricantes],
+            expand=True
+        )
+
+        self.campo_nome = ft.TextField(label="Nome do Medicamento", border_radius=10, bgcolor="#F0FDF4")
+        self.campo_estoque = ft.TextField(label="Quantidade em Estoque", keyboard_type=ft.KeyboardType.NUMBER, border_radius=10, bgcolor="#F0FDF4")
+        self.campo_observacoes = ft.TextField(label="Observações", multiline=True, min_lines=3, max_lines=5, border_radius=10, bgcolor="#F0FDF4")
+
         self.current_view.controls.append(
             ft.Container(
                 padding=30,
                 content=ft.Column(
                     [
-                        ft.Text(
-                            "Cadastrar Novo Medicamento",
-                            size=28,
-                            weight="bold",
-                            color="#059669",
-                        ),
+                        ft.Text("Cadastrar Novo Medicamento", size=28, weight="bold", color="#059669"),
                         ft.Container(height=20),
                         ft.Container(
                             padding=30,
                             bgcolor="#FFFFFF",
                             border_radius=20,
-                            shadow=ft.BoxShadow(
-                                blur_radius=20,
-                                spread_radius=2,
-                                color="#CBD5E1",
-                                offset=ft.Offset(0, 8),
-                            ),
+                            shadow=ft.BoxShadow(blur_radius=20, spread_radius=2, color="#CBD5E1", offset=ft.Offset(0, 8)),
                             content=ft.Column(
                                 [
-                                    ft.TextField(
-                                        label="Nome do Medicamento",
-                                        border_radius=10,
-                                        bgcolor="#F0FDF4",
-                                    ),
+                                    self.campo_nome,
                                     ft.Row([
-                                        ft.Dropdown(
-                                            label="Categoria",
-                                            border_radius=10,
-                                            bgcolor="#F0FDF4",
-                                            options=[
-                                                ft.dropdown.Option("Analgésico"),
-                                                ft.dropdown.Option("Antibiótico"),
-                                                ft.dropdown.Option("Anti-inflamatório")
-                                            ],
-                                            expand=True
-                                        ),
+                                        self.dropdown_categoria,
                                         ft.IconButton(
                                             icon=ft.icons.ADD_CIRCLE_OUTLINE,
                                             tooltip="Cadastrar nova categoria",
@@ -447,40 +524,20 @@ class TelaAdminDashboard:
                                         )
                                     ], spacing=10),
 
-                                # Linha Fabricante
-                                ft.Row([
-                                    ft.Dropdown(
-                                        label="Fabricante",
-                                        border_radius=10,
-                                        bgcolor="#F0FDF4",
-                                        options=[
-                                            ft.dropdown.Option("Farmacêutica XYZ"),
-                                            ft.dropdown.Option("Laboratório ABC")
-                                        ],
-                                        expand=True
-                                    ),
-                                    ft.IconButton(
-                                        icon=ft.icons.ADD_CIRCLE_OUTLINE,
-                                        tooltip="Cadastrar novo fabricante",
-                                        icon_color="#059669",
-                                        on_click=self.load_cadastro_fabricante
-                                    )
-                                ], spacing=10),
-                                    ft.TextField(
-                                        label="Quantidade em Estoque",
-                                        keyboard_type=ft.KeyboardType.NUMBER,
-                                        border_radius=10,
-                                        bgcolor="#F0FDF4",
-                                    ),
-                                    ft.TextField(
-                                        label="Observações",
-                                        multiline=True,
-                                        min_lines=3,
-                                        max_lines=5,
-                                        border_radius=10,
-                                        bgcolor="#F0FDF4",
-                                    ),
+                                    ft.Row([
+                                        self.dropdown_fabricante,
+                                        ft.IconButton(
+                                            icon=ft.icons.ADD_CIRCLE_OUTLINE,
+                                            tooltip="Cadastrar novo fabricante",
+                                            icon_color="#059669",
+                                            on_click=self.load_cadastro_fabricante
+                                        )
+                                    ], spacing=10),
+
+                                    self.campo_estoque,
+                                    self.campo_observacoes,
                                     ft.Container(height=20),
+
                                     ft.Row(
                                         [
                                             ft.ElevatedButton(
@@ -490,7 +547,7 @@ class TelaAdminDashboard:
                                                 height=50,
                                                 style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12)),
                                                 expand=True,
-                                                on_click=lambda e: print("Medicamento salvo!"),
+                                                on_click=self.salvar_medicamento  # deve usar a função real
                                             ),
                                             ft.OutlinedButton(
                                                 "Cancelar",
@@ -513,7 +570,9 @@ class TelaAdminDashboard:
                 ),
             )
         )
+
         self.page.update()
+
 
     def load_cadastro_categoria(self, e=None):
         self.current_view.controls.clear()
@@ -535,6 +594,20 @@ class TelaAdminDashboard:
         self.page.update()
     
     def load_cadastro_fabricante(self, e=None):
+        from farmconnect.database import adicionar_fabricante
+
+        campo_nome_fabricante = ft.TextField(label="Nome do Fabricante", border_radius=10, bgcolor="#F0FDF4")
+
+        def salvar(e):
+            nome = campo_nome_fabricante.value.strip()
+            if nome:
+                adicionar_fabricante(nome)
+                self.load_cadastro_medicamento()
+            else:
+                self.page.snack_bar = ft.SnackBar(content=ft.Text("Nome do fabricante é obrigatório."), bgcolor="red")
+                self.page.snack_bar.open = True
+                self.page.update()
+
         self.current_view.controls.clear()
         self.current_view.controls.append(
             ft.Container(
@@ -542,16 +615,18 @@ class TelaAdminDashboard:
                 content=ft.Column([
                     ft.Text("Cadastrar Novo Fabricante", size=26, weight="bold", color="#059669"),
                     ft.Container(height=20),
-                    ft.TextField(label="Nome do Fabricante", border_radius=10, bgcolor="#F0FDF4"),
+                    campo_nome_fabricante,
                     ft.Container(height=20),
                     ft.Row([
-                        ft.ElevatedButton("Salvar", bgcolor="#059669", color="white", on_click=lambda e: print("Fabricante salvo!"), expand=True),
+                        ft.ElevatedButton("Salvar", bgcolor="#059669", color="white", on_click=salvar, expand=True),
                         ft.OutlinedButton("Cancelar", on_click=lambda e: self.load_cadastro_medicamento(), expand=True),
                     ], spacing=20)
                 ], spacing=10)
             )
         )
+
         self.page.update()
+
     
     def load_agendamentos(self, e=None):
         self.current_view.controls.clear()
@@ -762,4 +837,4 @@ if __name__ == "__main__":
         page.views.append(app.build_tela()) # app.build_tela()
         page.update()
 
-ft.app(target=main)
+    ft.app(target=main)
