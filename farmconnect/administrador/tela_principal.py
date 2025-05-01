@@ -575,6 +575,20 @@ class TelaAdminDashboard:
 
 
     def load_cadastro_categoria(self, e=None):
+        from farmconnect.database import adicionar_categoria
+
+        campo_nome_categoria = ft.TextField(label="Nome da Categoria", border_radius=10, bgcolor="#F0FDF4")
+
+        def salvar(e):
+            nome = campo_nome_categoria.value.strip()
+            if nome:
+                adicionar_categoria(nome)
+                self.load_cadastro_medicamento()
+            else:
+                self.page.snack_bar = ft.SnackBar(content=ft.Text("Nome da categoria é obrigatório."), bgcolor="red")
+                self.page.snack_bar.open = True
+                self.page.update()
+
         self.current_view.controls.clear()
         self.current_view.controls.append(
             ft.Container(
@@ -582,16 +596,18 @@ class TelaAdminDashboard:
                 content=ft.Column([
                     ft.Text("Cadastrar Nova Categoria", size=26, weight="bold", color="#059669"),
                     ft.Container(height=20),
-                    ft.TextField(label="Nome da Categoria", border_radius=10, bgcolor="#F0FDF4"),
+                    campo_nome_categoria,
                     ft.Container(height=20),
                     ft.Row([
-                        ft.ElevatedButton("Salvar", bgcolor="#059669", color="white", on_click=lambda e: print("Categoria salva!"), expand=True),
+                        ft.ElevatedButton("Salvar", bgcolor="#059669", color="white", on_click=salvar, expand=True),
                         ft.OutlinedButton("Cancelar", on_click=lambda e: self.load_cadastro_medicamento(), expand=True),
                     ], spacing=20)
                 ], spacing=10)
             )
         )
+
         self.page.update()
+
     
     def load_cadastro_fabricante(self, e=None):
         from farmconnect.database import adicionar_fabricante
