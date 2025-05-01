@@ -41,9 +41,14 @@ def criar_tabelas():
             descricao TEXT,
             imagem TEXT,
             estoque INTEGER DEFAULT 0,
-            data_criacao TEXT DEFAULT CURRENT_TIMESTAMP
+            categoria_id INTEGER,
+            fabricante_id INTEGER,
+            data_criacao TEXT DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (categoria_id) REFERENCES categorias(id),
+            FOREIGN KEY (fabricante_id) REFERENCES fabricantes(id)
         )
         """)
+
 
         # Farmácias
         cursor.execute("""
@@ -144,8 +149,24 @@ def criar_tabelas():
         )
         """)
 
+        # Categorias de medicamentos
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS categorias (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nome TEXT NOT NULL UNIQUE
+            )
+        """)
+
+        # Fabricantes de medicamentos
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS fabricantes (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nome TEXT NOT NULL UNIQUE
+            )
+        """)
 
         conn.commit()
+
 
 def registrar_usuario(nome, email, cpf, nascimento, senha):
     conn = conectar()
@@ -201,8 +222,11 @@ def listar_medicamentos():
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT id, nome, descricao, imagem, estoque
-        FROM medicamentos
+        SELECT m.id, m.nome, m.descricao, m.imagem, m.estoque,
+               c.nome AS categoria, f.nome AS fabricante
+        FROM medicamentos m
+        LEFT JOIN categorias c ON m.categoria_id = c.id
+        LEFT JOIN fabricantes f ON m.fabricante_id = f.id
     """)
 
     medicamentos = cursor.fetchall()
@@ -212,18 +236,20 @@ def listar_medicamentos():
 
     return medicamentos
 
-def adicionar_medicamento(nome, descricao, imagem, estoque=0):
+
+def adicionar_medicamento(nome, descricao, imagem, estoque, categoria_id=None, fabricante_id=None):
     conn = conectar()
     cursor = conn.cursor()
 
     cursor.execute("""
-        INSERT INTO medicamentos (nome, descricao, imagem, estoque)
-        VALUES (?, ?, ?, ?)
-    """, (nome, descricao, imagem, estoque))
+        INSERT INTO medicamentos (nome, descricao, imagem, estoque, categoria_id, fabricante_id)
+        VALUES (?, ?, ?, ?, ?, ?)
+    """, (nome, descricao, imagem, estoque, categoria_id, fabricante_id))
 
     conn.commit()
     cursor.close()
     conn.close()
+
 
 def agendar_medicamento(usuario_email, medicamento_id):
     conn = conectar()
@@ -284,6 +310,32 @@ def listar_notificacoes(usuario_id):
 
     return notificacoes
 
+def listar_categorias():
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT id, nome FROM categorias ORDER BY nome")
+
+    categorias = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return categorias
+
+def listar_fabricantes():
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT id, nome FROM fabricantes ORDER BY nome")
+
+    fabricantes = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return fabricantes
+
 def solicitar_notificacao(usuario_email, medicamento_id):
     conn = conectar()
     cursor = conn.cursor()
@@ -301,6 +353,20 @@ def solicitar_notificacao(usuario_email, medicamento_id):
 
         conn.commit()
 
+    cursor.close()
+    conn.close()
+
+def editar_medicamento(id, nome, fabricante_id, categoria_id, descricao, imagem, estoque):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE medicamentos
+        SET nome = ?, descricao = ?, imagem = ?, estoque = ?, fabricante_id = ?, categoria_id = ?
+        WHERE id = ?
+    """, (nome, descricao, fabricante_id, categoria_id, imagem, estoque, id))
+
+    conn.commit()
     cursor.close()
     conn.close()
 
@@ -370,6 +436,40 @@ def verificar_login_admin(email, senha):
     conn.close()
 
     return admin is not None
+
+def adicionar_fabricante(nome):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("""
+            INSERT INTO fabricantes (nome) VALUES (?)
+        """, (nome,))
+        conn.commit()
+
+    except sqlite3.IntegrityError:
+        print(f"Fabricante '{nome}' já existe.")
+    finally:
+        cursor.close()
+        conn.close()
+
+def adicionar_categoria(nome):
+    conn = conectar()
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute("""
+            INSERT INTO categorias (nome) VALUES (?)
+        """, (nome,))
+        conn.commit()
+
+    except sqlite3.IntegrityError:
+        print(f"Categoria '{nome}' já existe.")
+    finally:
+        cursor.close()
+        conn.close()
+
+
 
 
 
