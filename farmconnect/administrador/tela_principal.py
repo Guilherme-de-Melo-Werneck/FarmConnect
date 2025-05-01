@@ -275,6 +275,9 @@ class TelaAdminDashboard:
         self.current_view.controls.clear()
         self.editando_medicamento = medicamento is not None
 
+        categorias = listar_categorias()
+        fabricantes = listar_fabricantes()
+
         if medicamento:
             self.medicamento_atual = medicamento
 
@@ -326,8 +329,22 @@ class TelaAdminDashboard:
 
         # Campos editáveis
         self.campo_nome = ft.TextField(label="Nome do Medicamento", value=medicamento.get("nome") if medicamento else "")
-        self.campo_fabricante = ft.TextField(label="Fabricante", value=medicamento.get("fabricante") if medicamento else "")
-        self.campo_categoria = ft.TextField(label="Categoria", value=medicamento.get("categoria") if medicamento else "")
+        self.dropdown_fabricante = ft.Dropdown(
+            label="Fabricante",
+            border_radius=10,
+            bgcolor="#F0FDF4",
+            options=[ft.dropdown.Option(str(f[0]), f[1]) for f in fabricantes],
+            value=str(medicamento.get("fabricante_id")) if medicamento else None,
+            expand=True
+        )
+        self.dropdown_categoria = ft.Dropdown(
+            label="Categoria",
+            border_radius=10,
+            bgcolor="#F0FDF4",
+            options=[ft.dropdown.Option(str(c[0]), c[1]) for c in categorias],
+            value=str(medicamento.get("categoria_id")) if medicamento else None,
+            expand=True
+        )
         self.campo_descricao = ft.TextField(label="Descrição", value=medicamento.get("descricao") if medicamento else "")
         self.campo_imagem = ft.TextField(label="Imagem", value=medicamento.get("imagem") if medicamento else "")
         self.campo_estoque = ft.TextField(label="Estoque Atual", keyboard_type=ft.KeyboardType.NUMBER, value=str(medicamento.get("estoque")) if medicamento else "")
@@ -346,8 +363,8 @@ class TelaAdminDashboard:
                 ft.Text("Detalhes do Medicamento", size=20, weight="bold", color="#059669"),
                 ft.Divider(),
                 self.campo_nome,
-                self.campo_fabricante,
-                self.campo_categoria,
+                self.dropdown_fabricante,
+                self.dropdown_categoria,
                 self.campo_descricao,
                 self.campo_imagem,
                 self.campo_estoque,
@@ -428,8 +445,9 @@ class TelaAdminDashboard:
         descricao = self.campo_descricao.value.strip()
         imagem = self.campo_imagem.value.strip()
         estoque_str = self.campo_estoque.value.strip()
-        categoria_id = self.campo_categoria.value.strip()
-        fabricante_id = self.campo_fabricante.value.strip()
+        
+        categoria_id = int(self.dropdown_categoria.value) if self.dropdown_categoria.value else None
+        fabricante_id = int(self.dropdown_fabricante.value) if self.dropdown_fabricante.value else None
 
         # Validação
         if not nome:
@@ -450,21 +468,21 @@ class TelaAdminDashboard:
         if self.editando_medicamento and hasattr(self, "medicamento_atual"):
             editar_medicamento(
                 self.medicamento_atual["id"],
-                nome,
-                fabricante_id,
-                categoria_id,
-                descricao,
-                imagem,
-                estoque
+                nome=nome,
+                descricao=descricao,
+                imagem=imagem,
+                estoque=estoque,
+                categoria_id=categoria_id,
+                fabricante_id=fabricante_id
             )
         else:
             adicionar_medicamento(
-                nome,
-                fabricante_id,
-                categoria_id,
-                descricao,
-                imagem,
-                estoque
+                nome=nome,
+                descricao=descricao,
+                imagem=imagem,
+                estoque=estoque,
+                categoria_id=categoria_id,
+                fabricante_id=fabricante_id
             )
 
         # Voltar para lista
