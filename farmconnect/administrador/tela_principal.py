@@ -71,9 +71,10 @@ class TelaAdminDashboard:
         menu_items = [
             create_menu_item(ft.icons.HOME_OUTLINED, "Início", self.load_dashboard),
             create_menu_item(ft.icons.CALENDAR_MONTH_OUTLINED, "Agendamentos", self.load_agendamentos),  # <- AQUI
-            create_menu_item(ft.icons.PERSON_OUTLINED, "Pacientes"),
             create_menu_item(ft.icons.LOCAL_HOSPITAL_OUTLINED, "Farmácias", self.load_farmacias),
             create_menu_item(ft.icons.MEDICAL_SERVICES_OUTLINED, "Medicamentos", self.load_medicamentos),
+            create_menu_item(ft.icons.PERSON_OUTLINED, "Pacientes", self.load_pacientes),
+
         ]
 
 
@@ -688,212 +689,199 @@ class TelaAdminDashboard:
     
     def load_agendamentos(self, e=None):
         self.current_view.controls.clear()
+
+        status_cores = {
+            "Pendente": ("#D97706", "#FEF3C7"),
+            "Confirmado": ("#15803D", "#D1FAE5"),
+            "Cancelado": ("#DC2626", "#FEE2E2"),
+            "Concluído": ("#047857", "#D1FAE5")
+        }
+
+        def status_badge(status):
+            cor_texto, cor_fundo = status_cores.get(status, ("#6B7280", "#E5E7EB"))
+            return ft.Row([
+                ft.Container(
+                    width=8, height=8,
+                    bgcolor=cor_texto,
+                    border_radius=20
+                ),
+                ft.Text(status, color=cor_texto, weight="bold")
+            ], spacing=6, alignment=ft.MainAxisAlignment.CENTER)
+
+        dados = [
+            (1, "Maria da Silva", "Losartana 50mg", "MED123456", "30", "2025-05-10", "08:00", "Pendente"),
+            (2, "João Pereira", "Paracetamol 500mg", "MED654321", "20", "2025-05-11", "09:00", "Confirmado"),
+            (3, "Ana Clara", "Ibuprofeno 400mg", "MED789012", "15", "2025-05-12", "10:00", "Cancelado"),
+            (4, "Lucas Martins", "Amoxicilina 500mg", "MED345678", "25", "2025-05-13", "11:00", "Concluído"),
+            (5, "Fernanda Lima", "Cetirizina 10mg", "MED987654", "50", "2025-05-14", "12:00", "Pendente"),
+        ]
+
+        tabela = ft.DataTable(
+            heading_row_color="#F9FAFB",
+            border=ft.border.all(1, "#E5E7EB"),
+            border_radius=12,
+            columns=[
+                ft.DataColumn(ft.Text("ID")),
+                ft.DataColumn(ft.Text("Paciente")),
+                ft.DataColumn(ft.Text("Medicamento")),
+                ft.DataColumn(ft.Text("Código")),
+                ft.DataColumn(ft.Text("Qtd")),
+                ft.DataColumn(ft.Text("Data")),
+                ft.DataColumn(ft.Text("Horário")),
+                ft.DataColumn(ft.Text("Status")),
+                ft.DataColumn(ft.Text("Ações")),
+            ],
+            rows=[
+                ft.DataRow(
+                    cells=[
+                        ft.DataCell(ft.Text(str(item[0]))),
+                        ft.DataCell(ft.Text(item[1])),
+                        ft.DataCell(ft.Text(item[2])),
+                        ft.DataCell(ft.Text(item[3])),
+                        ft.DataCell(ft.Text(item[4])),
+                        ft.DataCell(ft.Text(item[5])),
+                        ft.DataCell(ft.Text(item[6])),
+                        ft.DataCell(
+                            ft.Container(
+                                content=status_badge(item[7]),
+                                padding=ft.padding.symmetric(horizontal=8, vertical=4),
+                                bgcolor=status_cores[item[7]][1],
+                                border_radius=20,
+                            )
+                        ),
+                        ft.DataCell(
+                            ft.Row([
+                                ft.IconButton(icon=ft.icons.CHECK_CIRCLE_OUTLINE, icon_color="#059669", tooltip="Confirmar Agendamento"),
+                                ft.IconButton(icon=ft.icons.CANCEL_OUTLINED, icon_color="#DC2626", tooltip="Cancelar Agendamento")
+                            ], spacing=6)
+                        )
+                    ]
+                ) for item in dados
+            ]
+        )
+
         self.current_view.controls.append(
             ft.Container(
                 padding=30,
-                content=ft.Column(
-                    [
-                        ft.Text(
-                            "📅 Agendamentos de Retirada",
-                            size=30,
-                            weight="bold",
-                            color="#059669"
-                        ),
-                        ft.Text(
-                            "Acompanhe os agendamentos feitos pelos pacientes",
-                            size=14,
-                            color="#6B7280"
-                        ),
-                        ft.Container(height=20),
-                        ft.Container(
-                            padding=20,
-                            bgcolor="#FFFFFF",
-                            border_radius=16,
-                            shadow=ft.BoxShadow(blur_radius=12, color="#CBD5E1", offset=ft.Offset(0, 6)),
-                            content=ft.Column([
-                                ft.Row([
-                                    ft.Text("Lista de Agendamentos", size=20, weight="bold", color="#111827"),
-                                    ft.Container(expand=True),
-                                    ft.IconButton(icon=ft.icons.FILTER_LIST, tooltip="Filtrar", icon_color="#059669"),
-                                    ft.IconButton(icon=ft.icons.REFRESH, tooltip="Atualizar", icon_color="#059669"),
-                                ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
-                                ft.Divider(height=30),
-                                ft.Container(
-                                    content=ft.DataTable(
-                                        columns=[
-                                            ft.DataColumn(ft.Text("ID")),
-                                            ft.DataColumn(ft.Text("Paciente")),
-                                            ft.DataColumn(ft.Text("Medicamento")),
-                                            ft.DataColumn(ft.Text("Código")),
-                                            ft.DataColumn(ft.Text("Quantidade")),
-                                            ft.DataColumn(ft.Text("Data")),
-                                            ft.DataColumn(ft.Text("Horário")),
-                                            ft.DataColumn(ft.Text("Status")),
-                                            ft.DataColumn(ft.Text("Ações")),
-                                        ],
-                                        rows=[
-                                            ft.DataRow(
-                                                cells=[
-                                                    ft.DataCell(ft.Text("1")),
-                                                    ft.DataCell(ft.Text("Maria da Silva")),
-                                                    ft.DataCell(ft.Text("Losartana 50mg")),
-                                                    ft.DataCell(ft.Text("MED123456")),
-                                                    ft.DataCell(ft.Text("30")),
-                                                    ft.DataCell(ft.Text("2025-05-10")),
-                                                    ft.DataCell(ft.Text("08:00")),
-                                                    ft.DataCell(
-                                                        ft.Container(
-                                                            content=ft.Text("Pendente", color="#D97706", weight="bold"),
-                                                            padding=ft.padding.symmetric(horizontal=6, vertical=2),
-                                                            bgcolor="#FEF3C7",
-                                                            border_radius=6,
-                                                        )
-                                                    ),
-                                                    ft.DataCell(
-                                                        ft.Row([
-                                                            ft.IconButton(icon=ft.icons.CHECK_CIRCLE_OUTLINE, icon_color="#059669", tooltip="Confirmar"),
-                                                            ft.IconButton(icon=ft.icons.CANCEL_OUTLINED, icon_color="#DC2626", tooltip="Cancelar")
-                                                        ], spacing=4)
-                                                    )
-                                                ]
-                                            ),
-                                            ft.DataRow(
-                                                cells=[
-                                                    ft.DataCell(ft.Text("2")),
-                                                    ft.DataCell(ft.Text("João Pereira")),
-                                                    ft.DataCell(ft.Text("Paracetamol 500mg")),
-                                                    ft.DataCell(ft.Text("MED654321")),
-                                                    ft.DataCell(ft.Text("20")),
-                                                    ft.DataCell(ft.Text("2025-05-11")),
-                                                    ft.DataCell(ft.Text("09:00")),
-                                                    ft.DataCell(
-                                                        ft.Container(
-                                                            content=ft.Text("Confirmado", color="#15803D", weight="bold"),
-                                                            padding=ft.padding.symmetric(horizontal=6, vertical=2),
-                                                            bgcolor="#D1FAE5",
-                                                            border_radius=6,
-                                                        )
-                                                    ),
-                                                    ft.DataCell(
-                                                        ft.Row([
-                                                            ft.IconButton(icon=ft.icons.CHECK_CIRCLE_OUTLINE, icon_color="#059669", tooltip="Confirmar"),
-                                                            ft.IconButton(icon=ft.icons.CANCEL_OUTLINED, icon_color="#DC2626", tooltip="Cancelar")
-                                                        ], spacing=4)
-                                                    )
-                                                ]
-                                            ),
-                                            ft.DataRow(
-                                                cells=[
-                                                    ft.DataCell(ft.Text("3")),
-                                                    ft.DataCell(ft.Text("Ana Clara")),
-                                                    ft.DataCell(ft.Text("Ibuprofeno 400mg")),
-                                                    ft.DataCell(ft.Text("MED789012")),
-                                                    ft.DataCell(ft.Text("15")),
-                                                    ft.DataCell(ft.Text("2025-05-12")),
-                                                    ft.DataCell(ft.Text("10:00")),
-                                                    ft.DataCell(
-                                                        ft.Container(
-                                                            content=ft.Text("Cancelado", color="#DC2626", weight="bold"),
-                                                            padding=ft.padding.symmetric(horizontal=6, vertical=2),
-                                                            bgcolor="#FEE2E2",
-                                                            border_radius=6,
-                                                        )
-                                                    ),
-                                                    ft.DataCell(
-                                                        ft.Row([
-                                                            ft.IconButton(icon=ft.icons.CHECK_CIRCLE_OUTLINE, icon_color="#059669", tooltip="Confirmar"),
-                                                            ft.IconButton(icon=ft.icons.CANCEL_OUTLINED, icon_color="#DC2626", tooltip="Cancelar")
-                                                        ], spacing=4)
-                                                    )
-                                                ]
-                                            ),
-                                            ft.DataRow(
-                                                cells=[
-                                                    ft.DataCell(ft.Text("4")),
-                                                    ft.DataCell(ft.Text("Lucas Martins")),
-                                                    ft.DataCell(ft.Text("Amoxicilina 500mg")),
-                                                    ft.DataCell(ft.Text("MED345678")),
-                                                    ft.DataCell(ft.Text("25")),
-                                                    ft.DataCell(ft.Text("2025-05-13")),
-                                                    ft.DataCell(ft.Text("11:00")),
-                                                    ft.DataCell(
-                                                        ft.Container(
-                                                            content=ft.Text("Concluído", color="#047857", weight="bold"),
-                                                            padding=ft.padding.symmetric(horizontal=6, vertical=2),
-                                                            bgcolor="#D1FAE5",
-                                                            border_radius=6,
-                                                        )
-                                                    ),
-                                                    ft.DataCell(
-                                                        ft.Row([
-                                                            ft.IconButton(icon=ft.icons.CHECK_CIRCLE_OUTLINE, icon_color="#059669", tooltip="Confirmar"),
-                                                            ft.IconButton(icon=ft.icons.CANCEL_OUTLINED, icon_color="#DC2626", tooltip="Cancelar")
-                                                        ], spacing=4)
-                                                    )
-                                                ]
-                                            ),
-                                            ft.DataRow(
-                                                cells=[
-                                                    ft.DataCell(ft.Text("5")),
-                                                    ft.DataCell(ft.Text("Fernanda Lima")),
-                                                    ft.DataCell(ft.Text("Cetirizina 10mg")),
-                                                    ft.DataCell(ft.Text("MED987654")),
-                                                    ft.DataCell(ft.Text("50")),
-                                                    ft.DataCell(ft.Text("2025-05-14")),
-                                                    ft.DataCell(ft.Text("12:00")),
-                                                    ft.DataCell(
-                                                        ft.Container(
-                                                            content=ft.Text("Pendente", color="#D97706", weight="bold"),
-                                                            padding=ft.padding.symmetric(horizontal=6, vertical=2),
-                                                            bgcolor="#FEF3C7",
-                                                            border_radius=6,
-                                                        )
-                                                    ),
-                                                    ft.DataCell(
-                                                        ft.Row([
-                                                            ft.IconButton(icon=ft.icons.CHECK_CIRCLE_OUTLINE, icon_color="#059669", tooltip="Confirmar"),
-                                                            ft.IconButton(icon=ft.icons.CANCEL_OUTLINED, icon_color="#DC2626", tooltip="Cancelar")
-                                                        ], spacing=4)
-                                                    )
-                                                ]
-                                            ),
-                                        ],
-                                        heading_row_color="#F9FAFB",
-                                        border=ft.border.all(1, "#E5E7EB"),
-                                        border_radius=8,
-                                    ),
-                                    expand=True
-                                )
-                            ], spacing=16)
-                        )
-                    ],
-                    spacing=16
-                )
+                content=ft.Column([
+                    ft.Row([
+                        ft.Icon(name=ft.icons.CALENDAR_MONTH, size=40, color="#059669"),
+                        ft.Text("Agendamentos de Retirada", size=32, weight="bold", color="#065F46"),
+                    ], spacing=10, alignment=ft.MainAxisAlignment.CENTER),
+                    ft.Text("Acompanhe todos os agendamentos de medicamentos realizados pelos pacientes",
+                            size=14, color="#6B7280", text_align=ft.TextAlign.CENTER),
+                    ft.Divider(height=30),
+
+                    ft.Container(
+                        bgcolor="#FFFFFF",
+                        border_radius=20,
+                        padding=25,
+                        shadow=ft.BoxShadow(blur_radius=18, color="#CBD5E1", offset=ft.Offset(0, 6)),
+                        content=ft.Column([
+                            ft.Row([
+                                ft.Text("📋 Lista de Agendamentos", size=20, weight="bold", color="#111827"),
+                                ft.Container(expand=True),
+                                ft.IconButton(icon=ft.icons.FILTER_LIST, icon_color="#059669", tooltip="Filtrar"),
+                                ft.IconButton(icon=ft.icons.REFRESH, icon_color="#059669", tooltip="Atualizar Lista"),
+                            ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+                            ft.Divider(),
+                            ft.Container(
+                                content=tabela,
+                                expand=True
+                            )
+                        ], spacing=20)
+                    )
+                ], spacing=20)
             )
         )
+
         self.page.update()
 
     def load_farmacias(self, e=None, farmacia=None):
         self.current_view.controls.clear()
         self.editando_farmacia = farmacia is not None
+        self.farmacia_atual = farmacia if farmacia else None
 
-        # Exemplo de farmácias fictícias para exibir na tabela (substituir pelo banco depois)
-        farmacias_mock = [
+        self.farmacias_mock = [
             (1, "Farmácia Central", "12.345.678/0001-00", "São Paulo", "SP", "(11) 99999-9999"),
             (2, "Drogaria Saúde", "98.765.432/0001-99", "Campinas", "SP", "(19) 88888-8888"),
+            (3, "Clínica Farma", "77.111.222/0001-33", "Rio de Janeiro", "RJ", "(21) 90000-0000"),
+            (4, "FarmaVida", "22.333.444/0001-55", "Niterói", "RJ", "(21) 95555-5555"),
         ]
 
-        if farmacia:
-            self.farmacia_atual = farmacia
+        self.campo_busca_farmacia = ft.TextField(
+            hint_text="Buscar farmácia...",
+            prefix_icon=ft.icons.SEARCH,
+            border_radius=30,
+            bgcolor="#FFFFFF",
+            height=50,
+            on_change=self.filtrar_farmacias
+        )
 
-        tabela_farmacias = ft.DataTable(
+        self.campo_nome_f = ft.TextField(label="Nome da Farmácia", value=farmacia["nome"] if farmacia else "")
+        self.campo_cnpj = ft.TextField(label="CNPJ", value=farmacia["cnpj"] if farmacia else "")
+        self.campo_cidade = ft.TextField(label="Cidade", value=farmacia["cidade"] if farmacia else "")
+        self.campo_estado = ft.TextField(label="Estado", value=farmacia["estado"] if farmacia else "")
+        self.campo_telefone = ft.TextField(label="Telefone", value=farmacia["telefone"] if farmacia else "")
+
+        self.painel_detalhes_farmacia = ft.Container(
+            bgcolor="white",
+            border_radius=12,
+            padding=20,
+            shadow=ft.BoxShadow(blur_radius=8, color="#E2E8F0"),
+            expand=1,
+            visible=self.editando_farmacia,
+            animate_opacity=300,
+            opacity=1.0 if self.editando_farmacia else 0.0,
+            content=ft.Column([
+                ft.Text("🧾 Detalhes da Farmácia", size=20, weight="bold", color="#059669"),
+                ft.Divider(),
+                self.campo_nome_f,
+                self.campo_cnpj,
+                self.campo_cidade,
+                self.campo_estado,
+                self.campo_telefone,
+                ft.Container(height=20),
+                ft.Row([
+                    ft.ElevatedButton(
+                        "Salvar",
+                        bgcolor="#059669",
+                        color="white",
+                        expand=True,
+                        style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12)),
+                        on_click=lambda e: self.load_farmacias()
+                    ),
+                    ft.OutlinedButton(
+                        "Cancelar",
+                        expand=True,
+                        style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12)),
+                        on_click=lambda e: self.load_farmacias()
+                    )
+                ], spacing=10)
+            ], spacing=12)
+        )
+
+        self.renderizar_tabela_farmacias(self.farmacias_mock)
+
+    def filtrar_farmacias(self, e):
+        termo = self.campo_busca_farmacia.value.strip().lower()
+        resultado = [f for f in self.farmacias_mock if termo in f[1].lower()]
+        self.renderizar_tabela_farmacias(resultado)
+        self.page.set_focus(self.campo_busca_farmacia)  # <- Mantém o foco após digitar
+
+
+    def renderizar_tabela_farmacias(self, lista):
+        tabela = ft.DataTable(
+            heading_row_color="#F9FAFB",
+            border=ft.border.all(1, "#E5E7EB"),
+            border_radius=12,
             columns=[
                 ft.DataColumn(ft.Text("ID")),
                 ft.DataColumn(ft.Text("Nome")),
                 ft.DataColumn(ft.Text("Cidade")),
                 ft.DataColumn(ft.Text("Estado")),
                 ft.DataColumn(ft.Text("Telefone")),
-                ft.DataColumn(ft.Text("Ações")),
+                ft.DataColumn(ft.Text("Ações"))
             ],
             rows=[
                 ft.DataRow(
@@ -916,117 +904,179 @@ class TelaAdminDashboard:
                                             "cnpj": f[2],
                                             "cidade": f[3],
                                             "estado": f[4],
-                                            "telefone": f[5],
+                                            "telefone": f[5]
                                         }),
                                         self.load_farmacias(farmacia=self.farmacia_atual)
                                     )
                                 ),
-                                ft.IconButton(icon=ft.icons.DELETE, icon_color="red", tooltip="Excluir")
-                            ], spacing=5)
+                                ft.IconButton(icon=ft.icons.DELETE, icon_color="#DC2626", tooltip="Excluir")
+                            ], spacing=6)
                         )
                     ]
-                ) for f in farmacias_mock
+                ) for f in lista
             ]
         )
 
-        # Campos editáveis (só aparece ao clicar em editar ou adicionar)
-        self.campo_nome_f = ft.TextField(label="Nome da Farmácia", value=farmacia.get("nome") if farmacia else "")
-        self.campo_cnpj = ft.TextField(label="CNPJ", value=farmacia.get("cnpj") if farmacia else "")
-        self.campo_cidade = ft.TextField(label="Cidade", value=farmacia.get("cidade") if farmacia else "")
-        self.campo_estado = ft.TextField(label="Estado", value=farmacia.get("estado") if farmacia else "")
-        self.campo_telefone = ft.TextField(label="Telefone", value=farmacia.get("telefone") if farmacia else "")
-
-        painel_detalhes = ft.Container(
-            bgcolor="white",
-            border_radius=12,
-            padding=20,
-            shadow=ft.BoxShadow(blur_radius=8, color="#E2E8F0"),
-            expand=1,
-            visible=self.editando_farmacia,
-            animate_opacity=300,
-            opacity=1.0 if self.editando_farmacia else 0.0,
-            content=ft.Column([
-                ft.Text("Detalhes da Farmácia", size=20, weight="bold", color="#059669"),
-                ft.Divider(),
-                self.campo_nome_f,
-                self.campo_cnpj,
-                self.campo_cidade,
-                self.campo_estado,
-                self.campo_telefone,
-                ft.Container(height=20),
-                ft.Row([
-                    ft.ElevatedButton(
-                        "Salvar",
-                        bgcolor="#059669",
-                        color="white",
-                        expand=True,
-                        style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12)),
-                        on_click=lambda e: self.load_farmacias()  # Simula salvar
-                    ),
-                    ft.OutlinedButton(
-                        "Cancelar",
-                        expand=True,
-                        style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12)),
-                        on_click=lambda e: self.load_farmacias(),
-                    ),
-                ], spacing=10),
-            ], spacing=12)
-        )
-
+        self.current_view.controls.clear()
         self.current_view.controls.append(
             ft.Container(
-                padding=25,
+                padding=30,
                 content=ft.Column([
-                    ft.Text("Gerenciamento de Farmácias", size=24, weight="bold", color="#065F46"),
-                    ft.Container(height=20),
                     ft.Row([
-                        ft.Container(
-                            expand=True,
-                            content=ft.TextField(
-                                hint_text="Buscar farmácia...",
-                                prefix_icon=ft.icons.SEARCH,
-                                border_radius=30,
-                                bgcolor="#FFFFFF",
-                                height=50,
-                            )
-                        ),
+                        ft.Icon(ft.icons.LOCAL_HOSPITAL, size=40, color="#059669"),
+                        ft.Text("Gerenciamento de Farmácias", size=32, weight="bold", color="#065F46")
+                    ], spacing=10, alignment=ft.MainAxisAlignment.CENTER),
+                    ft.Text("Adicione, edite e mantenha os dados das farmácias disponíveis", size=14, color="#6B7280"),
+                    ft.Divider(height=30),
+                    ft.Row([
+                        ft.Container(expand=True, content=self.campo_busca_farmacia),
                         ft.Container(width=10),
                         ft.FloatingActionButton(
                             icon=ft.icons.ADD,
                             bgcolor="#059669",
                             tooltip="Adicionar nova farmácia",
-                            on_click=self.load_cadastro_farmacia,
-                        ),
+                            on_click=lambda e: self.load_farmacias(farmacia={})
+                        )
                     ]),
                     ft.Container(height=20),
                     ft.Row([
                         ft.Container(
                             expand=2 if not self.editando_farmacia else 1,
                             bgcolor="white",
-                            border_radius=12,
-                            padding=16,
+                            border_radius=16,
+                            padding=20,
                             shadow=ft.BoxShadow(blur_radius=8, color="#CBD5E1"),
                             content=ft.Container(
                                 height=420,
                                 content=ft.ListView(
-                                    controls=[tabela_farmacias],
+                                    controls=[tabela],
                                     auto_scroll=True
                                 )
                             )
                         ),
                         ft.Container(width=20),
-                        painel_detalhes
+                        self.painel_detalhes_farmacia
                     ], spacing=20)
                 ], spacing=20)
             )
         )
 
         self.page.update()
-    
-    def load_cadastro_farmacia(self, e=None):
-        self.farmacia_atual = None
-        self.editando_farmacia = True
-        self.load_farmacias()
+        
+
+
+    def load_pacientes(self, e=None):
+        self.current_view.controls.clear()
+
+        pacientes_mock = [
+            (1, "Ana Souza", "123.456.789-00", "ana@email.com", "(21) 99999-9999", "Pendente"),
+            (2, "Carlos Lima", "987.654.321-00", "carlos@email.com", "(21) 98888-8888", "Aprovado"),
+            (3, "Fernanda Alves", "111.222.333-44", "fernanda@email.com", "(21) 97777-7777", "Recusado"),
+        ]
+
+        status_cores = {
+            "Pendente": ("#D97706", "#FEF3C7"),
+            "Aprovado": ("#15803D", "#D1FAE5"),
+            "Recusado": ("#DC2626", "#FEE2E2"),
+        }
+
+        def status_badge(status):
+            cor_texto, cor_fundo = status_cores.get(status, ("#6B7280", "#E5E7EB"))
+            return ft.Row([
+                ft.Container(width=8, height=8, bgcolor=cor_texto, border_radius=20),
+                ft.Text(status, color=cor_texto, weight="bold")
+            ], spacing=6, alignment=ft.MainAxisAlignment.CENTER)
+
+        tabela_pacientes = ft.DataTable(
+            heading_row_color="#F3F4F6",
+            border=ft.border.all(1, "#E5E7EB"),
+            border_radius=12,
+            data_row_max_height=60,
+            columns=[
+                ft.DataColumn(ft.Text("ID")),
+                ft.DataColumn(ft.Text("Nome")),
+                ft.DataColumn(ft.Text("CPF")),
+                ft.DataColumn(ft.Text("Email")),
+                ft.DataColumn(ft.Text("Telefone")),
+                ft.DataColumn(ft.Text("Status")),
+                ft.DataColumn(ft.Text("Ações")),
+            ],
+            rows=[
+                ft.DataRow(
+                    cells=[
+                        ft.DataCell(ft.Text(str(p[0]))),
+                        ft.DataCell(ft.Text(p[1])),
+                        ft.DataCell(ft.Text(p[2])),
+                        ft.DataCell(ft.Text(p[3])),
+                        ft.DataCell(ft.Text(p[4])),
+                        ft.DataCell(
+                            ft.Container(
+                                content=status_badge(p[5]),
+                                padding=ft.padding.symmetric(horizontal=8, vertical=4),
+                                bgcolor=status_cores[p[5]][1],
+                                border_radius=20,
+                            )
+                        ),
+                        ft.DataCell(
+                            ft.Row([
+                                ft.IconButton(
+                                    icon=ft.icons.CHECK_CIRCLE_OUTLINE,
+                                    icon_color="#059669",
+                                    tooltip="Aprovar paciente",
+                                    on_click=lambda e: print("Paciente aprovado")
+                                ),
+                                ft.IconButton(
+                                    icon=ft.icons.CANCEL_OUTLINED,
+                                    icon_color="#DC2626",
+                                    tooltip="Recusar paciente",
+                                    on_click=lambda e: print("Paciente recusado")
+                                ),
+                            ], spacing=8)
+                        )
+                    ]
+                ) for p in pacientes_mock
+            ]
+        )
+
+        content_card = ft.Container(
+            padding=20,
+            bgcolor="#FFFFFF",
+            border_radius=16,
+            shadow=ft.BoxShadow(blur_radius=12, color="#CBD5E1", offset=ft.Offset(0, 4)),
+            content=ft.Column([
+                ft.Row([
+                    ft.Text("📋 Lista de Pacientes", size=20, weight="bold", color="#111827"),
+                    ft.Container(expand=True),
+                    ft.IconButton(icon=ft.icons.REFRESH, icon_color="#059669", tooltip="Atualizar lista"),
+                ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+                ft.Divider(),
+                ft.Container(content=tabela_pacientes, expand=True)
+            ], spacing=20)
+        )
+
+        self.current_view.controls.append(
+            ft.Container(
+                padding=30,
+                content=ft.Column([
+                    ft.Row([
+                        ft.Icon(ft.icons.PERSON, size=40, color="#059669"),
+                        ft.Text("Gerenciamento de Pacientes", size=32, weight="bold", color="#065F46"),
+                    ], spacing=10, alignment=ft.MainAxisAlignment.CENTER),
+                    ft.Text(
+                        "Acompanhe e aprove os cadastros realizados pelos pacientes no aplicativo",
+                        size=14,
+                        color="#6B7280",
+                        text_align=ft.TextAlign.CENTER
+                    ),
+                    ft.Divider(height=30),
+                    content_card
+                ], spacing=20)
+            )
+        )
+
+        self.page.update()
+
+
 
     def build_tela(self):
         return ft.View(
@@ -1049,4 +1099,4 @@ if __name__ == "__main__":
         page.views.append(app.build_tela()) # app.build_tela()
         page.update()
 
-    ft.app(target=main)
+    ft.app(target=main)  # Ensure the main function is passed as the target
