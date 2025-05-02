@@ -72,7 +72,7 @@ class TelaAdminDashboard:
             create_menu_item(ft.icons.HOME_OUTLINED, "Início", self.load_dashboard),
             create_menu_item(ft.icons.CALENDAR_MONTH_OUTLINED, "Agendamentos", self.load_agendamentos),  # <- AQUI
             create_menu_item(ft.icons.PERSON_OUTLINED, "Pacientes"),
-            create_menu_item(ft.icons.LOCAL_HOSPITAL_OUTLINED, "Farmácias"),
+            create_menu_item(ft.icons.LOCAL_HOSPITAL_OUTLINED, "Farmácias", self.load_farmacias),
             create_menu_item(ft.icons.MEDICAL_SERVICES_OUTLINED, "Medicamentos", self.load_medicamentos),
         ]
 
@@ -848,6 +848,161 @@ class TelaAdminDashboard:
             )
         )
         self.page.update()
+
+    def load_farmacias(self, e=None, farmacia=None):
+        self.current_view.controls.clear()
+        self.editando_farmacia = farmacia is not None
+
+        # Exemplo de farmácias fictícias para exibir na tabela (substituir pelo banco depois)
+        farmacias_mock = [
+            (1, "Farmácia Central", "12.345.678/0001-00", "São Paulo", "SP", "(11) 99999-9999"),
+            (2, "Drogaria Saúde", "98.765.432/0001-99", "Campinas", "SP", "(19) 88888-8888"),
+        ]
+
+        if farmacia:
+            self.farmacia_atual = farmacia
+
+        tabela_farmacias = ft.DataTable(
+            columns=[
+                ft.DataColumn(ft.Text("ID")),
+                ft.DataColumn(ft.Text("Nome")),
+                ft.DataColumn(ft.Text("Cidade")),
+                ft.DataColumn(ft.Text("Estado")),
+                ft.DataColumn(ft.Text("Telefone")),
+                ft.DataColumn(ft.Text("Ações")),
+            ],
+            rows=[
+                ft.DataRow(
+                    cells=[
+                        ft.DataCell(ft.Text(str(f[0]))),
+                        ft.DataCell(ft.Text(f[1])),
+                        ft.DataCell(ft.Text(f[3])),
+                        ft.DataCell(ft.Text(f[4])),
+                        ft.DataCell(ft.Text(f[5])),
+                        ft.DataCell(
+                            ft.Row([
+                                ft.IconButton(
+                                    icon=ft.icons.EDIT,
+                                    icon_color="#10B981",
+                                    tooltip="Editar",
+                                    on_click=lambda e, f=f: (
+                                        setattr(self, "farmacia_atual", {
+                                            "id": f[0],
+                                            "nome": f[1],
+                                            "cnpj": f[2],
+                                            "cidade": f[3],
+                                            "estado": f[4],
+                                            "telefone": f[5],
+                                        }),
+                                        self.load_farmacias(farmacia=self.farmacia_atual)
+                                    )
+                                ),
+                                ft.IconButton(icon=ft.icons.DELETE, icon_color="red", tooltip="Excluir")
+                            ], spacing=5)
+                        )
+                    ]
+                ) for f in farmacias_mock
+            ]
+        )
+
+        # Campos editáveis (só aparece ao clicar em editar ou adicionar)
+        self.campo_nome_f = ft.TextField(label="Nome da Farmácia", value=farmacia.get("nome") if farmacia else "")
+        self.campo_cnpj = ft.TextField(label="CNPJ", value=farmacia.get("cnpj") if farmacia else "")
+        self.campo_cidade = ft.TextField(label="Cidade", value=farmacia.get("cidade") if farmacia else "")
+        self.campo_estado = ft.TextField(label="Estado", value=farmacia.get("estado") if farmacia else "")
+        self.campo_telefone = ft.TextField(label="Telefone", value=farmacia.get("telefone") if farmacia else "")
+
+        painel_detalhes = ft.Container(
+            bgcolor="white",
+            border_radius=12,
+            padding=20,
+            shadow=ft.BoxShadow(blur_radius=8, color="#E2E8F0"),
+            expand=1,
+            visible=self.editando_farmacia,
+            animate_opacity=300,
+            opacity=1.0 if self.editando_farmacia else 0.0,
+            content=ft.Column([
+                ft.Text("Detalhes da Farmácia", size=20, weight="bold", color="#059669"),
+                ft.Divider(),
+                self.campo_nome_f,
+                self.campo_cnpj,
+                self.campo_cidade,
+                self.campo_estado,
+                self.campo_telefone,
+                ft.Container(height=20),
+                ft.Row([
+                    ft.ElevatedButton(
+                        "Salvar",
+                        bgcolor="#059669",
+                        color="white",
+                        expand=True,
+                        style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12)),
+                        on_click=lambda e: self.load_farmacias()  # Simula salvar
+                    ),
+                    ft.OutlinedButton(
+                        "Cancelar",
+                        expand=True,
+                        style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12)),
+                        on_click=lambda e: self.load_farmacias(),
+                    ),
+                ], spacing=10),
+            ], spacing=12)
+        )
+
+        self.current_view.controls.append(
+            ft.Container(
+                padding=25,
+                content=ft.Column([
+                    ft.Text("Gerenciamento de Farmácias", size=24, weight="bold", color="#065F46"),
+                    ft.Container(height=20),
+                    ft.Row([
+                        ft.Container(
+                            expand=True,
+                            content=ft.TextField(
+                                hint_text="Buscar farmácia...",
+                                prefix_icon=ft.icons.SEARCH,
+                                border_radius=30,
+                                bgcolor="#FFFFFF",
+                                height=50,
+                            )
+                        ),
+                        ft.Container(width=10),
+                        ft.FloatingActionButton(
+                            icon=ft.icons.ADD,
+                            bgcolor="#059669",
+                            tooltip="Adicionar nova farmácia",
+                            on_click=self.load_cadastro_farmacia,
+                        ),
+                    ]),
+                    ft.Container(height=20),
+                    ft.Row([
+                        ft.Container(
+                            expand=2 if not self.editando_farmacia else 1,
+                            bgcolor="white",
+                            border_radius=12,
+                            padding=16,
+                            shadow=ft.BoxShadow(blur_radius=8, color="#CBD5E1"),
+                            content=ft.Container(
+                                height=420,
+                                content=ft.ListView(
+                                    controls=[tabela_farmacias],
+                                    auto_scroll=True
+                                )
+                            )
+                        ),
+                        ft.Container(width=20),
+                        painel_detalhes
+                    ], spacing=20)
+                ], spacing=20)
+            )
+        )
+
+        self.page.update()
+    
+    def load_cadastro_farmacia(self, e=None):
+        self.farmacia_atual = None
+        self.editando_farmacia = True
+        self.load_farmacias()
 
 
     def build_tela(self):
