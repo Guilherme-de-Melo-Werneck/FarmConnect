@@ -1,5 +1,5 @@
 import flet as ft
-from farmconnect.database import listar_medicamentos, editar_medicamento, adicionar_medicamento, listar_categorias, listar_fabricantes
+from farmconnect.database import listar_medicamentos, editar_medicamento, adicionar_medicamento, listar_categorias, listar_fabricantes, deletar_medicamento
 
 class TelaAdminDashboard:
     def __init__(self, page: ft.Page):
@@ -319,7 +319,7 @@ class TelaAdminDashboard:
                                         self.load_medicamentos(medicamento=self.medicamento_atual)
                                     )
                                 ),
-                                ft.IconButton(icon=ft.icons.DELETE, icon_color="red", tooltip="Excluir")
+                                ft.IconButton(icon=ft.icons.DELETE, icon_color="red", tooltip="Excluir", on_click=lambda e, id=med[0]:self.deletar_medicamento_click(id))   
                             ], spacing=5)
                         ),
                     ]
@@ -438,6 +438,13 @@ class TelaAdminDashboard:
             )
         )
 
+        self.page.update()
+
+    def deletar_medicamento_click(self, id):
+        deletar_medicamento(id)  # Remove do banco
+        self.page.snack_bar = ft.SnackBar(content=ft.Text("Medicamento apagado com sucesso."), bgcolor="green")
+        self.page.snack_bar.open = True
+        self.load_medicamentos()  # Recarrega a lista atualizada
         self.page.update()
 
     def salvar_medicamento(self, e=None):
@@ -1003,7 +1010,6 @@ class TelaAdminDashboard:
         self.farmacia_atual = None
         self.editando_farmacia = True
         self.load_farmacias()
-
 
     def build_tela(self):
         return ft.View(
