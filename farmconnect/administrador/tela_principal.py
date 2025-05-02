@@ -394,27 +394,43 @@ class TelaAdminDashboard:
             ft.Container(
                 padding=25,
                 content=ft.Column([
-                    ft.Text("Gerenciamento de Medicamentos", size=24, weight="bold", color="#065F46"),
+                    ft.Text("💊 Gerenciamento de Medicamentos", size=30, weight="bold", color="#059669"),
+                    ft.Text("Adicione, edite ou remova medicamentos disponíveis no sistema", size=14, color="#6B7280"),
                     ft.Container(height=20),
-                    ft.Row([
-                        ft.Container(
-                            expand=True,
-                            content=ft.TextField(
-                                hint_text="Buscar medicamento...",
-                                prefix_icon=ft.icons.SEARCH,
-                                border_radius=30,
-                                bgcolor="#FFFFFF",
-                                height=50,
-                            )
-                        ),
-                        ft.Container(width=10),
-                        ft.FloatingActionButton(
-                            icon=ft.icons.ADD,
-                            bgcolor="#059669",
-                            tooltip="Adicionar novo medicamento",
-                            on_click=self.load_cadastro_medicamento,
-                        ),
-                    ]),
+                    ft.Container(
+                        padding=20,
+                        bgcolor="#FFFFFF",
+                        border_radius=16,
+                        shadow=ft.BoxShadow(blur_radius=12, color="#CBD5E1", offset=ft.Offset(0, 6)),
+                        content=ft.Column([
+                            ft.Row([
+                                ft.Text("Lista de Medicamentos", size=20, weight="bold", color="#111827"),
+                                ft.Container(expand=True),
+                                ft.IconButton(icon=ft.icons.REFRESH, tooltip="Atualizar", icon_color="#059669"),
+                            ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+                            ft.Divider(height=30),
+
+                            ft.Row([
+                                ft.Container(
+                                    expand=True,
+                                    content=ft.TextField(
+                                        hint_text="Buscar medicamento...",
+                                        prefix_icon=ft.icons.SEARCH,
+                                        border_radius=30,
+                                        bgcolor="#F9FAFB",
+                                        height=50,
+                                    )
+                                ),
+                                ft.Container(width=10),
+                                ft.FloatingActionButton(
+                                    icon=ft.icons.ADD,
+                                    bgcolor="#059669",
+                                    tooltip="Adicionar novo medicamento",
+                                    on_click=self.load_cadastro_medicamento,
+                                ),
+                            ])
+                        ], spacing=20)
+                    ),
                     ft.Container(height=20),
                     ft.Row([
                         ft.Container(
