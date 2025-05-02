@@ -69,8 +69,6 @@ class HomeApp:
             )
         )
 
-
-
     def build_hero_section(self):
         title = ft.Text(
             "Facilite, conecte e organize a ",
@@ -103,8 +101,7 @@ class HomeApp:
             )
         )
 
-        return self.section_spacing(
-            ft.Container(
+        return ft.Container(
                 padding=40,
                 content=ft.ResponsiveRow(
                     columns=12,
@@ -114,7 +111,6 @@ class HomeApp:
                     controls=[left_column, illustration]
                 )
             )
-        )
 
 
     def build_about_section(self):
