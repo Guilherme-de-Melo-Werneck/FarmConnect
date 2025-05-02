@@ -469,6 +469,17 @@ def adicionar_categoria(nome):
         cursor.close()
         conn.close()
 
+def deletar_medicamento(id):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("DELETE FROM medicamentos WHERE id = ?", (id,))
+    
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+
 
 
 
