@@ -444,8 +444,9 @@ class TelaAdminDashboard:
         deletar_medicamento(id)  # Remove do banco
         self.page.snack_bar = ft.SnackBar(content=ft.Text("Medicamento apagado com sucesso."), bgcolor="green")
         self.page.snack_bar.open = True
-        self.load_medicamentos()  # Recarrega a lista atualizada
         self.page.update()
+        self.load_medicamentos()  # Recarrega a lista atualizada
+        
 
     def salvar_medicamento(self, e=None):
         nome = self.campo_nome.value.strip()
