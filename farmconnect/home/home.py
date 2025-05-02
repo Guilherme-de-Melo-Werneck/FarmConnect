@@ -26,26 +26,46 @@ class HomeApp:
     def build_header(self):
         return ft.Container(
             bgcolor=ft.Colors.WHITE,
-            padding=20,
-            content=ft.Row(
+            padding=ft.padding.symmetric(vertical=20, horizontal=40),
+            content=ft.ResponsiveRow(
+                columns=12,
+                spacing=20,
+                vertical_alignment=ft.CrossAxisAlignment.CENTER,
                 controls=[
-                    ft.Image(src="farmconnect/home/img_home/logo.png", width=100, height=100),
-                    ft.Text("FarmConnect", size=24, weight="bold", color=self.PRIMARY_DARK),
-                    ft.Container(expand=True),
-                    ft.ElevatedButton(
-                        "Baixe o app agora!",
-                        bgcolor=self.PRIMARY,
-                        color=ft.Colors.WHITE,
-                        style=ft.ButtonStyle(padding=15),
+                    ft.Container(
+                        col={"xs": 12, "md": 6},
+                        alignment=ft.alignment.center_left,
+                        content=ft.Row(
+                            controls=[
+                                ft.Image(src="farmconnect/home/img_home/logo.png", width=50, height=50),
+                                ft.Text("FarmConnect", size=22, weight="bold", color=self.PRIMARY_DARK)
+                            ],
+                            spacing=10,
+                            alignment=ft.MainAxisAlignment.START
+                        )
                     ),
-                    ft.TextButton(
-                        "Entrar",
-                        on_click=lambda e: self.page.go("/escolha_usuario"),
-                        style=ft.ButtonStyle(padding=15, color=self.PRIMARY)
+                    ft.Container(
+                        col={"xs": 12, "md": 6},
+                        alignment=ft.alignment.center_right,
+                        content=ft.Row(
+                            alignment=ft.MainAxisAlignment.END,
+                            spacing=12,
+                            controls=[
+                                ft.ElevatedButton(
+                                    "Baixe o app agora!",
+                                    bgcolor=self.PRIMARY,
+                                    color=ft.Colors.WHITE,
+                                    style=ft.ButtonStyle(padding=15),
+                                ),
+                                ft.TextButton(
+                                    "Entrar",
+                                    on_click=lambda e: self.page.go("/escolha_usuario"),
+                                    style=ft.ButtonStyle(padding=15, color=self.PRIMARY)
+                                )
+                            ]
+                        )
                     )
-                ],
-                spacing=15,
-                alignment=ft.MainAxisAlignment.START
+                ]
             )
         )
 
@@ -65,31 +85,36 @@ class HomeApp:
             size=15,
             color=self.TEXT_SECONDARY
         )
-        left_column = ft.Column(
-            [title, paragraph],
-            spacing=20,
-            alignment=ft.MainAxisAlignment.START,
-            width=500
+
+        left_column = ft.Container(
+            col={"xs": 12, "md": 6},
+            content=ft.Column([title, paragraph], spacing=20, alignment=ft.MainAxisAlignment.START)
         )
-        illustration = ft.Image(
-            src="farmconnect/home/img_home/inicio.png",
-            width=600,
-            height=500,
-            fit=ft.ImageFit.CONTAIN
-        )
-        return self.section_spacing(ft.Container(
-            padding=40,
-            content=ft.Row(
-                controls=[left_column, illustration],
-                alignment=ft.MainAxisAlignment.SPACE_AROUND,
-                vertical_alignment=ft.CrossAxisAlignment.CENTER,
-                expand=True
+
+        illustration = ft.Container(
+            col={"xs": 12, "md": 6},
+            content=ft.Image(
+                src="farmconnect/home/img_home/inicio.png",
+                width=600,
+                height=500,
+                fit=ft.ImageFit.CONTAIN
             )
-        ))
+        )
+
+        return ft.Container(
+                padding=40,
+                content=ft.ResponsiveRow(
+                    columns=12,
+                    spacing=20,
+                    run_spacing=20,
+                    vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                    controls=[left_column, illustration]
+                )
+            )
+
 
     def build_about_section(self):
         about_title = ft.Text("Sobre nós", size=28, weight="bold", color=self.PRIMARY_DARK, text_align=ft.TextAlign.CENTER)
-
         about_text = ft.Text(
             "Bem-vindo à FarmConnect, sua aliada confiável na gestão de agendamentos e retirada de medicamentos especializados. "
             "Nosso compromisso é transformar a experiência de acesso a medicamentos de alto custo, proporcionando agilidade, organização e praticidade "
@@ -106,14 +131,14 @@ class HomeApp:
             color=self.TEXT_SECONDARY,
         )
 
-        benefits_left = ["Agendamento facilitado", "Redução de filas e deslocamentos", "Maior controle sobre retiradas"]
-        benefits_right = ["Conveniência para o paciente", "Economia de tempo", "Informações atualizadas em tempo real"]
-
         def benefit(texto):
             return ft.Row([
                 ft.Icon(name=ft.Icons.CHECK_CIRCLE_OUTLINED, color=self.PRIMARY),
                 ft.Text(texto, size=13, weight="bold", color=self.TEXT_PRIMARY)
             ], spacing=8)
+
+        benefits_left = ["Agendamento facilitado", "Redução de filas e deslocamentos", "Maior controle sobre retiradas"]
+        benefits_right = ["Conveniência para o paciente", "Economia de tempo", "Informações atualizadas em tempo real"]
 
         benefits_grid = ft.Row(
             controls=[
@@ -124,36 +149,39 @@ class HomeApp:
             alignment=ft.MainAxisAlignment.START
         )
 
-        about_image = ft.Image(
-            src="farmconnect/home/img_home/sobre_nos.png",
-            width=600,
-            height=500,
-            fit=ft.ImageFit.CONTAIN
+        about_image = ft.Container(
+            col={"xs": 12, "md": 6},
+            content=ft.Image(
+                src="farmconnect/home/img_home/sobre_nos.png",
+                width=600,
+                height=500,
+                fit=ft.ImageFit.CONTAIN
+            )
+        )
+
+        about_text_column = ft.Container(
+            col={"xs": 12, "md": 6},
+            content=ft.Column([
+                about_title,
+                ft.Container(height=10),
+                about_text,
+                ft.Container(height=20),
+                benefits_grid
+            ], spacing=10)
         )
 
         return self.section_spacing(
             ft.Container(
                 padding=40,
-                content=ft.Row(
-                    controls=[
-                        about_image,
-                        ft.Container(
-                            width=500,
-                            content=ft.Column([
-                                about_title,
-                                ft.Container(height=10),
-                                about_text,
-                                ft.Container(height=20),
-                                benefits_grid
-                            ], spacing=10)
-                        )
-                    ],
-                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                    vertical_alignment=ft.CrossAxisAlignment.CENTER,
-                    expand=True
+                content=ft.ResponsiveRow(
+                    columns=12,
+                    spacing=20,
+                    run_spacing=20,
+                    controls=[about_image, about_text_column]
                 )
             )
         )
+
 
     def build_manage_section(self):
         title = ft.Text("Pacientes: Gerencie seus agendamentos", size=24, weight="bold", color=self.PRIMARY_DARK)
@@ -190,52 +218,48 @@ class HomeApp:
                 )
             )
 
-        cards_row = ft.Column(
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            spacing=30,
+        cards = [
+            card(ft.Icons.PERSON_OUTLINE, "Pacientes", "Gerencie seus agendamentos"),
+            card(ft.Icons.LOCAL_PHARMACY_OUTLINED, "Medicamentos", "Controle a disponibilidade"),
+            card(ft.Icons.CALENDAR_MONTH_OUTLINED, "Agendar Retirada", "Marque a retirada do medicamento"),
+            card(ft.Icons.CALENDAR_MONTH_OUTLINED, "Reagendar Retirada", "Altere a data com facilidade"),
+            card(ft.Icons.CHECK_CIRCLE_OUTLINE, "Confirmação", "Confirme o agendamento realizado"),
+        ]
+
+        cards_row = ft.ResponsiveRow(
+            columns=12,
+            spacing=20,
+            run_spacing=20,
             controls=[
-                ft.Row(
-                    alignment=ft.MainAxisAlignment.CENTER,
-                    spacing=20,
-                    controls=[
-                        card(ft.Icons.PERSON_OUTLINE, "Pacientes", "Gerencie seus agendamentos"),
-                        card(ft.Icons.LOCAL_PHARMACY_OUTLINED, "Medicamentos", "Controle a disponibilidade"),
-                        card(ft.Icons.CALENDAR_MONTH_OUTLINED, "Agendar Retirada", "Marque a retirada do medicamento"),
-                    ],
-                ),
-                ft.Row(
-                    alignment=ft.MainAxisAlignment.CENTER,
-                    spacing=20,
-                    controls=[
-                        card(ft.Icons.CALENDAR_MONTH_OUTLINED, "Reagendar Retirada", "Altere a data com facilidade"),
-                        card(ft.Icons.CHECK_CIRCLE_OUTLINE, "Confirmação", "Confirme o agendamento realizado"),
-                    ],
-                ),
+                ft.Container(col={"xs": 12, "sm": 6, "md": 4}, content=c) for c in cards
             ]
         )
 
-        image = ft.Image(
-            src="farmconnect/home/img_home/paciente.png",
-            width=600,
-            height=500,
-            fit=ft.ImageFit.CONTAIN
+        image = ft.Container(
+            col={"xs": 12, "md": 6},
+            content=ft.Image(
+                src="farmconnect/home/img_home/paciente.png",
+                width=600,
+                height=500,
+                fit=ft.ImageFit.CONTAIN
+            )
+        )
+
+        text_column = ft.Container(
+            col={"xs": 12, "md": 6},
+            content=ft.Column([title, description, ft.Container(height=20), cards_row], spacing=20)
         )
 
         return self.section_spacing(ft.Container(
             padding=40,
-            content=ft.Row(
-                controls=[
-                    ft.Container(
-                        width=500,
-                        content=ft.Column([title, description, ft.Container(height=20), cards_row], spacing=20)
-                    ),
-                    image
-                ],
-                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                vertical_alignment=ft.CrossAxisAlignment.CENTER,
-                expand=True
+            content=ft.ResponsiveRow(
+                columns=12,
+                spacing=20,
+                run_spacing=20,
+                controls=[text_column, image]
             )
         ))
+
 
     def build_admin_section(self):
         title = ft.Text("Administradores: Gerencie agendamentos e estoques", size=24, weight="bold", color=self.PRIMARY_DARK)
@@ -252,7 +276,7 @@ class HomeApp:
                 bgcolor=ft.Colors.WHITE,
                 border_radius=12,
                 padding=20,
-                width=180,
+                width=200,
                 height=160,
                 shadow=ft.BoxShadow(
                     spread_radius=1,
@@ -265,62 +289,55 @@ class HomeApp:
                     spacing=10,
                     controls=[
                         ft.Icon(icon_name, size=40, color=self.PRIMARY),
-                        ft.Container(height=3, bgcolor=self.PRIMARY, width=50),
+                        ft.Container(height=3, bgcolor=self.PRIMARY, width=60),
                         ft.Text(title_text, size=14, weight="bold", color=self.TEXT_PRIMARY, text_align=ft.TextAlign.CENTER),
                         ft.Text(subtitle_text, size=12, color=self.TEXT_SECONDARY, text_align=ft.TextAlign.CENTER),
                     ]
                 )
             )
 
-        cards = ft.Column(
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            spacing=30,
+        cards = [
+            admin_card(ft.Icons.ADD_BOX_OUTLINED, "Cadastrar Medicamentos", "Adicione medicamentos"),
+            admin_card(ft.Icons.PERSON_ADD_ALT_1_OUTLINED, "Aprovar Pacientes", "Gerencie solicitações de cadastro"),
+            admin_card(ft.Icons.INVENTORY_2_OUTLINED, "Gerenciar Estoque", "Disponibilidade dos medicamentos"),
+            admin_card(ft.Icons.DESCRIPTION_OUTLINED, "Agendamentos", "Visualize agendamentos e reagendamentos"),
+            admin_card(ft.Icons.NOTIFICATIONS_OUTLINED, "Notificações", "Envie alertas sobre retiradas e prazos"),
+        ]
+
+        cards_row = ft.ResponsiveRow(
+            columns=12,
+            spacing=20,
+            run_spacing=20,
             controls=[
-                ft.Row(
-                    alignment=ft.MainAxisAlignment.CENTER,
-                    spacing=20,
-                    controls=[
-                        admin_card(ft.Icons.ADD_BOX_OUTLINED, "Cadastrar Medicamentos", "Adicione medicamentos"),
-                        admin_card(ft.Icons.PERSON_ADD_ALT_1_OUTLINED, "Aprovar Pacientes", "Gerencie solicitações de cadastro"),
-                        admin_card(ft.Icons.INVENTORY_2_OUTLINED, "Gerenciar Estoque", "Disponibilidade dos medicamentos"),
-                    ],
-                ),
-                ft.Row(
-                    alignment=ft.MainAxisAlignment.CENTER,
-                    spacing=20,
-                    controls=[
-                        admin_card(ft.Icons.DESCRIPTION_OUTLINED, "Agendamentos", "Visualize agendamentos e reagendamentos"),
-                        admin_card(ft.Icons.NOTIFICATIONS_OUTLINED, "Notificações", "Envie alertas sobre retiradas e prazos"),
-                    ],
-                ),
+                ft.Container(col={"xs": 12, "sm": 6, "md": 4}, content=c) for c in cards
             ]
         )
 
-        image = ft.Image(
-            src="farmconnect/home/img_home/administrador.png",
-            width=600,
-            height=500,
-            fit=ft.ImageFit.CONTAIN
+        image = ft.Container(
+            col={"xs": 12, "md": 6},
+            content=ft.Image(
+                src="farmconnect/home/img_home/administrador.png",
+                width=600,
+                height=500,
+                fit=ft.ImageFit.CONTAIN
+            )
+        )
+
+        content_column = ft.Container(
+            col={"xs": 12, "md": 6},
+            content=ft.Column([title, description, ft.Container(height=20), cards_row], spacing=20)
         )
 
         return self.section_spacing(ft.Container(
             padding=40,
-            content=ft.Row(
-                controls=[
-                    image,
-                    ft.Container(
-                        width=550,
-                        content=ft.Column(
-                            [title, description, ft.Container(height=20), cards],
-                            spacing=20
-                        )
-                    ),
-                ],
-                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                vertical_alignment=ft.CrossAxisAlignment.CENTER,
-                expand=True
+            content=ft.ResponsiveRow(
+                columns=12,
+                spacing=20,
+                run_spacing=20,
+                controls=[image, content_column]
             )
         ))
+
 
     def build_footer(self):
         return ft.Container(
@@ -330,12 +347,22 @@ class HomeApp:
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 spacing=20,
                 controls=[
-                    ft.Row(
-                        alignment=ft.MainAxisAlignment.CENTER,
+                    ft.ResponsiveRow(
+                        columns=12,
                         spacing=10,
                         controls=[
-                            ft.Text("FarmConnect", size=20, weight="bold", color=self.PRIMARY_DARK),
-                            ft.Icon(ft.Icons.LOCAL_PHARMACY_OUTLINED, size=20, color=self.PRIMARY_DARK),
+                            ft.Container(
+                                col={"xs": 12, "md": 12},
+                                alignment=ft.alignment.center,
+                                content=ft.Row(
+                                    alignment=ft.MainAxisAlignment.CENTER,
+                                    spacing=10,
+                                    controls=[
+                                        ft.Text("FarmConnect", size=20, weight="bold", color=self.PRIMARY_DARK),
+                                        ft.Icon(ft.Icons.LOCAL_PHARMACY_OUTLINED, size=20, color=self.PRIMARY_DARK),
+                                    ]
+                                )
+                            )
                         ]
                     ),
                     ft.Text(
@@ -345,14 +372,27 @@ class HomeApp:
                         text_align=ft.TextAlign.CENTER,
                     ),
                     ft.Divider(height=20, color=self.TEXT_SECONDARY),
-                    ft.Row(
-                        alignment=ft.MainAxisAlignment.CENTER,
+                    ft.ResponsiveRow(
+                        columns=12,
                         spacing=30,
+                        alignment=ft.MainAxisAlignment.CENTER,
                         controls=[
-                            ft.TextButton("Política de Privacidade", on_click=lambda e: None),
-                            ft.TextButton("Termos de Uso", on_click=lambda e: None),
-                            ft.TextButton("Contato", on_click=lambda e: None),
-                        ],
+                            ft.Container(
+                                col={"xs": 12, "md": 4},
+                                alignment=ft.alignment.center,
+                                content=ft.TextButton("Política de Privacidade", on_click=lambda e: None),
+                            ),
+                            ft.Container(
+                                col={"xs": 12, "md": 4},
+                                alignment=ft.alignment.center,
+                                content=ft.TextButton("Termos de Uso", on_click=lambda e: None),
+                            ),
+                            ft.Container(
+                                col={"xs": 12, "md": 4},
+                                alignment=ft.alignment.center,
+                                content=ft.TextButton("Contato", on_click=lambda e: None),
+                            ),
+                        ]
                     ),
                     ft.Text(
                         "FarmConnect © 2025 - Todos os direitos reservados.",
@@ -363,6 +403,7 @@ class HomeApp:
                 ],
             )
         )
+
 
     def build(self):
         return ft.View(
