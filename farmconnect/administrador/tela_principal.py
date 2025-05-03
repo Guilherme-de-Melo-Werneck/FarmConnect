@@ -285,6 +285,9 @@ class TelaAdminDashboard:
         medicamentos = listar_medicamentos()
 
         tabela_medicamentos = ft.DataTable(
+            heading_row_color="#F9FAFB",
+            border=ft.border.all(1, "#E5E7EB"),
+            border_radius=12,
             columns=[
                 ft.DataColumn(ft.Text("ID")),
                 ft.DataColumn(ft.Text("Nome")),
@@ -296,11 +299,11 @@ class TelaAdminDashboard:
             rows=[
                 ft.DataRow(
                     cells=[
-                        ft.DataCell(ft.Text(str(med[0]))),  # ID
-                        ft.DataCell(ft.Text(med[1])),       # Nome
-                        ft.DataCell(ft.Text(med[5] or "-")),# Categoria
-                        ft.DataCell(ft.Text(med[6] or "-")),# Fabricante
-                        ft.DataCell(ft.Text(str(med[4]))),  # Estoque
+                        ft.DataCell(ft.Text(str(med[0]))),
+                        ft.DataCell(ft.Text(med[1])),
+                        ft.DataCell(ft.Text(med[5] or "-")),
+                        ft.DataCell(ft.Text(med[6] or "-")),
+                        ft.DataCell(ft.Text(str(med[4]))),
                         ft.DataCell(
                             ft.Row([
                                 ft.IconButton(
@@ -320,13 +323,19 @@ class TelaAdminDashboard:
                                         self.load_medicamentos(medicamento=self.medicamento_atual)
                                     )
                                 ),
-                                ft.IconButton(icon=ft.icons.DELETE, icon_color="red", tooltip="Excluir", on_click=lambda e, id=med[0]:self.deletar_medicamento_click(id))   
-                            ], spacing=5)
-                        ),
+                                ft.IconButton(
+                                    icon=ft.icons.DELETE,
+                                    icon_color="#DC2626",
+                                    tooltip="Excluir",
+                                    on_click=lambda e, id=med[0]: self.deletar_medicamento_click(id)
+                                )
+                            ], spacing=6)
+                        )
                     ]
                 ) for med in medicamentos
             ]
         )
+
 
         # Campos editáveis
         self.campo_nome = ft.TextField(label="Nome do Medicamento", value=medicamento.get("nome") if medicamento else "")
@@ -393,23 +402,43 @@ class TelaAdminDashboard:
         # Interface completa
         self.current_view.controls.append(
             ft.Container(
-                padding=25,
+                padding=30,
                 content=ft.Column([
-                    ft.Text("💊 Gerenciamento de Medicamentos", size=30, weight="bold", color="#059669"),
-                    ft.Text("Adicione, edite ou remova medicamentos disponíveis no sistema", size=14, color="#6B7280"),
-                    ft.Container(height=20),
+                    ft.Row([
+                        ft.Icon(name=ft.icons.LOCAL_PHARMACY, size=40, color="#059669"),
+                        ft.Text("Gerenciamento de Medicamentos", size=32, weight="bold", color="#065F46"),
+                    ], spacing=10, alignment=ft.MainAxisAlignment.CENTER),
+                    ft.Text(
+                        "Adicione, edite ou remova medicamentos disponíveis no sistema.",
+                        size=14,
+                        color="#6B7280",
+                        text_align=ft.TextAlign.CENTER
+                    ),
+                    ft.Divider(height=30),
+
                     ft.Container(
-                        padding=20,
                         bgcolor="#FFFFFF",
-                        border_radius=16,
-                        shadow=ft.BoxShadow(blur_radius=12, color="#CBD5E1", offset=ft.Offset(0, 6)),
+                        border_radius=20,
+                        padding=25,
+                        shadow=ft.BoxShadow(blur_radius=18, color="#CBD5E1", offset=ft.Offset(0, 6)),
                         content=ft.Column([
                             ft.Row([
-                                ft.Text("Lista de Medicamentos", size=20, weight="bold", color="#111827"),
+                                ft.Text("📋 Lista de Medicamentos", size=20, weight="bold", color="#111827"),
                                 ft.Container(expand=True),
-                                ft.IconButton(icon=ft.icons.REFRESH, tooltip="Atualizar", icon_color="#059669"),
+                                ft.IconButton(
+                                    icon=ft.icons.REFRESH,
+                                    tooltip="Atualizar",
+                                    icon_color="#059669",
+                                    on_click=self.load_medicamentos
+                                ),
+                                ft.IconButton(
+                                    icon=ft.icons.ADD,
+                                    tooltip="Adicionar novo medicamento",
+                                    icon_color="#059669",
+                                    on_click=self.load_cadastro_medicamento
+                                ),
                             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
-                            ft.Divider(height=30),
+                            ft.Divider(),
 
                             ft.Row([
                                 ft.Container(
@@ -419,38 +448,22 @@ class TelaAdminDashboard:
                                         prefix_icon=ft.icons.SEARCH,
                                         border_radius=30,
                                         bgcolor="#F9FAFB",
-                                        height=50,
+                                        height=50
                                     )
+                                )
+                            ]),
+                            ft.Container(height=20),
+
+                            ft.Row([
+                                ft.Container(
+                                    expand=2 if not self.editando_medicamento else 1,
+                                    content=tabela_medicamentos
                                 ),
-                                ft.Container(width=10),
-                                ft.FloatingActionButton(
-                                    icon=ft.icons.ADD,
-                                    bgcolor="#059669",
-                                    tooltip="Adicionar novo medicamento",
-                                    on_click=self.load_cadastro_medicamento,
-                                ),
+                                ft.Container(width=20 if self.editando_medicamento else 0),
+                                detalhes_medicamento
                             ])
                         ], spacing=20)
-                    ),
-                    ft.Container(height=20),
-                    ft.Row([
-                        ft.Container(
-                            expand=2 if not self.editando_medicamento else 1,
-                            bgcolor="white",
-                            border_radius=12,
-                            padding=16,
-                            shadow=ft.BoxShadow(blur_radius=8, color="#CBD5E1"),
-                            content=ft.Container(
-                                height=420,
-                                content=ft.ListView(
-                                    controls=[tabela_medicamentos],
-                                    auto_scroll=True
-                                )
-                            )
-                        ),
-                        ft.Container(width=20),
-                        detalhes_medicamento
-                    ], spacing=20)
+                    )
                 ], spacing=20)
             )
         )
@@ -813,7 +826,7 @@ class TelaAdminDashboard:
             hint_text="Buscar farmácia...",
             prefix_icon=ft.icons.SEARCH,
             border_radius=30,
-            bgcolor="#FFFFFF",
+            bgcolor="#F9FAFB",
             height=50,
             on_change=self.filtrar_farmacias
         )
@@ -825,16 +838,16 @@ class TelaAdminDashboard:
         self.campo_telefone = ft.TextField(label="Telefone", value=farmacia["telefone"] if farmacia else "")
 
         self.painel_detalhes_farmacia = ft.Container(
-            bgcolor="white",
-            border_radius=12,
-            padding=20,
-            shadow=ft.BoxShadow(blur_radius=8, color="#E2E8F0"),
-            expand=1,
+            bgcolor="#FFFFFF",
+            border_radius=20,
+            padding=25,
+            shadow=ft.BoxShadow(blur_radius=18, color="#CBD5E1", offset=ft.Offset(0, 6)),
             visible=self.editando_farmacia,
             animate_opacity=300,
             opacity=1.0 if self.editando_farmacia else 0.0,
+            expand=1,
             content=ft.Column([
-                ft.Text("🧾 Detalhes da Farmácia", size=20, weight="bold", color="#059669"),
+                ft.Text("🏥 Editar Farmácia", size=20, weight="bold", color="#059669"),
                 ft.Divider(),
                 self.campo_nome_f,
                 self.campo_cnpj,
@@ -849,7 +862,7 @@ class TelaAdminDashboard:
                         color="white",
                         expand=True,
                         style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12)),
-                        on_click=lambda e: self.load_farmacias()
+                        on_click=lambda e: self.load_farmacias()  # Aqui você pode trocar para salvar_farmacia() futuramente
                     ),
                     ft.OutlinedButton(
                         "Cancelar",
@@ -861,13 +874,8 @@ class TelaAdminDashboard:
             ], spacing=12)
         )
 
-        self.renderizar_tabela_farmacias(self.farmacias_mock)
 
-    def filtrar_farmacias(self, e):
-        termo = self.campo_busca_farmacia.value.strip().lower()
-        resultado = [f for f in self.farmacias_mock if termo in f[1].lower()]
-        self.renderizar_tabela_farmacias(resultado)
-        self.page.set_focus(self.campo_busca_farmacia)  # <- Mantém o foco após digitar
+        self.renderizar_tabela_farmacias(self.farmacias_mock)
 
 
     def renderizar_tabela_farmacias(self, lista):
@@ -917,51 +925,86 @@ class TelaAdminDashboard:
             ]
         )
 
+
         self.current_view.controls.clear()
         self.current_view.controls.append(
             ft.Container(
                 padding=30,
                 content=ft.Column([
                     ft.Row([
-                        ft.Icon(ft.icons.LOCAL_HOSPITAL, size=40, color="#059669"),
+                        ft.Icon(name=ft.icons.LOCAL_HOSPITAL, size=40, color="#059669"),
                         ft.Text("Gerenciamento de Farmácias", size=32, weight="bold", color="#065F46")
                     ], spacing=10, alignment=ft.MainAxisAlignment.CENTER),
-                    ft.Text("Adicione, edite e mantenha os dados das farmácias disponíveis", size=14, color="#6B7280"),
+                    ft.Text("Adicione, edite ou gerencie as farmácias cadastradas no sistema.",
+                            size=14, color="#6B7280", text_align=ft.TextAlign.CENTER),
                     ft.Divider(height=30),
-                    ft.Row([
-                        ft.Container(expand=True, content=self.campo_busca_farmacia),
-                        ft.Container(width=10),
-                        ft.FloatingActionButton(
-                            icon=ft.icons.ADD,
-                            bgcolor="#059669",
-                            tooltip="Adicionar nova farmácia",
-                            on_click=lambda e: self.load_farmacias(farmacia={})
-                        )
-                    ]),
-                    ft.Container(height=20),
-                    ft.Row([
-                        ft.Container(
-                            expand=2 if not self.editando_farmacia else 1,
-                            bgcolor="white",
-                            border_radius=16,
-                            padding=20,
-                            shadow=ft.BoxShadow(blur_radius=8, color="#CBD5E1"),
-                            content=ft.Container(
-                                height=420,
-                                content=ft.ListView(
-                                    controls=[tabela],
-                                    auto_scroll=True
+
+                    ft.Container(
+                        bgcolor="#FFFFFF",
+                        border_radius=20,
+                        padding=25,
+                        expand=True,
+                        shadow=ft.BoxShadow(blur_radius=18, color="#CBD5E1", offset=ft.Offset(0, 6)),
+                        content=ft.Column([
+                            ft.Row([
+                                ft.Text("📋 Lista de Farmácias", size=20, weight="bold", color="#111827"),
+                                ft.Container(expand=True),
+                                ft.IconButton(
+                                    icon=ft.icons.REFRESH,
+                                    tooltip="Atualizar Lista",
+                                    icon_color="#059669",
+                                    on_click=self.load_farmacias
+                                ),
+                                ft.IconButton(
+                                    icon=ft.icons.ADD,
+                                    tooltip="Adicionar nova farmácia",
+                                    icon_color="#059669",
+                                    on_click=lambda e: self.load_farmacias(farmacia={})
+                                )
+                            ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+                            ft.Divider(),
+
+                            ft.Row([
+                                ft.Container(
+                                    expand=True,
+                                    content=self.campo_busca_farmacia
+                                )
+                            ]),
+                            ft.Container(height=20),
+
+                            ft.Container(
+                                expand=True,
+                                content=ft.Stack(
+                                    expand=True,
+                                    controls=[
+                                        ft.Container(
+                                            expand=True,
+                                            content=tabela
+                                        ),
+                                        ft.AnimatedSwitcher(
+                                            content=self.painel_detalhes_farmacia if self.editando_farmacia else ft.Container(),
+                                            transition=ft.Animation(300, "easeInOut")
+                                        )
+                                    ]
                                 )
                             )
-                        ),
-                        ft.Container(width=20),
-                        self.painel_detalhes_farmacia
-                    ], spacing=20)
+                        ], spacing=20)
+                    )
                 ], spacing=20)
             )
         )
 
         self.page.update()
+
+
+
+
+    def filtrar_farmacias(self, e):
+        termo = self.campo_busca_farmacia.value.strip().lower()
+        resultado = [f for f in self.farmacias_mock if termo in f[1].lower()]
+        self.renderizar_tabela_farmacias(resultado)
+        self.page.set_focus(self.campo_busca_farmacia)
+
         
 
 
