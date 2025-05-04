@@ -74,9 +74,7 @@ class TelaAdminDashboard:
             create_menu_item(ft.icons.LOCAL_HOSPITAL_OUTLINED, "Farmácias", self.load_farmacias),
             create_menu_item(ft.icons.MEDICAL_SERVICES_OUTLINED, "Medicamentos", self.load_medicamentos),
             create_menu_item(ft.icons.PERSON_OUTLINED, "Pacientes", self.load_pacientes),
-
         ]
-
 
         # Botão de sair
         botao_sair = ft.Container(
@@ -137,12 +135,13 @@ class TelaAdminDashboard:
 
     def header(self):
         return ft.Container(
-            padding=ft.padding.symmetric(horizontal=20),
+            padding=ft.padding.symmetric(horizontal=20, vertical=14),
             bgcolor="#34D399",
-            height=65,
             border=ft.border.only(bottom=ft.BorderSide(1, "#E5E7EB")),
             content=ft.ResponsiveRow(
                 columns=12,
+                spacing=10,
+                run_spacing=10,
                 controls=[
                     ft.Container(
                         col={"sm": 12, "md": 6},
@@ -151,28 +150,28 @@ class TelaAdminDashboard:
                             "FarmConnect - Painel Principal",
                             size=22,
                             weight="bold",
-                            color="#065F46"
+                            color="#065F46",
+                            text_align=ft.TextAlign.START
                         )
                     ),
                     ft.Container(
                         col={"sm": 12, "md": 6},
                         alignment=ft.alignment.center_right,
-                        content=ft.Row(
-                            wrap=True,
-                            spacing=10,
-                            alignment=ft.MainAxisAlignment.END,
-                            controls=[
-                                ft.IconButton(ft.icons.DARK_MODE_OUTLINED, icon_color="#065F46"),
-                                ft.IconButton(ft.icons.SCHEDULE_OUTLINED, icon_color="#065F46"),
-                                ft.Text("Bem-vindo!", size=12, color="#065F46"),
-                                ft.Text("DESENVOLVIMENTO", size=12, weight="bold", color="#065F46"),
-                                ft.IconButton(ft.icons.REFRESH, icon_color="#065F46"),
-                            ],
-                        )
+                        content=ft.Column([
+                            ft.Row(
+                                wrap=True,
+                                spacing=10,
+                                controls=[
+                                    ft.IconButton(ft.icons.DARK_MODE_OUTLINED, icon_color="#065F46"),
+                                    ft.IconButton(ft.icons.SCHEDULE_OUTLINED, icon_color="#065F46"),
+                                    ft.Text("Bem-vindo!", size=12, color="#065F46"),
+                                    ft.Text("DESENVOLVIMENTO", size=12, weight="bold", color="#065F46"),
+                                    ft.IconButton(ft.icons.REFRESH, icon_color="#065F46"),
+                                ]
+                            )
+                        ])
                     )
-                ],
-                spacing=10,
-                run_spacing=10
+                ]
             )
         )
 
@@ -1159,21 +1158,31 @@ class TelaAdminDashboard:
 
     def build_tela(self):
         return ft.View(
-        route="/admin_dashboard",
-        controls=[
-            ft.Row(
-                controls=[
-                    self.side_menu(),
-                    ft.Column([
-                        self.header(),
-                        self.current_view
-                    ], expand=True)
-                ],
-                expand=True
-            )
-        ],
-        scroll=ft.ScrollMode.AUTO
-    )
+            route="/admin_dashboard",
+            controls=[
+                ft.ResponsiveRow(
+                    columns=12,
+                    controls=[
+                        ft.Container(
+                            col={"sm": 12, "md": 3},
+                            content=self.side_menu(),
+                            bgcolor="#F9FAFB"
+                        ),
+                        ft.Container(
+                            col={"sm": 12, "md": 9},
+                            content=ft.Column([
+                                self.header(),
+                                self.current_view
+                            ], expand=True)
+                        )
+                    ],
+                    expand=True,
+                    spacing=0,
+                    run_spacing=0
+                )
+            ],
+            scroll=ft.ScrollMode.AUTO
+        )
 
 if __name__ == "__main__":
     def main(page: ft.Page):
