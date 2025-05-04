@@ -140,11 +140,21 @@ class TelaLoginAdmin:
             content=ft.ResponsiveRow(
                 columns=12,
                 controls=[
-                    ft.Container(col={"sm": 12, "md": 6}, content=login_card, alignment=ft.alignment.center),
-                    ft.Container(col={"sm": 12, "md": 6}, content=cadastro_card, alignment=ft.alignment.center)
+                    ft.Container(
+                        col={"sm": 12, "md": 6},
+                        alignment=ft.alignment.center,
+                        content=login_card
+                    ),
+                    ft.Container(
+                        col={"sm": 12, "md": 6},
+                        alignment=ft.alignment.center,
+                        content=cadastro_card
+                    )
                 ],
+                alignment=ft.MainAxisAlignment.CENTER,
                 vertical_alignment=ft.CrossAxisAlignment.CENTER,
-                spacing=40
+                spacing=40,
+                run_spacing=30
             )
         )
 
@@ -165,6 +175,7 @@ class TelaLoginAdmin:
 
         return ft.View(
             route="/login_admin",
+            scroll=ft.ScrollMode.AUTO,
             controls=[
                 self.page.snack_bar,
                 ft.Column([header, cards_section, footer], spacing=0, expand=True)
