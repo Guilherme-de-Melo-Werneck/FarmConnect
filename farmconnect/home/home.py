@@ -134,18 +134,26 @@ class HomeApp:
         def benefit(texto):
             return ft.Row([
                 ft.Icon(name=ft.Icons.CHECK_CIRCLE_OUTLINED, color=self.PRIMARY),
-                ft.Text(texto, size=13, weight="bold", color=self.TEXT_PRIMARY)
+                ft.Container(
+                    expand=True,
+                    content=ft.Text(texto, size=13, weight="bold", color=self.TEXT_PRIMARY)
+                )
             ], spacing=8)
 
         benefits_left = ["Agendamento facilitado", "Redução de filas e deslocamentos", "Maior controle sobre retiradas"]
         benefits_right = ["Conveniência para o paciente", "Economia de tempo", "Informações atualizadas em tempo real"]
 
-        benefits_grid = ft.Row(
+        benefits_grid = ft.ResponsiveRow(
             controls=[
-                ft.Column([benefit(item) for item in benefits_left], spacing=10),
-                ft.Column([benefit(item) for item in benefits_right], spacing=10)
+                ft.Container(
+                    content=ft.Column([benefit(item) for item in benefits_left], spacing=10),
+                    col={"xs": 12, "md": 6}
+                ),
+                ft.Container(
+                    content=ft.Column([benefit(item) for item in benefits_right], spacing=10),
+                    col={"xs": 12, "md": 6}
+                )
             ],
-            spacing=40,
             alignment=ft.MainAxisAlignment.START
         )
 
