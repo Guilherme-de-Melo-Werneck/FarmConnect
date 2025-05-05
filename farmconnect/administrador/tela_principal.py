@@ -487,7 +487,7 @@ class TelaAdminDashboard:
                                 run_spacing=20,
                                 controls=[
                                     ft.Container(
-                                        col={"sm": 12, "md": 8},
+                                        col={"sm": 12, "md": 12},
                                         content=tabela_medicamentos
                                     ),
                                     ft.Container(
@@ -746,11 +746,7 @@ class TelaAdminDashboard:
         def status_badge(status):
             cor_texto, cor_fundo = status_cores.get(status, ("#6B7280", "#E5E7EB"))
             return ft.Row([
-                ft.Container(
-                    width=8, height=8,
-                    bgcolor=cor_texto,
-                    border_radius=20
-                ),
+                ft.Container(width=8, height=8, bgcolor=cor_texto, border_radius=20),
                 ft.Text(status, color=cor_texto, weight="bold")
             ], spacing=6, alignment=ft.MainAxisAlignment.CENTER)
 
@@ -766,6 +762,8 @@ class TelaAdminDashboard:
             heading_row_color="#F9FAFB",
             border=ft.border.all(1, "#E5E7EB"),
             border_radius=12,
+            horizontal_margin=10,
+            column_spacing=20,
             columns=[
                 ft.DataColumn(ft.Text("ID")),
                 ft.DataColumn(ft.Text("Paciente")),
@@ -796,10 +794,36 @@ class TelaAdminDashboard:
                             )
                         ),
                         ft.DataCell(
-                            ft.Row([
-                                ft.IconButton(icon=ft.icons.CHECK_CIRCLE_OUTLINE, icon_color="#059669", tooltip="Confirmar Agendamento"),
-                                ft.IconButton(icon=ft.icons.CANCEL_OUTLINED, icon_color="#DC2626", tooltip="Cancelar Agendamento")
-                            ], spacing=6)
+                            ft.Container(
+                                width=100,
+                                alignment=ft.alignment.center,
+                                content=ft.Row(
+                                    [
+                                        ft.IconButton(
+                                            icon=ft.icons.CHECK_CIRCLE_OUTLINE,
+                                            icon_color="#059669",
+                                            tooltip="Confirmar Agendamento",
+                                            icon_size=20,
+                                            style=ft.ButtonStyle(
+                                                padding=ft.padding.all(0),
+                                                shape=ft.RoundedRectangleBorder(radius=8),
+                                            )
+                                        ),
+                                        ft.IconButton(
+                                            icon=ft.icons.CANCEL_OUTLINED,
+                                            icon_color="#DC2626",
+                                            tooltip="Cancelar Agendamento",
+                                            icon_size=20,
+                                            style=ft.ButtonStyle(
+                                                padding=ft.padding.all(0),
+                                                shape=ft.RoundedRectangleBorder(radius=8),
+                                            )
+                                        )
+                                    ],
+                                    spacing=8,
+                                    alignment=ft.MainAxisAlignment.CENTER,
+                                )
+                            )
                         )
                     ]
                 ) for item in dados
@@ -833,7 +857,8 @@ class TelaAdminDashboard:
                             ft.Divider(),
                             ft.Container(
                                 content=tabela,
-                                expand=True
+                                expand=True,
+                                width=1200
                             )
                         ], spacing=20)
                     )
@@ -842,6 +867,7 @@ class TelaAdminDashboard:
         )
 
         self.page.update()
+
 
     def load_farmacias(self, e=None, farmacia=None):
         self.current_view.controls.clear()
@@ -1012,7 +1038,8 @@ class TelaAdminDashboard:
                                     controls=[
                                         ft.Container(
                                             expand=True,
-                                            content=tabela
+                                            content=tabela,
+                                            width=1200,
                                         ),
                                         ft.AnimatedSwitcher(
                                             content=self.painel_detalhes_farmacia if self.editando_farmacia else ft.Container(),
