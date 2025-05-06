@@ -25,7 +25,7 @@ class TelaEscolhaUsuario:
 
         titulo = ft.Text(
             "Bem-vindo à FarmConnect",
-            size=32,
+            size=26,
             weight=ft.FontWeight.BOLD,
             text_align=ft.TextAlign.CENTER,
             color=SECONDARY_COLOR,
@@ -60,7 +60,7 @@ class TelaEscolhaUsuario:
         botao_admin = ft.ElevatedButton(
             content=ft.Row([
                 ft.Icon(name=ft.Icons.ADMIN_PANEL_SETTINGS_OUTLINED),
-                ft.Text("Sou Administrador", size=16)
+                ft.Text("Sou Administrador", size=14)
             ],
             alignment=ft.MainAxisAlignment.CENTER,
             spacing=10),
@@ -113,6 +113,7 @@ class TelaEscolhaUsuario:
         tela = ft.Container(
             expand=True,
             bgcolor=ft.Colors.WHITE,
+            padding=ft.padding.symmetric(horizontal=40),
             content=ft.Row(
                 [
                     ft.Column(
