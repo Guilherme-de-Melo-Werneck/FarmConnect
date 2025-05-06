@@ -90,7 +90,7 @@ class TelaLoginAdmin:
                 ft.Text("FarmConnect Admin", size=20, weight="bold", color=ft.colors.WHITE)
             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
             padding=ft.padding.symmetric(horizontal=40, vertical=24),
-            bgcolor="#10B981",
+            bgcolor=ft.Colors.BLUE_600,
             shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK38, offset=ft.Offset(0, 8)),
             animate=ft.Animation(600, "easeInOut")
         )
@@ -101,17 +101,17 @@ class TelaLoginAdmin:
             border_radius=20,
             shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK12, offset=ft.Offset(0, 6)),
             content=ft.Column([
-                ft.Text("Login", size=24, weight="bold", color="#10B981"),
+                ft.Text("Login", size=24, weight="bold", color=ft.Colors.BLUE_600),
                 self.login_email,
                 self.login_senha,
-                ft.ElevatedButton("Entrar", bgcolor="#10B981", color="white",
-                    style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10), overlay_color="#6EE7B7"),
+                ft.ElevatedButton("Entrar", bgcolor=ft.Colors.BLUE_900, color="white",
+                    style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10), overlay_color=ft.Colors.BLUE_500),
                     on_click=login_click
                 ),
                 ft.TextButton(
                     "Esqueceu a senha?",
                     on_click=lambda _: print("Redirecionar para recuperação de senha"),
-                    style=ft.ButtonStyle(color="#10B981", padding=ft.padding.only(top=10))
+                    style=ft.ButtonStyle(color=ft.Colors.BLUE_600, padding=ft.padding.only(top=10))
                 )
             ], spacing=20, scroll=ft.ScrollMode.ADAPTIVE)
         )
@@ -122,13 +122,13 @@ class TelaLoginAdmin:
             border_radius=20,
             shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK12, offset=ft.Offset(0, 6)),
             content=ft.Column([
-                ft.Text("Cadastro", size=24, weight="bold", color="#10B981"),
+                ft.Text("Cadastro", size=24, weight="bold", color=ft.Colors.BLUE_600),
                 self.cadastro_nome,
                 self.cadastro_email,
                 self.cadastro_senha,
                 self.cadastro_confirmar_senha,
-                ft.ElevatedButton("Registrar", bgcolor="#10B981", color="white",
-                    style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10), overlay_color="#6EE7B7"),
+                ft.ElevatedButton("Registrar", bgcolor=ft.Colors.BLUE_900, color="white",
+                    style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10), overlay_color=ft.Colors.BLUE_500),
                     on_click=registrar_click
                 )
             ], spacing=20, scroll=ft.ScrollMode.ADAPTIVE)
@@ -169,7 +169,7 @@ class TelaLoginAdmin:
                 ], alignment=ft.MainAxisAlignment.CENTER, spacing=14)
             ], alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=8),
             padding=24,
-            bgcolor="#10B981",
+            bgcolor=ft.Colors.BLUE_600,
             shadow=ft.BoxShadow(blur_radius=16, color=ft.colors.BLACK26, offset=ft.Offset(0, -6))
         )
 
