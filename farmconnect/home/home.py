@@ -412,7 +412,7 @@ class HomeApp:
     def build(self):
         return ft.View(
             route="/",
-            scroll=ft.ScrollMode.ADAPTIVE,
+            scroll=ft.ScrollMode.AUTO,
             controls=[
                 ft.Container(
                     bgcolor=ft.Colors.WHITE,
