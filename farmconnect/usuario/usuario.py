@@ -164,9 +164,9 @@ def main(page: ft.Page):
 
     footer = ft.Container(
         bgcolor="#1E3A8A",
-        padding=10,
+        padding=7.3,
         content=ft.Column(
-            spacing=5,
+            spacing=2,
             alignment=ft.MainAxisAlignment.CENTER,
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
             controls=[
