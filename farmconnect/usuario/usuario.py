@@ -176,8 +176,6 @@ def main(page: ft.Page):
                     alignment=ft.MainAxisAlignment.CENTER,
                     spacing=10,
                     controls=[
-                        ft.IconButton(icon=ft.icons.HOME, icon_color="white", tooltip="Início"),
-                        ft.IconButton(icon=ft.icons.HELP_OUTLINE, icon_color="white", tooltip="Ajuda"),
                         ft.IconButton(icon=ft.icons.EMAIL, icon_color="white", tooltip="Contato"),
                     ]
                 ),
