@@ -15,6 +15,9 @@ class TelaEscolhaUsuario:
 
     def entrar_como_admin(self, e):
         self.page.go("/login_admin")
+    
+    def voltar(self, e):
+        self.page.go("/")
 
     def build_tela(self):
         logo = ft.Image(
@@ -74,6 +77,19 @@ class TelaEscolhaUsuario:
             on_click=self.entrar_como_admin,
         )
 
+        botao_voltar = ft.ElevatedButton(
+            content=ft.Row(
+                [
+                    ft.Icon(name=ft.Icons.ARROW_BACK_IOS_NEW),
+                ],
+                alignment=ft.MainAxisAlignment.START
+            ),
+            style=ft.ButtonStyle(
+                color=ft.Colors.WHITE,
+            ),
+            on_click=self.voltar,
+        )
+
         botoes = ft.Column(
             controls=[botao_paciente, botao_admin],
             spacing=20,
@@ -83,6 +99,8 @@ class TelaEscolhaUsuario:
 
         conteudo_cartao = ft.Column(
             controls=[
+                botao_voltar,
+                ft.Divider(height=10, color=ft.Colors.TRANSPARENT),
                 logo,
                 ft.Divider(height=10, color=ft.Colors.TRANSPARENT),
                 titulo,
