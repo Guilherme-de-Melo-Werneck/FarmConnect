@@ -53,7 +53,7 @@ class HomeApp:
                             controls=[
                                 ft.ElevatedButton(
                                     "Baixe o app agora!",
-                                    bgcolor=self.PRIMARY,
+                                    bgcolor=self.PRIMARY_DARK,
                                     color=ft.Colors.WHITE,
                                     style=ft.ButtonStyle(padding=15),
                                 ),
@@ -372,7 +372,7 @@ class HomeApp:
                     ft.Text(
                         "Simplificando o agendamento e retirada de medicamentos especializados.",
                         size=14,
-                        color=self.TEXT_SECONDARY,
+                        color=self.TEXT_PRIMARY,
                         text_align=ft.TextAlign.CENTER,
                     ),
                     ft.Divider(height=20, color=self.TEXT_SECONDARY),

@@ -86,12 +86,12 @@ class TelaLoginAdmin:
 
         header = ft.Container(
             content=ft.Row([
-                ft.Image(src="farmconnect/administrador/img_adm/logo_verde.png", width=120, height=80),
+                ft.Image(src="farmconnect/administrador/img_adm/logo.png", width=120, height=80),
                 ft.Text("FarmConnect Admin", size=20, weight="bold", color=ft.colors.WHITE)
             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
             padding=ft.padding.symmetric(horizontal=40, vertical=24),
-            bgcolor=ft.Colors.BLUE_600,
-            shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK38, offset=ft.Offset(0, 8)),
+            bgcolor=ft.Colors.GREY_50,
+            shadow=ft.BoxShadow(blur_radius=5, color=ft.colors.BLACK38, offset=ft.Offset(0, 8)),
             animate=ft.Animation(600, "easeInOut")
         )
 
