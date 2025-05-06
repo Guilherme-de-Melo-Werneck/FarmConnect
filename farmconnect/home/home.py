@@ -206,8 +206,6 @@ class HomeApp:
                 bgcolor=ft.Colors.WHITE,
                 border_radius=12,
                 padding=20,
-                width=200,
-                height=160,
                 shadow=ft.BoxShadow(
                     spread_radius=1,
                     blur_radius=10,
@@ -284,8 +282,6 @@ class HomeApp:
                 bgcolor=ft.Colors.WHITE,
                 border_radius=12,
                 padding=20,
-                width=200,
-                height=160,
                 shadow=ft.BoxShadow(
                     spread_radius=1,
                     blur_radius=10,
@@ -298,8 +294,8 @@ class HomeApp:
                     controls=[
                         ft.Icon(icon_name, size=40, color=self.PRIMARY),
                         ft.Container(height=3, bgcolor=self.PRIMARY, width=60),
-                        ft.Text(title_text, size=14, weight="bold", color=self.TEXT_PRIMARY, text_align=ft.TextAlign.CENTER),
-                        ft.Text(subtitle_text, size=12, color=self.TEXT_SECONDARY, text_align=ft.TextAlign.CENTER),
+                        ft.Text(title_text, size=14, weight="bold", color=self.TEXT_PRIMARY, text_align=ft.TextAlign.START),
+                        ft.Text(subtitle_text, size=12, color=self.TEXT_SECONDARY, text_align=ft.TextAlign.START),
                     ]
                 )
             )
