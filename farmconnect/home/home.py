@@ -411,18 +411,23 @@ class HomeApp:
 
     def build(self):
         return ft.View(
-        route="/",
-        controls=[
-            self.build_header(),
-            self.build_hero_section(),
-            self.build_about_section(),
-            self.build_manage_section(),
-            self.build_admin_section(),
-            self.build_footer()
-        ],
-        scroll=ft.ScrollMode.ADAPTIVE
-    )
-
+            route="/",
+            scroll=ft.ScrollMode.ADAPTIVE,
+            controls=[
+                ft.Container(
+                    bgcolor=ft.Colors.WHITE,
+                    content=ft.Column([
+                        self.build_header(),
+                        self.build_hero_section(),
+                        self.build_about_section(),
+                        self.build_manage_section(),
+                        self.build_admin_section(),
+                        self.build_footer()
+                    ])
+                )
+            ]
+        )
+    
 # Teste Local:
 if __name__ == "__main__":
     def main(page: ft.Page):
