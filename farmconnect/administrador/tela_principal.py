@@ -47,7 +47,7 @@ class TelaAdminDashboard:
                 content=ft.Row(
                     [
                         ft.Icon(icon, color=ft.Colors.BLUE_600, size=24),
-                        ft.Text(text, size=16, visible=self.sidebar_open, color="#374151"),
+                        ft.Text(text, size=16, visible=self.sidebar_open, color="#111827"),
                     ],
                     alignment=ft.MainAxisAlignment.START,
                     spacing=15,
@@ -187,7 +187,7 @@ class TelaAdminDashboard:
                     shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26),
                     padding=20,
                     content=ft.Column([
-                        ft.Text("Evolução dos Agendamentos", size=16, weight="bold", color=ft.Colors.BLUE_900),
+                        ft.Text("Evolução dos Agendamentos", size=16, weight="bold", color="#111827"),
                         ft.Container(
                             height=120,
                             bgcolor="#d1eefa",
@@ -204,7 +204,7 @@ class TelaAdminDashboard:
                     shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26),
                     padding=20,
                     content=ft.Column([
-                        ft.Text("Estoque de Medicamentos (%)", size=16, weight="bold", color=ft.Colors.BLUE_900),
+                        ft.Text("Estoque de Medicamentos (%)", size=16, weight="bold", color="#111827"),
                         ft.Container(
                             width=100,
                             height=100,
@@ -222,7 +222,7 @@ class TelaAdminDashboard:
                     shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26),
                     padding=20,
                     content=ft.Column([
-                        ft.Text("Medicamentos mais solicitados", size=16, weight="bold", color=ft.Colors.BLUE_900),
+                        ft.Text("Medicamentos mais solicitados", size=16, weight="bold", color="#111827"),
                         ft.Column([
                             ft.Row([ft.Container(width=50, height=20, bgcolor="#047857", border_radius=5), ft.Text("Medicamento 1", size=13)], spacing=8),
                             ft.Row([ft.Container(width=45, height=20, bgcolor="#059669", border_radius=5), ft.Text("Medicamento 2", size=13)], spacing=8),
@@ -261,7 +261,7 @@ class TelaAdminDashboard:
                     shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26),
                     padding=20,
                     content=ft.Column([
-                        ft.Text("Agendamentos Hoje", size=14, weight="bold", color=ft.Colors.BLUE_900),
+                        ft.Text("Agendamentos Hoje", size=14, weight="bold"),
                         ft.Text("0", size=34, weight="bold", color="#111827"),
                         ft.Text("Valor dinâmico", size=12, color="#6B7280"),
                         ft.OutlinedButton("+ Novo Agendamento", style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=8)))
@@ -274,7 +274,7 @@ class TelaAdminDashboard:
                     shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26),
                     padding=20,
                     content=ft.Column([
-                        ft.Text("Medicamentos Cadastrados", size=14, weight="bold", color=ft.Colors.BLUE_900),
+                        ft.Text("Medicamentos Cadastrados", size=14, weight="bold", color="#111827"),
                         ft.Text("0", size=34, weight="bold", color="#111827"),
                         ft.Text("Valor dinâmico", size=12, color="#6B7280"),
                         ft.OutlinedButton("+ Adicionar Medicamento", style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=8)))
@@ -431,13 +431,13 @@ class TelaAdminDashboard:
                 padding=30,
                 content=ft.Column([
                     ft.Row([
-                        ft.Icon(name=ft.icons.LOCAL_PHARMACY, size=40, color="#059669"),
-                        ft.Text("Gerenciamento de Medicamentos", size=32, weight="bold", color="#065F46"),
+                        ft.Icon(name=ft.icons.LOCAL_PHARMACY, size=40, color=ft.Colors.BLUE_600),
+                        ft.Text("Gerenciamento de Medicamentos", size=32, weight="bold", color=ft.Colors.BLUE_900),
                     ], spacing=10, alignment=ft.MainAxisAlignment.CENTER),
                     ft.Text(
                         "Adicione, edite ou remova medicamentos disponíveis no sistema.",
                         size=14,
-                        color="#6B7280",
+                        color=ft.Colors.GREY_700,
                         text_align=ft.TextAlign.CENTER
                     ),
                     ft.Divider(height=30),
@@ -454,13 +454,13 @@ class TelaAdminDashboard:
                                 ft.IconButton(
                                     icon=ft.icons.REFRESH,
                                     tooltip="Atualizar",
-                                    icon_color="#059669",
+                                    icon_color=ft.Colors.BLUE_600,
                                     on_click=self.load_medicamentos
                                 ),
                                 ft.IconButton(
                                     icon=ft.icons.ADD,
                                     tooltip="Adicionar novo medicamento",
-                                    icon_color="#059669",
+                                    icon_color=ft.Colors.BLUE_600,
                                     on_click=self.load_cadastro_medicamento
                                 ),
                             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
@@ -838,7 +838,7 @@ class TelaAdminDashboard:
                         ft.Text("Agendamentos de Retirada", size=32, weight="bold", color=ft.Colors.BLUE_900),
                     ], spacing=10, alignment=ft.MainAxisAlignment.CENTER),
                     ft.Text("Acompanhe todos os agendamentos de medicamentos realizados pelos pacientes",
-                            size=14, color="#6B7280", text_align=ft.TextAlign.CENTER),
+                            size=14, color=ft.Colors.GREY_700, text_align=ft.TextAlign.CENTER),
                     ft.Divider(height=30),
 
                     ft.Container(
@@ -990,11 +990,11 @@ class TelaAdminDashboard:
                 padding=30,
                 content=ft.Column([
                     ft.Row([
-                        ft.Icon(name=ft.icons.LOCAL_HOSPITAL, size=40, color="#059669"),
-                        ft.Text("Gerenciamento de Farmácias", size=32, weight="bold", color="#065F46")
+                        ft.Icon(name=ft.icons.LOCAL_HOSPITAL, size=40, color=ft.Colors.BLUE_600),
+                        ft.Text("Gerenciamento de Farmácias", size=32, weight="bold", color=ft.Colors.BLUE_900)
                     ], spacing=10, alignment=ft.MainAxisAlignment.CENTER),
                     ft.Text("Adicione, edite ou gerencie as farmácias cadastradas no sistema.",
-                            size=14, color="#6B7280", text_align=ft.TextAlign.CENTER),
+                            size=14, color=ft.Colors.GREY_700, text_align=ft.TextAlign.CENTER),
                     ft.Divider(height=30),
 
                     ft.Container(
@@ -1010,13 +1010,13 @@ class TelaAdminDashboard:
                                 ft.IconButton(
                                     icon=ft.icons.REFRESH,
                                     tooltip="Atualizar Lista",
-                                    icon_color="#059669",
+                                    icon_color=ft.Colors.BLUE_600,
                                     on_click=self.load_farmacias
                                 ),
                                 ft.IconButton(
                                     icon=ft.icons.ADD,
                                     tooltip="Adicionar nova farmácia",
-                                    icon_color="#059669",
+                                    icon_color=ft.Colors.BLUE_600,
                                     on_click=lambda e: self.load_farmacias(farmacia={})
                                 )
                             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
@@ -1163,13 +1163,13 @@ class TelaAdminDashboard:
                 padding=30,
                 content=ft.Column([
                     ft.Row([
-                        ft.Icon(ft.icons.PERSON, size=40, color="#059669"),
-                        ft.Text("Gerenciamento de Pacientes", size=32, weight="bold", color="#065F46"),
+                        ft.Icon(ft.icons.PERSON, size=40, color=ft.Colors.BLUE_600),
+                        ft.Text("Gerenciamento de Pacientes", size=32, weight="bold", color=ft.Colors.BLUE_900),
                     ], spacing=10, alignment=ft.MainAxisAlignment.CENTER),
                     ft.Text(
                         "Acompanhe e aprove os cadastros realizados pelos pacientes no aplicativo",
                         size=14,
-                        color="#6B7280",
+                        color=ft.Colors.GREY_700,
                         text_align=ft.TextAlign.CENTER
                     ),
                     ft.Divider(height=30),
