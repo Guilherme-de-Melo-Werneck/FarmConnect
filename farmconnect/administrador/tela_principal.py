@@ -136,7 +136,7 @@ class TelaAdminDashboard:
     def header(self):
         return ft.Container(
             padding=ft.padding.symmetric(horizontal=20, vertical=14),
-            bgcolor="#34D399",
+            bgcolor="white",
             border=ft.border.only(bottom=ft.BorderSide(1, "#E5E7EB")),
             content=ft.ResponsiveRow(
                 columns=12,
@@ -147,10 +147,10 @@ class TelaAdminDashboard:
                         col={"sm": 12, "md": 6},
                         alignment=ft.alignment.center_left,
                         content=ft.Text(
-                            "FarmConnect - Painel Principal",
+                            "FarmConnect - Painel de Controle",
                             size=22,
                             weight="bold",
-                            color="#065F46",
+                            color=ft.Colors.BLUE_900,
                             text_align=ft.TextAlign.START
                         )
                     ),
