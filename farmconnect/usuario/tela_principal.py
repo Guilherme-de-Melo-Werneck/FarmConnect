@@ -3,6 +3,17 @@ import flet as ft
 # Lista completa de medicamentos com dados diferentes
 medicamentos_mock = [
     {"nome": "Interferon Alfa", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
+    {"nome": "Interferon Alfa", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
+    {"nome": "Interferon Alfa", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
+    {"nome": "Interferon Alfa", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
+    {"nome": "Interferon Alfa", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
+    {"nome": "Interferon Alfa", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
+    {"nome": "Interferon Alfa", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
+    {"nome": "Interferon Alfa", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
+    {"nome": "Interferon Alfa", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
+    {"nome": "Interferon Alfa", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
+    {"nome": "Interferon Alfa", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
+    {"nome": "Rituximabe", "imagem": "/images/remedio2.png", "descricao": "Imunossupressor"},
     {"nome": "Rituximabe", "imagem": "/images/remedio2.png", "descricao": "Imunossupressor"},
     {"nome": "Etanercepte", "imagem": "/images/remedio3.png", "descricao": "Artrite reumatoide"},
     {"nome": "Adalimumabe", "imagem": "/images/remedio4.png", "descricao": "Inflamações crônicas"},
@@ -28,7 +39,7 @@ medicamentos_mock = [
     {"nome": "Cerdelga", "imagem": "/images/remedio24.png", "descricao": "Doença de Gaucher"},
 ]
 
-medicamentos_por_pagina = 6
+medicamentos_por_pagina = 8
 
 def tela_usuario(page: ft.Page):
     cards_container = ft.ResponsiveRow(run_spacing=20, spacing=20)
