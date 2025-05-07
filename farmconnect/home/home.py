@@ -209,7 +209,7 @@ class HomeApp:
                 shadow=ft.BoxShadow(
                     spread_radius=1,
                     blur_radius=10,
-                    color=ft.Colors.GREY_200,
+                    color=ft.Colors.BLACK26,
                     offset=ft.Offset(0, 3),
                     blur_style=ft.ShadowBlurStyle.NORMAL
                 ),
@@ -285,7 +285,7 @@ class HomeApp:
                 shadow=ft.BoxShadow(
                     spread_radius=1,
                     blur_radius=10,
-                    color=ft.Colors.GREY_200,
+                    color=ft.Colors.BLACK26,
                     offset=ft.Offset(0, 3),
                     blur_style=ft.ShadowBlurStyle.NORMAL
                 ),
@@ -345,7 +345,7 @@ class HomeApp:
 
     def build_footer(self):
         return ft.Container(
-            bgcolor=ft.Colors.BLUE_50,
+            bgcolor=ft.Colors.BLUE_600,
             padding=40,
             content=ft.Column(
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
@@ -362,8 +362,8 @@ class HomeApp:
                                     alignment=ft.MainAxisAlignment.CENTER,
                                     spacing=10,
                                     controls=[
-                                        ft.Text("FarmConnect", size=20, weight="bold", color=self.PRIMARY_DARK),
-                                        ft.Icon(ft.Icons.LOCAL_PHARMACY_OUTLINED, size=20, color=self.PRIMARY_DARK),
+                                        ft.Text("FarmConnect", size=20, weight="bold", color=ft.Colors.GREY_200),
+                                        ft.Icon(ft.Icons.LOCAL_PHARMACY_OUTLINED, size=20, color=ft.Colors.GREY_200),
                                     ]
                                 )
                             )
@@ -372,10 +372,10 @@ class HomeApp:
                     ft.Text(
                         "Simplificando o agendamento e retirada de medicamentos especializados.",
                         size=14,
-                        color=self.TEXT_PRIMARY,
+                        color=ft.Colors.WHITE70,
                         text_align=ft.TextAlign.CENTER,
                     ),
-                    ft.Divider(height=20, color=self.TEXT_SECONDARY),
+                    ft.Divider(height=20, color=ft.Colors.WHITE70),
                     ft.ResponsiveRow(
                         columns=12,
                         spacing=30,
@@ -401,7 +401,7 @@ class HomeApp:
                     ft.Text(
                         "FarmConnect © 2025 - Todos os direitos reservados.",
                         size=12,
-                        color=self.TEXT_SECONDARY,
+                        color=ft.Colors.WHITE,
                         text_align=ft.TextAlign.CENTER,
                     ),
                 ],
