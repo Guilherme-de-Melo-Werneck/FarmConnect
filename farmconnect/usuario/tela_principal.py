@@ -1,6 +1,94 @@
 import flet as ft
 
+# Lista completa de medicamentos com dados diferentes
+medicamentos_mock = [
+    {"nome": "Interferon Alfa", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
+    {"nome": "Rituximabe", "imagem": "/images/remedio2.png", "descricao": "Imunossupressor"},
+    {"nome": "Etanercepte", "imagem": "/images/remedio3.png", "descricao": "Artrite reumatoide"},
+    {"nome": "Adalimumabe", "imagem": "/images/remedio4.png", "descricao": "Inflamações crônicas"},
+    {"nome": "Tocilizumabe", "imagem": "/images/remedio5.png", "descricao": "Uso hospitalar"},
+    {"nome": "Somatropina", "imagem": "/images/remedio6.png", "descricao": "Deficiência de crescimento"},
+    {"nome": "Bevacizumabe", "imagem": "/images/remedio7.png", "descricao": "Tratamento oncológico"},
+    {"nome": "Trastuzumabe", "imagem": "/images/remedio8.png", "descricao": "Câncer de mama"},
+    {"nome": "Infliximabe", "imagem": "/images/remedio9.png", "descricao": "Doença de Crohn"},
+    {"nome": "Lenalidomida", "imagem": "/images/remedio10.png", "descricao": "Mieloma múltiplo"},
+    {"nome": "Imatinibe", "imagem": "/images/remedio11.png", "descricao": "Leucemia mieloide crônica"},
+    {"nome": "Eculizumabe", "imagem": "/images/remedio12.png", "descricao": "Síndromes raras"},
+    {"nome": "Nusinersen", "imagem": "/images/remedio13.png", "descricao": "Atrofia muscular espinhal"},
+    {"nome": "Canakinumabe", "imagem": "/images/remedio14.png", "descricao": "Inflamações genéticas"},
+    {"nome": "Fingolimode", "imagem": "/images/remedio15.png", "descricao": "Esclerose múltipla"},
+    {"nome": "Everolimo", "imagem": "/images/remedio16.png", "descricao": "Antineoplásico"},
+    {"nome": "Belimumabe", "imagem": "/images/remedio17.png", "descricao": "Lúpus eritematoso"},
+    {"nome": "Cerliponase Alfa", "imagem": "/images/remedio18.png", "descricao": "Lipofuscinose ceroid"},
+    {"nome": "Vimizim", "imagem": "/images/remedio19.png", "descricao": "Síndrome de Morquio"},
+    {"nome": "Spinraza", "imagem": "/images/remedio20.png", "descricao": "Atrofia muscular"},
+    {"nome": "Zolgensma", "imagem": "/images/remedio21.png", "descricao": "Terapia gênica"},
+    {"nome": "Onasemnogene", "imagem": "/images/remedio22.png", "descricao": "Trata mutações genéticas"},
+    {"nome": "Alglucosidase Alfa", "imagem": "/images/remedio23.png", "descricao": "Doença de Pompe"},
+    {"nome": "Cerdelga", "imagem": "/images/remedio24.png", "descricao": "Doença de Gaucher"},
+]
+
+medicamentos_por_pagina = 6
+
 def tela_usuario(page: ft.Page):
+    cards_container = ft.ResponsiveRow(run_spacing=20, spacing=20)
+    pagina_atual = 1
+
+    def gerar_cards(pagina):
+        inicio = (pagina - 1) * medicamentos_por_pagina
+        fim = inicio + medicamentos_por_pagina
+        cards_container.controls.clear()
+        for med in medicamentos_mock[inicio:fim]:
+            cards_container.controls.append(
+                ft.Container(
+                    alignment=ft.alignment.center,
+                    padding=16,
+                    bgcolor="#F8FAFC",
+                    border_radius=16,
+                    col={"xs": 12, "sm": 6, "md": 4, "lg": 3},
+                    content=ft.Column([
+                        ft.Image(src=med["imagem"], width=100, height=100),
+                        ft.Text(
+                            med["nome"],
+                            text_align=ft.TextAlign.CENTER,
+                            size=13,
+                            weight=ft.FontWeight.BOLD,
+                            color=ft.Colors.BLUE_600,
+                        ),
+                        ft.Text(
+                            med["descricao"],
+                            size=11,
+                            text_align=ft.TextAlign.CENTER,
+                            color=ft.Colors.GREY_700,
+                        ),
+                        ft.ElevatedButton(
+                            "ADICIONAR",
+                            width=130,
+                            bgcolor=ft.Colors.BLUE_900,
+                            color=ft.colors.WHITE,
+                            style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10))
+                        )
+                    ], spacing=10, alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
+                )
+            )
+        page.update()
+
+    def mudar_pagina(e):
+        nonlocal pagina_atual
+        pagina_atual = int(e.control.text)
+        gerar_cards(pagina_atual)
+
+    botoes_paginacao = ft.Row(
+        controls=[
+            ft.ElevatedButton(str(i), on_click=mudar_pagina)
+            for i in range(1, (len(medicamentos_mock) // medicamentos_por_pagina) + 1)
+        ],
+        alignment=ft.MainAxisAlignment.CENTER,
+        spacing=10
+    )
+
+    gerar_cards(pagina_atual)
+
     return ft.View(
         route="/usuario",
         controls=[
@@ -37,7 +125,7 @@ def tela_usuario(page: ft.Page):
                                     "Documentos Necessários", "Editar Dados"
                                 ]
                             ],
-                            ft.Container(expand=True),  # empurra o botão para baixo
+                            ft.Container(expand=True),
                             ft.ElevatedButton(
                                 "Sair",
                                 width=220,
@@ -52,46 +140,41 @@ def tela_usuario(page: ft.Page):
                         ], spacing=16, alignment=ft.MainAxisAlignment.START, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
                     ),
 
-                    # CONTEÚDO PRINCIPAL
+                    # CONTEÚDO PRINCIPAL COM SCROLL
                     ft.Container(
                         expand=True,
                         padding=20,
                         col={"xs": 12, "md": 9, "lg": 10},
-                        content=ft.Column([
-                            # TOPO
-                            ft.Container(
-                                bgcolor=ft.Colors.BLUE_600,
-                                border_radius=16,
-                                padding=ft.padding.symmetric(horizontal=20, vertical=18),
-                                shadow=ft.BoxShadow(blur_radius=12, color=ft.colors.BLACK12, offset=ft.Offset(0, 3)),
-                                content=ft.ResponsiveRow([
-                                    ft.Image(src="logo.png", width=110, col={"xs": 12, "md": 2}),
-                                    ft.TextField(
-                                        hint_text="Buscar medicamentos...",
-                                        prefix_icon=ft.icons.SEARCH,
-                                        border_radius=12,
-                                        bgcolor=ft.colors.WHITE,
-                                        height=45,
-                                        col={"xs": 12, "md": 6}
-                                    ),
-                                    ft.Row([
-                                        ft.CircleAvatar(foreground_image_src="/images/profile.jpg", radius=20),
-                                        ft.Text("JOÃO NASCIMENTO", size=13, weight=ft.FontWeight.BOLD, color=ft.colors.WHITE),
-                                    ], spacing=10, alignment=ft.MainAxisAlignment.END, col={"xs": 12, "md": 4})
-                                ])
-                            ),
+                        content=ft.Column(
+                            scroll=ft.ScrollMode.ADAPTIVE,
+                            controls=[
+                                # TOPO
+                                ft.Container(
+                                    bgcolor=ft.Colors.BLUE_600,
+                                    border_radius=16,
+                                    padding=ft.padding.symmetric(horizontal=20, vertical=18),
+                                    shadow=ft.BoxShadow(blur_radius=12, color=ft.colors.BLACK12, offset=ft.Offset(0, 3)),
+                                    content=ft.ResponsiveRow([
+                                        ft.Image(src="logo.png", width=110, col={"xs": 12, "md": 2}),
+                                        ft.TextField(
+                                            hint_text="Buscar medicamentos...",
+                                            prefix_icon=ft.icons.SEARCH,
+                                            border_radius=12,
+                                            bgcolor=ft.colors.WHITE,
+                                            height=45,
+                                            col={"xs": 12, "md": 6}
+                                        ),
+                                        ft.Row([
+                                            ft.CircleAvatar(foreground_image_src="/images/profile.jpg", radius=20),
+                                            ft.Text("JOÃO NASCIMENTO", size=13, weight=ft.FontWeight.BOLD, color=ft.colors.WHITE),
+                                        ], spacing=10, alignment=ft.MainAxisAlignment.END, col={"xs": 12, "md": 4})
+                                    ])
+                                ),
 
-                            # CONTEÚDO
-                            ft.Container(
-                                expand=True,
-                                alignment=ft.alignment.top_center,
-                                padding=30,
-                                content=ft.Container(
-                                    width=900,
+                                # CONTEÚDO DOS MEDICAMENTOS
+                                ft.Container(
+                                    alignment=ft.alignment.top_center,
                                     padding=30,
-                                    bgcolor=ft.colors.WHITE,
-                                    border_radius=20,
-                                    shadow=ft.BoxShadow(blur_radius=18, color=ft.colors.BLACK12, offset=ft.Offset(0, 5)),
                                     content=ft.Column([
                                         ft.Row([
                                             ft.Text(
@@ -109,46 +192,14 @@ def tela_usuario(page: ft.Page):
                                         ], alignment=ft.MainAxisAlignment.CENTER, spacing=16),
 
                                         ft.Divider(height=25),
-
-                                        # CARDS CENTRALIZADOS
-                                        ft.ResponsiveRow([
-                                            *[
-                                                ft.Container(
-                                                    alignment=ft.alignment.center,
-                                                    padding=16,
-                                                    bgcolor="#F8FAFC",
-                                                    border_radius=16,
-                                                    col={"xs": 12, "sm": 6, "md": 4},
-                                                    ink=True,
-                                                    on_hover=lambda e, c=None: (
-                                                        setattr(e.control, "shadow", ft.BoxShadow(blur_radius=15, color=ft.colors.BLACK26, offset=ft.Offset(0, 6))) if e.data == "true"
-                                                        else setattr(e.control, "shadow", ft.BoxShadow(blur_radius=8, color=ft.colors.BLACK12, offset=ft.Offset(0, 4))),
-                                                        e.control.update()
-                                                    ),
-                                                    content=ft.Column([
-                                                        ft.Image(src="/images/remedio.png", width=100, height=100),
-                                                        ft.Text(
-                                                            "INTERFERON ALFA 2B\n3MUI INJ",
-                                                            text_align=ft.TextAlign.CENTER,
-                                                            size=13,
-                                                            weight=ft.FontWeight.BOLD,
-                                                            color=ft.Colors.BLUE_600,
-                                                        ),
-                                                        ft.ElevatedButton(
-                                                            "ADICIONAR",
-                                                            width=130,
-                                                            bgcolor=ft.Colors.BLUE_900,
-                                                            color=ft.colors.WHITE,
-                                                            style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10))
-                                                        )
-                                                    ], spacing=12, alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
-                                                ) for _ in range(6)
-                                            ]
-                                        ], spacing=20, run_spacing=20)
+                                        cards_container,
+                                        ft.Divider(height=30),
+                                        botoes_paginacao
                                     ], spacing=30)
                                 )
-                            )
-                        ], spacing=20)
+                            ],
+                            spacing=20
+                        )
                     )
                 ])
             )
@@ -167,7 +218,7 @@ def main(page: ft.Page):
         page.update()
 
     page.on_route_change = route_change
-    page.go("/usuario")  # Página inicial de teste
+    page.go("/usuario")
 
 ft.app(target=main)
 
