@@ -101,7 +101,7 @@ class TelaLoginAdmin:
             border_radius=20,
             shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK26, offset=ft.Offset(0, 8)),
             content=ft.Column([
-                ft.Text("Login", size=24, weight="bold", color=ft.Colors.BLUE_600),
+                ft.Text("Login", size=24, weight="bold", color=ft.Colors.BLUE_900),
                 self.login_email,
                 self.login_senha,
                 ft.ElevatedButton("Entrar", bgcolor=ft.Colors.BLUE_900, color="white",
@@ -122,7 +122,7 @@ class TelaLoginAdmin:
             border_radius=20,
             shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK26, offset=ft.Offset(0, 8)),
             content=ft.Column([
-                ft.Text("Cadastro", size=24, weight="bold", color=ft.Colors.BLUE_600),
+                ft.Text("Cadastro", size=24, weight="bold", color=ft.Colors.BLUE_900),
                 self.cadastro_nome,
                 self.cadastro_email,
                 self.cadastro_senha,

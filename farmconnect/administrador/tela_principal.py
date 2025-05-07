@@ -35,7 +35,7 @@ class TelaAdminDashboard:
             on_click=on_click
         )
         def on_hover(e):
-            item.bgcolor = "#D1FAE5" if e.data == "true" else "#FFFFFF"
+            item.bgcolor = "#d1eefa" if e.data == "true" else "#FFFFFF"
             item.update()
         item.on_hover = on_hover
         return item
@@ -46,7 +46,7 @@ class TelaAdminDashboard:
                 padding=ft.padding.symmetric(vertical=12, horizontal=10),
                 content=ft.Row(
                     [
-                        ft.Icon(icon, color="#059669", size=24),
+                        ft.Icon(icon, color=ft.Colors.BLUE_600, size=24),
                         ft.Text(text, size=16, visible=self.sidebar_open, color="#374151"),
                     ],
                     alignment=ft.MainAxisAlignment.START,
@@ -61,7 +61,7 @@ class TelaAdminDashboard:
             )
 
             def on_hover(e):
-                container.bgcolor = "#E0F2F1" if e.data == "true" else "#FFFFFF"
+                container.bgcolor = "#d1eefa" if e.data == "true" else "#FFFFFF"
                 container.update()
 
             container.on_hover = on_hover
@@ -114,8 +114,8 @@ class TelaAdminDashboard:
                                 alignment=ft.alignment.center,
                                 padding=ft.padding.symmetric(vertical=10),
                                 content=ft.IconButton(
-                                    icon=ft.icons.ARROW_BACK if self.sidebar_open else ft.icons.ARROW_FORWARD,
-                                    icon_color="#10B981",
+                                    icon=ft.icons.ARROW_BACK_IOS_NEW if self.sidebar_open else ft.icons.ARROW_FORWARD_IOS,
+                                    icon_color=ft.Colors.BLUE_600,
                                     on_click=self.toggle_sidebar,
                                     tooltip="Expandir/Recolher Menu",
                                 )
@@ -162,11 +162,11 @@ class TelaAdminDashboard:
                                 wrap=True,
                                 spacing=10,
                                 controls=[
-                                    ft.IconButton(ft.icons.DARK_MODE_OUTLINED, icon_color="#065F46"),
-                                    ft.IconButton(ft.icons.SCHEDULE_OUTLINED, icon_color="#065F46"),
-                                    ft.Text("Bem-vindo!", size=12, color="#065F46"),
-                                    ft.Text("DESENVOLVIMENTO", size=12, weight="bold", color="#065F46"),
-                                    ft.IconButton(ft.icons.REFRESH, icon_color="#065F46"),
+                                    ft.IconButton(ft.icons.DARK_MODE_OUTLINED, icon_color=ft.Colors.BLUE_600),
+                                    ft.IconButton(ft.icons.SCHEDULE_OUTLINED, icon_color=ft.Colors.BLUE_600),
+                                    ft.Text("Bem-vindo!", size=12, color=ft.Colors.BLUE_600),
+                                    ft.Text("DESENVOLVIMENTO", size=12, weight="bold", color=ft.Colors.BLUE_600),
+                                    ft.IconButton(ft.icons.REFRESH, icon_color=ft.Colors.BLUE_600),
                                 ]
                             )
                         ])
@@ -184,16 +184,16 @@ class TelaAdminDashboard:
                     col={"sm": 12, "md": 4},
                     bgcolor="#FFFFFF",
                     border_radius=12,
-                    shadow=ft.BoxShadow(blur_radius=8, color="#CBD5E1"),
+                    shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26),
                     padding=20,
                     content=ft.Column([
-                        ft.Text("Evolução dos Agendamentos", size=16, weight="bold", color="#065F46"),
+                        ft.Text("Evolução dos Agendamentos", size=16, weight="bold", color=ft.Colors.BLUE_900),
                         ft.Container(
                             height=120,
-                            bgcolor="#D1FAE5",
+                            bgcolor="#d1eefa",
                             border_radius=10,
                             alignment=ft.alignment.center,
-                            content=ft.Text("Gráfico aqui", size=14, color="#047857")
+                            content=ft.Text("Gráfico aqui", size=14, color=ft.Colors.BLUE_600)
                         )
                     ], spacing=10)
                 ),
@@ -201,17 +201,17 @@ class TelaAdminDashboard:
                     col={"sm": 12, "md": 4},
                     bgcolor="#FFFFFF",
                     border_radius=12,
-                    shadow=ft.BoxShadow(blur_radius=8, color="#CBD5E1"),
+                    shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26),
                     padding=20,
                     content=ft.Column([
-                        ft.Text("Estoque de Medicamentos (%)", size=16, weight="bold", color="#065F46"),
+                        ft.Text("Estoque de Medicamentos (%)", size=16, weight="bold", color=ft.Colors.BLUE_900),
                         ft.Container(
                             width=100,
                             height=100,
-                            bgcolor="#A7F3D0",
+                            bgcolor="#d1eefa",
                             border_radius=50,
                             alignment=ft.alignment.center,
-                            content=ft.Text("80%", size=18, weight="bold", color="#047857")
+                            content=ft.Text("80%", size=18, weight="bold", color=ft.Colors.BLUE_600)
                         )
                     ], spacing=10, alignment=ft.MainAxisAlignment.CENTER)
                 ),
@@ -219,10 +219,10 @@ class TelaAdminDashboard:
                     col={"sm": 12, "md": 4},
                     bgcolor="#FFFFFF",
                     border_radius=12,
-                    shadow=ft.BoxShadow(blur_radius=8, color="#CBD5E1"),
+                    shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26),
                     padding=20,
                     content=ft.Column([
-                        ft.Text("Medicamentos mais solicitados", size=16, weight="bold", color="#065F46"),
+                        ft.Text("Medicamentos mais solicitados", size=16, weight="bold", color=ft.Colors.BLUE_900),
                         ft.Column([
                             ft.Row([ft.Container(width=50, height=20, bgcolor="#047857", border_radius=5), ft.Text("Medicamento 1", size=13)], spacing=8),
                             ft.Row([ft.Container(width=45, height=20, bgcolor="#059669", border_radius=5), ft.Text("Medicamento 2", size=13)], spacing=8),
@@ -245,10 +245,10 @@ class TelaAdminDashboard:
                     col={"sm": 12, "md": 4},
                     bgcolor="#FFFFFF",
                     border_radius=12,
-                    shadow=ft.BoxShadow(blur_radius=8, color="#CBD5E1"),
+                    shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26),
                     padding=20,
                     content=ft.Column([
-                        ft.Text("Pacientes Cadastrados", size=14, weight="bold", color="#065F46"),
+                        ft.Text("Pacientes Cadastrados", size=14, weight="bold", color="#111827"),
                         ft.Text("0", size=34, weight="bold", color="#111827"),
                         ft.Text("Valor dinâmico", size=12, color="#6B7280"),
                         ft.OutlinedButton("+ Adicionar Paciente", style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=8)))
@@ -258,12 +258,12 @@ class TelaAdminDashboard:
                     col={"sm": 12, "md": 4},
                     bgcolor="#FFFFFF",
                     border_radius=12,
-                    shadow=ft.BoxShadow(blur_radius=8, color="#CBD5E1"),
+                    shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26),
                     padding=20,
                     content=ft.Column([
-                        ft.Text("Agendamentos Hoje", size=14, weight="bold", color="#065F46"),
+                        ft.Text("Agendamentos Hoje", size=14, weight="bold", color=ft.Colors.BLUE_900),
                         ft.Text("0", size=34, weight="bold", color="#111827"),
-                        ft.Text("Valor dinâmico", size=12, color="#10B981"),
+                        ft.Text("Valor dinâmico", size=12, color="#6B7280"),
                         ft.OutlinedButton("+ Novo Agendamento", style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=8)))
                     ], spacing=10, alignment=ft.MainAxisAlignment.CENTER)
                 ),
@@ -271,10 +271,10 @@ class TelaAdminDashboard:
                     col={"sm": 12, "md": 4},
                     bgcolor="#FFFFFF",
                     border_radius=12,
-                    shadow=ft.BoxShadow(blur_radius=8, color="#CBD5E1"),
+                    shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26),
                     padding=20,
                     content=ft.Column([
-                        ft.Text("Medicamentos Cadastrados", size=14, weight="bold", color="#065F46"),
+                        ft.Text("Medicamentos Cadastrados", size=14, weight="bold", color=ft.Colors.BLUE_900),
                         ft.Text("0", size=34, weight="bold", color="#111827"),
                         ft.Text("Valor dinâmico", size=12, color="#6B7280"),
                         ft.OutlinedButton("+ Adicionar Medicamento", style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=8)))
@@ -282,7 +282,6 @@ class TelaAdminDashboard:
                 )
             ]
         )
-
 
     def load_dashboard(self, e=None):
         self.current_view.controls = [
@@ -447,7 +446,7 @@ class TelaAdminDashboard:
                         bgcolor="#FFFFFF",
                         border_radius=20,
                         padding=25,
-                        shadow=ft.BoxShadow(blur_radius=18, color="#CBD5E1", offset=ft.Offset(0, 6)),
+                        shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26, offset=ft.Offset(0, 8)),
                         content=ft.Column([
                             ft.Row([
                                 ft.Text("📋 Lista de Medicamentos", size=20, weight="bold", color="#111827"),
@@ -835,8 +834,8 @@ class TelaAdminDashboard:
                 padding=30,
                 content=ft.Column([
                     ft.Row([
-                        ft.Icon(name=ft.icons.CALENDAR_MONTH, size=40, color="#059669"),
-                        ft.Text("Agendamentos de Retirada", size=32, weight="bold", color="#065F46"),
+                        ft.Icon(name=ft.icons.CALENDAR_MONTH, size=40, color=ft.Colors.BLUE_600),
+                        ft.Text("Agendamentos de Retirada", size=32, weight="bold", color=ft.Colors.BLUE_900),
                     ], spacing=10, alignment=ft.MainAxisAlignment.CENTER),
                     ft.Text("Acompanhe todos os agendamentos de medicamentos realizados pelos pacientes",
                             size=14, color="#6B7280", text_align=ft.TextAlign.CENTER),
@@ -846,13 +845,13 @@ class TelaAdminDashboard:
                         bgcolor="#FFFFFF",
                         border_radius=20,
                         padding=25,
-                        shadow=ft.BoxShadow(blur_radius=18, color="#CBD5E1", offset=ft.Offset(0, 6)),
+                        shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26, offset=ft.Offset(0, 8)),
                         content=ft.Column([
                             ft.Row([
                                 ft.Text("📋 Lista de Agendamentos", size=20, weight="bold", color="#111827"),
                                 ft.Container(expand=True),
-                                ft.IconButton(icon=ft.icons.FILTER_LIST, icon_color="#059669", tooltip="Filtrar"),
-                                ft.IconButton(icon=ft.icons.REFRESH, icon_color="#059669", tooltip="Atualizar Lista"),
+                                ft.IconButton(icon=ft.icons.FILTER_LIST, icon_color=ft.Colors.BLUE_600, tooltip="Filtrar"),
+                                ft.IconButton(icon=ft.icons.REFRESH, icon_color=ft.Colors, tooltip="Atualizar Lista"),
                             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
                             ft.Divider(),
                             ft.Container(
@@ -900,7 +899,7 @@ class TelaAdminDashboard:
             bgcolor="#FFFFFF",
             border_radius=20,
             padding=25,
-            shadow=ft.BoxShadow(blur_radius=18, color="#CBD5E1", offset=ft.Offset(0, 6)),
+            shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26, offset=ft.Offset(0, 8)),
             visible=self.editando_farmacia,
             animate_opacity=300,
             opacity=1.0 if self.editando_farmacia else 0.0,
@@ -1003,7 +1002,7 @@ class TelaAdminDashboard:
                         border_radius=20,
                         padding=25,
                         expand=True,
-                        shadow=ft.BoxShadow(blur_radius=18, color="#CBD5E1", offset=ft.Offset(0, 6)),
+                        shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26, offset=ft.Offset(0, 8)),
                         content=ft.Column([
                             ft.Row([
                                 ft.Text("📋 Lista de Farmácias", size=20, weight="bold", color="#111827"),
@@ -1139,7 +1138,7 @@ class TelaAdminDashboard:
             padding=20,
             bgcolor="#FFFFFF",
             border_radius=16,
-            shadow=ft.BoxShadow(blur_radius=12, color="#CBD5E1", offset=ft.Offset(0, 4)),
+            shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26, offset=ft.Offset(0, 8)),
             content=ft.Column([
                 ft.Row([
                     ft.Text("📋 Lista de Pacientes", size=20, weight="bold", color="#111827"),
