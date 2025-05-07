@@ -16,7 +16,7 @@ def tela_usuario(page: ft.Page):
                     ft.Container(
                         width=260,
                         padding=20,
-                        bgcolor="#1E3A8A",
+                        bgcolor=ft.Colors.BLUE_600,
                         border_radius=16,
                         col={"xs": 12, "md": 3, "lg": 2},
                         content=ft.Column([
@@ -28,7 +28,7 @@ def tela_usuario(page: ft.Page):
                                     width=220,
                                     style=ft.ButtonStyle(
                                         bgcolor=ft.colors.WHITE,
-                                        color="#1E3A8A",
+                                        color=ft.Colors.BLUE_900,
                                         shape=ft.RoundedRectangleBorder(radius=12),
                                         padding=ft.padding.symmetric(vertical=12),
                                     )
@@ -60,7 +60,7 @@ def tela_usuario(page: ft.Page):
                         content=ft.Column([
                             # TOPO
                             ft.Container(
-                                bgcolor="#1E40AF",
+                                bgcolor=ft.Colors.BLUE_600,
                                 border_radius=16,
                                 padding=ft.padding.symmetric(horizontal=20, vertical=18),
                                 shadow=ft.BoxShadow(blur_radius=12, color=ft.colors.BLACK12, offset=ft.Offset(0, 3)),
@@ -98,7 +98,7 @@ def tela_usuario(page: ft.Page):
                                                 "MEDICAMENTOS DISPONÍVEIS",
                                                 size=24,
                                                 weight=ft.FontWeight.W_600,
-                                                color="#1E3A8A"
+                                                color=ft.Colors.BLUE_900,
                                             )
                                         ], alignment=ft.MainAxisAlignment.CENTER),
 
@@ -114,12 +114,17 @@ def tela_usuario(page: ft.Page):
                                         ft.ResponsiveRow([
                                             *[
                                                 ft.Container(
-                                                    alignment=ft.alignment.center,  # Centraliza todo o card
+                                                    alignment=ft.alignment.center,
                                                     padding=16,
                                                     bgcolor="#F8FAFC",
                                                     border_radius=16,
-                                                    shadow=ft.BoxShadow(blur_radius=8, color=ft.colors.BLACK12, offset=ft.Offset(0, 4)),
                                                     col={"xs": 12, "sm": 6, "md": 4},
+                                                    ink=True,
+                                                    on_hover=lambda e, c=None: (
+                                                        setattr(e.control, "shadow", ft.BoxShadow(blur_radius=15, color=ft.colors.BLACK26, offset=ft.Offset(0, 6))) if e.data == "true"
+                                                        else setattr(e.control, "shadow", ft.BoxShadow(blur_radius=8, color=ft.colors.BLACK12, offset=ft.Offset(0, 4))),
+                                                        e.control.update()
+                                                    ),
                                                     content=ft.Column([
                                                         ft.Image(src="/images/remedio.png", width=100, height=100),
                                                         ft.Text(
@@ -127,12 +132,12 @@ def tela_usuario(page: ft.Page):
                                                             text_align=ft.TextAlign.CENTER,
                                                             size=13,
                                                             weight=ft.FontWeight.BOLD,
-                                                            color="#1E3A8A"
+                                                            color=ft.Colors.BLUE_600,
                                                         ),
                                                         ft.ElevatedButton(
                                                             "ADICIONAR",
                                                             width=130,
-                                                            bgcolor="#1E3A8A",
+                                                            bgcolor=ft.Colors.BLUE_900,
                                                             color=ft.colors.WHITE,
                                                             style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10))
                                                         )
