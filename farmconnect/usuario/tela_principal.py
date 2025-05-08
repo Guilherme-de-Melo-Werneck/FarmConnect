@@ -64,13 +64,13 @@ def tela_usuario(page: ft.Page):
                             text_align=ft.TextAlign.CENTER,
                             size=13,
                             weight=ft.FontWeight.BOLD,
-                            color=ft.Colors.BLUE_600,
+                            color="#111827",
                         ),
                         ft.Text(
                             med["descricao"],
                             size=11,
                             text_align=ft.TextAlign.CENTER,
-                            color=ft.Colors.GREY_700,
+                            color="#111827",
                         ),
                         ft.ElevatedButton(
                             "ADICIONAR",
@@ -127,7 +127,7 @@ def tela_usuario(page: ft.Page):
                                     width=220,
                                     style=ft.ButtonStyle(
                                         bgcolor=ft.colors.WHITE,
-                                        color=ft.Colors.BLUE_900,
+                                        color="#111827",
                                         shape=ft.RoundedRectangleBorder(radius=12),
                                         padding=ft.padding.symmetric(vertical=12),
                                     )
@@ -192,16 +192,37 @@ def tela_usuario(page: ft.Page):
                                                 "MEDICAMENTOS DISPONÍVEIS",
                                                 size=24,
                                                 weight=ft.FontWeight.W_600,
-                                                color=ft.Colors.BLUE_900,
+                                                color="#111827",
                                             )
                                         ], alignment=ft.MainAxisAlignment.CENTER),
 
                                         ft.Row([
-                                            ft.OutlinedButton("Mais Buscados"),
-                                            ft.OutlinedButton("Meus Agendamentos"),
-                                            ft.OutlinedButton("Feedback"),
+                                            ft.OutlinedButton(
+                                                "Mais Buscados",
+                                                style=ft.ButtonStyle(
+                                                    color="#111827",
+                                                    shape=ft.RoundedRectangleBorder(radius=8),
+                                                    padding=ft.padding.symmetric(horizontal=20, vertical=10)
+                                                )
+                                            ),
+                                            ft.OutlinedButton(
+                                                "Meus Agendamentos",
+                                                style=ft.ButtonStyle(
+                                                    color="#111827",
+                                                    shape=ft.RoundedRectangleBorder(radius=8),
+                                                    padding=ft.padding.symmetric(horizontal=20, vertical=10)
+                                                )
+                                            ),
+                                            ft.OutlinedButton(
+                                                "Feedback",
+                                                style=ft.ButtonStyle(
+                                                    color="#111827",
+                                                    shape=ft.RoundedRectangleBorder(radius=8),
+                                                    padding=ft.padding.symmetric(horizontal=20, vertical=10)
+                                                )
+                                            ),
                                         ], alignment=ft.MainAxisAlignment.CENTER, spacing=16),
-
+                                        
                                         ft.Divider(height=25),
                                         cards_container,
                                         ft.Divider(height=30),
