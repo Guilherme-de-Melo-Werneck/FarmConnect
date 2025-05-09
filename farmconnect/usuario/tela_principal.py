@@ -122,19 +122,61 @@ def tela_usuario(page: ft.Page):
                             ft.Image(src="logo.png", width=120, height=40),
                             ft.Divider(height=20, color=ft.colors.TRANSPARENT),
                             *[
-                                ft.ElevatedButton(
-                                    text,
+                                 ft.ElevatedButton(
+                                    "Ver Perfil",
                                     width=220,
                                     style=ft.ButtonStyle(
                                         bgcolor=ft.colors.WHITE,
                                         color="#111827",
                                         shape=ft.RoundedRectangleBorder(radius=12),
                                         padding=ft.padding.symmetric(vertical=12),
-                                    )
-                                ) for text in [
-                                    "Ver Perfil", "Medicamentos Retirados", "Agendamentos",
-                                    "Documentos Necessários", "Editar Dados"
-                                ]
+                                    ),
+                                    on_click=lambda e: page.go("/perfil")
+                                ),
+                                ft.ElevatedButton(
+                                    "Medicamentos Retirados",
+                                    width=220,
+                                    style=ft.ButtonStyle(
+                                        bgcolor=ft.colors.WHITE,
+                                        color="#111827",
+                                        shape=ft.RoundedRectangleBorder(radius=12),
+                                        padding=ft.padding.symmetric(vertical=12),
+                                    ),
+                                    on_click=lambda e: page.go("/medicamentos")
+                                ),
+                                ft.ElevatedButton(
+                                    "Agendamentos",
+                                    width=220,
+                                    style=ft.ButtonStyle(
+                                        bgcolor=ft.colors.WHITE,
+                                        color="#111827",
+                                        shape=ft.RoundedRectangleBorder(radius=12),
+                                        padding=ft.padding.symmetric(vertical=12),
+                                    ),
+                                    on_click=lambda e: page.go("/agendamentos")
+                                ),
+                                ft.ElevatedButton(
+                                    "Documentos Necessários",
+                                    width=220,
+                                    style=ft.ButtonStyle(
+                                        bgcolor=ft.colors.WHITE,
+                                        color="#111827",
+                                        shape=ft.RoundedRectangleBorder(radius=12),
+                                        padding=ft.padding.symmetric(vertical=12),
+                                    ),
+                                    on_click=lambda e: page.go("/documentos")
+                                ),
+                                ft.ElevatedButton(
+                                    "Editar Dados",
+                                    width=220,
+                                    style=ft.ButtonStyle(
+                                        bgcolor=ft.colors.WHITE,
+                                        color="#111827",
+                                        shape=ft.RoundedRectangleBorder(radius=12),
+                                        padding=ft.padding.symmetric(vertical=12),
+                                    ),
+                                    on_click=lambda e: page.go("/editar")
+                                ),
                             ],
                             ft.Container(expand=True),
                             ft.ElevatedButton(
@@ -238,6 +280,176 @@ def tela_usuario(page: ft.Page):
         ]
     )
 
+def tela_documentos(page: ft.Page):
+    return ft.View(
+        route="/documentos",
+        controls=[
+            ft.Container(
+                expand=True,
+                gradient=ft.LinearGradient(
+                    begin=ft.alignment.top_left,
+                    end=ft.alignment.bottom_right,
+                    colors=["#EFF6FF", "#DBEAFE"]
+                ),
+                padding=40,
+                content=ft.Column([
+                    # Título da Página
+                    ft.Text(
+                        "📄 DOCUMENTOS NECESSÁRIOS", 
+                        size=30, 
+                        weight=ft.FontWeight.BOLD, 
+                        color=ft.Colors.BLUE_900,
+                        text_align=ft.TextAlign.CENTER,
+                    ),
+                    ft.Divider(height=30, color=ft.colors.TRANSPARENT),
+                    # Caixa de Documentos
+                    ft.Container(
+                        padding=30,
+                        bgcolor=ft.colors.WHITE,
+                        border_radius=20,
+                        shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK12, offset=ft.Offset(0, 10)),
+                        content=ft.Column([
+                            ft.Text(
+                                "Para retirar medicamentos é necessário apresentar:",
+                                size=20,
+                                weight=ft.FontWeight.BOLD,
+                                color=ft.Colors.BLUE_900
+                            ),
+                            ft.Text(
+                                "1. Documento com foto (RG, CNH, Passaporte)\n"
+                                "2. Receita médica válida por até 3 meses\n\n"
+                                "Se for um terceiro retirando o medicamento, é necessário:\n"
+                                "- Documento com foto do responsável\n"
+                                "- Documento com foto do paciente\n"
+                                "- Autorização assinada pelo responsável.",
+                                size=18,
+                                color=ft.Colors.GREY_700,
+                                selectable=True
+                            ),
+                        ], spacing=10)
+                    ),
+                    ft.Divider(height=30, color=ft.colors.TRANSPARENT),
+                    # Botões de Ação
+                    ft.Row([
+                        ft.ElevatedButton(
+                            "Baixar Documento de Autorização",
+                            icon=ft.icons.FILE_DOWNLOAD,
+                            bgcolor=ft.Colors.BLUE_900,
+                            color=ft.colors.WHITE,
+                            width=250,
+                            style=ft.ButtonStyle(
+                                shape=ft.RoundedRectangleBorder(radius=12),
+                                padding=ft.padding.symmetric(vertical=12)
+                            ),
+                            on_click=lambda e: print("Documento baixado")
+                        ),
+                        ft.ElevatedButton(
+                            "Voltar",
+                            icon=ft.icons.ARROW_BACK_IOS_NEW,
+                            bgcolor=ft.Colors.GREY_500,
+                            color=ft.colors.WHITE,
+                            width=150,
+                            style=ft.ButtonStyle(
+                                shape=ft.RoundedRectangleBorder(radius=12),
+                                padding=ft.padding.symmetric(vertical=12)
+                            ),
+                            on_click=lambda e: page.go("/usuario")
+                        )
+                    ], alignment=ft.MainAxisAlignment.CENTER, spacing=20)
+                ], spacing=30, alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
+            )
+        ]
+    )
+
+def tela_perfil_paciente(page: ft.Page):
+    return ft.View(
+        route="/perfil",
+        controls=[
+            ft.Container(
+                expand=True,
+                gradient=ft.LinearGradient(
+                    begin=ft.alignment.top_left,
+                    end=ft.alignment.bottom_right,
+                    colors=["#E0F2FE", "#F0F4FF"]
+                ),
+                padding=50,
+                content=ft.Column([
+                    # Cartão de Saúde com efeito 3D
+                    ft.Container(
+                        padding=40,
+                        bgcolor=ft.colors.WHITE,
+                        border_radius=30,
+                        shadow=ft.BoxShadow(blur_radius=40, color=ft.colors.BLACK12, offset=ft.Offset(0, 15)),
+                        content=ft.Column([
+                            ft.Row([
+                                ft.Container(
+                                    padding=10,
+                                    border_radius=70,
+                                    bgcolor=ft.colors.WHITE,
+                                    shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK12, offset=ft.Offset(0, 10)),
+                                    content=ft.CircleAvatar(
+                                        foreground_image_src="/images/profile.jpg",
+                                        radius=70
+                                    )
+                                ),
+                                ft.Column([
+                                    ft.Text("JOÃO NASCIMENTO", size=30, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
+                                    ft.Text("Paciente FarmConnect", size=18, color=ft.Colors.GREY_600),
+                                ], spacing=5, alignment=ft.MainAxisAlignment.CENTER)
+                            ], alignment=ft.MainAxisAlignment.CENTER, spacing=30),
+                            ft.Divider(height=20, color=ft.colors.TRANSPARENT),
+                            ft.Container(
+                                padding=30,
+                                bgcolor="#FAFAFA",
+                                border_radius=20,
+                                shadow=ft.BoxShadow(blur_radius=30, color=ft.colors.BLACK12, offset=ft.Offset(0, 10)),
+                                content=ft.Column([
+                                    ft.Text("Dados do Paciente", size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
+                                    ft.Divider(height=10, color=ft.colors.TRANSPARENT),
+                                    ft.Text("Nome: João Nascimento", size=20, color=ft.Colors.GREY_700),
+                                    ft.Text("CPF: 123.456.789-00", size=20, color=ft.Colors.GREY_700),
+                                    ft.Text("Data de Nascimento: 01/01/1990", size=20, color=ft.Colors.GREY_700),
+                                    ft.Text("Email: joao@gmail.com", size=20, color=ft.Colors.GREY_700),
+                                    ft.Text("Telefone: (11) 98765-4321", size=20, color=ft.Colors.GREY_700),
+                                ], spacing=15)
+                            ),
+                            ft.Divider(height=20, color=ft.colors.TRANSPARENT),
+                            ft.Row([
+                                ft.ElevatedButton(
+                                    "Editar Perfil",
+                                    icon=ft.icons.EDIT,
+                                    bgcolor=ft.Colors.BLUE_900,
+                                    color=ft.colors.WHITE,
+                                    width=220,
+                                    style=ft.ButtonStyle(
+                                        shape=ft.RoundedRectangleBorder(radius=20),
+                                        padding=ft.padding.symmetric(vertical=12),
+                                        elevation=5
+                                    ),
+                                    on_click=lambda e: page.go("/editar")
+                                ),
+                                ft.ElevatedButton(
+                                    "Voltar",
+                                    icon=ft.icons.ARROW_BACK_IOS_NEW,
+                                    bgcolor=ft.Colors.GREY_500,
+                                    color=ft.colors.WHITE,
+                                    width=150,
+                                    style=ft.ButtonStyle(
+                                        shape=ft.RoundedRectangleBorder(radius=20),
+                                        padding=ft.padding.symmetric(vertical=12),
+                                        elevation=5
+                                    ),
+                                    on_click=lambda e: page.go("/usuario")
+                                )
+                            ], alignment=ft.MainAxisAlignment.CENTER, spacing=20)
+                        ], spacing=30, alignment=ft.MainAxisAlignment.CENTER)
+                    )
+                ], spacing=40, alignment=ft.MainAxisAlignment.CENTER)
+            )
+        ]
+    )
+
+
 def main(page: ft.Page):
     page.title = "FarmConnect"
     page.bgcolor = "#EFF6FF"
@@ -247,7 +459,13 @@ def main(page: ft.Page):
         page.views.clear()
         if page.route == "/usuario":
             page.views.append(tela_usuario(page))
+        elif page.route == "/documentos":
+            page.views.append(tela_documentos(page))
+        elif page.route == "/perfil":
+            page.views.append(tela_perfil_paciente(page))
         page.update()
+
+
 
     page.on_route_change = route_change
     page.go("/usuario")
