@@ -11,7 +11,7 @@ class TelaEscolhaUsuario:
         self.page.bgcolor = ft.Colors.WHITE
 
     def entrar_como_paciente(self, e):
-        self.page.go("/login")
+        self.page.go("/login_usuario")
 
     def entrar_como_admin(self, e):
         self.page.go("/login_admin")
