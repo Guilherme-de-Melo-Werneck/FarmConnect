@@ -90,7 +90,7 @@ class TelaAdminDashboard:
             border_radius=8,
             bgcolor="#FEE2E2",
             ink=True,
-            on_click=lambda e: print("Logout clicado!"),
+            on_click=lambda e: self.page.go("/escolha_usuario"),
             animate=ft.Animation(200, "easeInOut"),
         )
 
