@@ -166,17 +166,6 @@ def tela_usuario(page: ft.Page):
                                     ),
                                     on_click=lambda e: page.go("/documentos")
                                 ),
-                                ft.ElevatedButton(
-                                    "Editar Dados",
-                                    width=220,
-                                    style=ft.ButtonStyle(
-                                        bgcolor=ft.colors.WHITE,
-                                        color="#111827",
-                                        shape=ft.RoundedRectangleBorder(radius=12),
-                                        padding=ft.padding.symmetric(vertical=12),
-                                    ),
-                                    on_click=lambda e: page.go("/editar")
-                                ),
                             ],
                             ft.Container(expand=True),
                             ft.ElevatedButton(
@@ -367,64 +356,81 @@ def tela_perfil_paciente(page: ft.Page):
         controls=[
             ft.Container(
                 expand=True,
+                alignment=ft.alignment.center,
                 gradient=ft.LinearGradient(
                     begin=ft.alignment.top_left,
                     end=ft.alignment.bottom_right,
                     colors=["#E0F2FE", "#F0F4FF"]
                 ),
-                padding=50,
-                content=ft.Column([
-                    # Cartão de Saúde com efeito 3D
-                    ft.Container(
-                        padding=40,
-                        bgcolor=ft.colors.WHITE,
-                        border_radius=30,
-                        shadow=ft.BoxShadow(blur_radius=40, color=ft.colors.BLACK12, offset=ft.Offset(0, 15)),
-                        content=ft.Column([
-                            ft.Row([
-                                ft.Container(
-                                    padding=10,
-                                    border_radius=70,
-                                    bgcolor=ft.colors.WHITE,
-                                    shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK12, offset=ft.Offset(0, 10)),
-                                    content=ft.CircleAvatar(
-                                        foreground_image_src="/images/profile.jpg",
-                                        radius=70
+                content=ft.Column(
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                    spacing=40,
+                    controls=[
+                        # Cartão de Saúde
+                        ft.Container(
+                            width=700,
+                            padding=30,
+                            bgcolor=ft.colors.WHITE,
+                            border_radius=20,
+                            shadow=ft.BoxShadow(blur_radius=30, color=ft.colors.BLACK12, offset=ft.Offset(0, 15)),
+                            content=ft.Row(
+                                alignment=ft.MainAxisAlignment.CENTER,
+                                spacing=20,
+                                controls=[
+                                    # Avatar e Nome
+                                    ft.Container(
+                                        width=200,
+                                        padding=10,
+                                        border_radius=100,
+                                        bgcolor=ft.colors.WHITE,
+                                        shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK12, offset=ft.Offset(0, 10)),
+                                        content=ft.CircleAvatar(
+                                            foreground_image_src="/images/profile.jpg",
+                                            radius=70
+                                        )
+                                    ),
+                                    # Dados do Paciente
+                                    ft.Container(
+                                        expand=True,
+                                        padding=20,
+                                        bgcolor="#FAFAFA",
+                                        border_radius=16,
+                                        shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK12, offset=ft.Offset(0, 10)),
+                                        content=ft.Column(
+                                            alignment=ft.MainAxisAlignment.CENTER,
+                                            horizontal_alignment=ft.CrossAxisAlignment.START,
+                                            spacing=10,
+                                            controls=[
+                                                ft.Text("JOÃO NASCIMENTO", size=26, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
+                                                ft.Text("Paciente FarmConnect", size=16, color=ft.Colors.GREY_600),
+                                                ft.Divider(height=15, color=ft.colors.TRANSPARENT),
+                                                ft.Text("Nome: João Nascimento", size=18, color=ft.Colors.GREY_700),
+                                                ft.Text("CPF: 123.456.789-00", size=18, color=ft.Colors.GREY_700),
+                                                ft.Text("Data de Nascimento: 01/01/1990", size=18, color=ft.Colors.GREY_700),
+                                                ft.Text("Email: joao@gmail.com", size=18, color=ft.Colors.GREY_700),
+                                                ft.Text("Telefone: (11) 98765-4321", size=18, color=ft.Colors.GREY_700),
+                                            ]
+                                        )
                                     )
-                                ),
-                                ft.Column([
-                                    ft.Text("JOÃO NASCIMENTO", size=30, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
-                                    ft.Text("Paciente FarmConnect", size=18, color=ft.Colors.GREY_600),
-                                ], spacing=5, alignment=ft.MainAxisAlignment.CENTER)
-                            ], alignment=ft.MainAxisAlignment.CENTER, spacing=30),
-                            ft.Divider(height=20, color=ft.colors.TRANSPARENT),
-                            ft.Container(
-                                padding=30,
-                                bgcolor="#FAFAFA",
-                                border_radius=20,
-                                shadow=ft.BoxShadow(blur_radius=30, color=ft.colors.BLACK12, offset=ft.Offset(0, 10)),
-                                content=ft.Column([
-                                    ft.Text("Dados do Paciente", size=24, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
-                                    ft.Divider(height=10, color=ft.colors.TRANSPARENT),
-                                    ft.Text("Nome: João Nascimento", size=20, color=ft.Colors.GREY_700),
-                                    ft.Text("CPF: 123.456.789-00", size=20, color=ft.Colors.GREY_700),
-                                    ft.Text("Data de Nascimento: 01/01/1990", size=20, color=ft.Colors.GREY_700),
-                                    ft.Text("Email: joao@gmail.com", size=20, color=ft.Colors.GREY_700),
-                                    ft.Text("Telefone: (11) 98765-4321", size=20, color=ft.Colors.GREY_700),
-                                ], spacing=15)
-                            ),
-                            ft.Divider(height=20, color=ft.colors.TRANSPARENT),
-                            ft.Row([
+                                ]
+                            )
+                        ),
+                        # Botões Editar e Voltar
+                        ft.Row(
+                            alignment=ft.MainAxisAlignment.CENTER,
+                            spacing=20,
+                            controls=[
                                 ft.ElevatedButton(
                                     "Editar Perfil",
                                     icon=ft.icons.EDIT,
                                     bgcolor=ft.Colors.BLUE_900,
                                     color=ft.colors.WHITE,
-                                    width=220,
+                                    width=180,
                                     style=ft.ButtonStyle(
-                                        shape=ft.RoundedRectangleBorder(radius=20),
-                                        padding=ft.padding.symmetric(vertical=12),
-                                        elevation=5
+                                        shape=ft.RoundedRectangleBorder(radius=16),
+                                        padding=ft.padding.symmetric(vertical=10),
+                                        elevation=4
                                     ),
                                     on_click=lambda e: page.go("/editar")
                                 ),
@@ -433,22 +439,21 @@ def tela_perfil_paciente(page: ft.Page):
                                     icon=ft.icons.ARROW_BACK_IOS_NEW,
                                     bgcolor=ft.Colors.GREY_500,
                                     color=ft.colors.WHITE,
-                                    width=150,
+                                    width=140,
                                     style=ft.ButtonStyle(
-                                        shape=ft.RoundedRectangleBorder(radius=20),
-                                        padding=ft.padding.symmetric(vertical=12),
-                                        elevation=5
+                                        shape=ft.RoundedRectangleBorder(radius=16),
+                                        padding=ft.padding.symmetric(vertical=10),
+                                        elevation=4
                                     ),
                                     on_click=lambda e: page.go("/usuario")
                                 )
-                            ], alignment=ft.MainAxisAlignment.CENTER, spacing=20)
-                        ], spacing=30, alignment=ft.MainAxisAlignment.CENTER)
-                    )
-                ], spacing=40, alignment=ft.MainAxisAlignment.CENTER)
+                            ]
+                        )
+                    ]
+                )
             )
         ]
     )
-
 
 def main(page: ft.Page):
     page.title = "FarmConnect"

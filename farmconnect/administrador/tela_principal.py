@@ -251,7 +251,7 @@ class TelaAdminDashboard:
                         ft.Text("Pacientes Cadastrados", size=14, weight="bold", color="#111827"),
                         ft.Text("0", size=34, weight="bold", color="#111827"),
                         ft.Text("Valor dinâmico", size=12, color="#6B7280"),
-                        ft.OutlinedButton("+ Adicionar Paciente", style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=8)))
+                        ft.OutlinedButton("+ Adicionar Paciente", style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=8)), on_click=self.load_cadastro_paciente)
                     ], spacing=10, alignment=ft.MainAxisAlignment.CENTER)
                 ),
                 ft.Container(
@@ -1179,6 +1179,95 @@ class TelaAdminDashboard:
         )
 
         self.page.update()
+    
+    def load_cadastro_paciente(self, e=None):
+        self.current_view.controls.clear()
+
+        self.campo_nome_paciente = ft.TextField(label="Nome do Paciente", border_radius=10, bgcolor="#F3F4F6")
+        self.campo_cpf = ft.TextField(label="CPF", border_radius=10, bgcolor="#F3F4F6")
+        self.campo_email = ft.TextField(label="Email", border_radius=10, bgcolor="#F3F4F6")
+        self.campo_telefone = ft.TextField(label="Telefone", border_radius=10, bgcolor="#F3F4F6")
+
+        self.current_view.controls.append(
+            ft.Container(
+                padding=30,
+                content=ft.Column(
+                    [
+                        ft.Text("Cadastrar Novo Paciente", size=28, weight="bold", color=ft.Colors.BLUE_900),
+                        ft.Container(height=20),
+                        ft.Container(
+                            padding=30,
+                            bgcolor="#FFFFFF",
+                            border_radius=20,
+                            shadow=ft.BoxShadow(blur_radius=20, spread_radius=2, color=ft.Colors.BLACK26, offset=ft.Offset(0, 8)),
+                            content=ft.Column(
+                                [
+                                    self.campo_nome_paciente,
+                                    self.campo_cpf,
+                                    self.campo_email,
+                                    self.campo_telefone,
+                                    ft.Container(height=20),
+
+                                    ft.Row(
+                                        [
+                                            ft.ElevatedButton(
+                                                "Salvar Paciente",
+                                                bgcolor=ft.Colors.BLUE_900,
+                                                color="white",
+                                                height=50,
+                                                style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12)),
+                                                expand=True,
+                                                on_click=self.salvar_paciente
+                                            ),
+                                            ft.OutlinedButton(
+                                                "Cancelar",
+                                                expand=True,
+                                                height=50,
+                                                style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12)),
+                                                on_click=lambda e: self.load_pacientes(),
+                                            ),
+                                        ],
+                                        spacing=20,
+                                    )
+                                ],
+                                spacing=15,
+                            ),
+                        )
+                    ],
+                    spacing=20,
+                    expand=True,
+                    alignment=ft.MainAxisAlignment.CENTER,
+                ),
+            )
+        )
+
+        self.page.update()
+    
+    def salvar_paciente(self, e=None):
+        nome = self.campo_nome_paciente.value.strip()
+        cpf = self.campo_cpf.value.strip()
+        email = self.campo_email.value.strip()
+        telefone = self.campo_telefone.value.strip()
+
+        # Validação simples
+        if not nome or not cpf or not email or not telefone:
+            self.page.snack_bar = ft.SnackBar(content=ft.Text("Todos os campos são obrigatórios."), bgcolor="red")
+            self.page.snack_bar.open = True
+            self.page.update()
+            return
+
+        # Salva no banco de dados (ajuste para usar a função real do seu banco)
+        from farmconnect.database import adicionar_paciente
+        adicionar_paciente(nome, cpf, email, telefone)
+
+        # Mensagem de sucesso
+        self.page.snack_bar = ft.SnackBar(content=ft.Text("Paciente cadastrado com sucesso."), bgcolor="green")
+        self.page.snack_bar.open = True
+        self.page.update()
+
+        # Voltar para a lista de pacientes
+        self.load_pacientes()
+
 
 
 
