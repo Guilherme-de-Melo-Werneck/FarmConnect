@@ -305,7 +305,7 @@ class TelaAdminDashboard:
         self.page.update()
 
     def load_medicamentos(self, e=None, medicamento=None):
-        from farmconnect.database import listar_medicamentos
+        from database import listar_medicamentos
 
         self.current_view.controls.clear()
         self.editando_medicamento = medicamento is not None
@@ -673,7 +673,7 @@ class TelaAdminDashboard:
 
 
     def load_cadastro_categoria(self, e=None):
-        from farmconnect.database import adicionar_categoria
+        from database import adicionar_categoria
 
         campo_nome_categoria = ft.TextField(label="Nome da Categoria", border_radius=10, bgcolor="#F9FAFB")
 
@@ -708,7 +708,7 @@ class TelaAdminDashboard:
 
     
     def load_cadastro_fabricante(self, e=None):
-        from farmconnect.database import adicionar_fabricante
+        from database import adicionar_fabricante
 
         campo_nome_fabricante = ft.TextField(label="Nome do Fabricante", border_radius=10, bgcolor="#F9FAFB")
 
@@ -1267,7 +1267,7 @@ class TelaAdminDashboard:
             return
 
         # Salva no banco de dados (ajuste para usar a função real do seu banco)
-        from farmconnect.database import adicionar_paciente
+        from database import adicionar_paciente
         adicionar_paciente(nome, cpf, email, telefone)
 
         # Mensagem de sucesso
@@ -1364,7 +1364,7 @@ class TelaAdminDashboard:
             return
 
         # Salva no banco de dados (ajuste para usar a função real do seu banco)
-        from farmconnect.database import adicionar_agendamento
+        from database import adicionar_agendamento
         adicionar_agendamento(paciente, medicamento, codigo, quantidade, data, horario)
 
         # Mensagem de sucesso
