@@ -37,7 +37,7 @@ class HomeApp:
                         alignment=ft.alignment.center_left,
                         content=ft.Row(
                             controls=[
-                                ft.Image(src="farmconnect/home/img_home/logo.png", width=50, height=50),
+                                ft.Image(src="home/img_home/logo.png", width=50, height=50),
                                 ft.Text("FarmConnect", size=22, weight="bold", color=self.PRIMARY_DARK)
                             ],
                             spacing=10,
@@ -94,7 +94,7 @@ class HomeApp:
         illustration = ft.Container(
             col={"xs": 12, "md": 6},
             content=ft.Image(
-                src="farmconnect/home/img_home/inicio.png",
+                src="home/img_home/inicio.png",
                 width=600,
                 height=500,
                 fit=ft.ImageFit.CONTAIN
@@ -160,7 +160,7 @@ class HomeApp:
         about_image = ft.Container(
             col={"xs": 12, "md": 6},
             content=ft.Image(
-                src="farmconnect/home/img_home/sobre_nos.png",
+                src="home/img_home/sobre_nos.png",
                 width=600,
                 height=500,
                 fit=ft.ImageFit.CONTAIN
@@ -244,7 +244,7 @@ class HomeApp:
         image = ft.Container(
             col={"xs": 12, "md": 6},
             content=ft.Image(
-                src="farmconnect/home/img_home/paciente.png",
+                src="home/img_home/paciente.png",
                 width=600,
                 height=500,
                 fit=ft.ImageFit.CONTAIN
@@ -320,7 +320,7 @@ class HomeApp:
         image = ft.Container(
             col={"xs": 12, "md": 6},
             content=ft.Image(
-                src="farmconnect/home/img_home/administrador.png",
+                src="home/img_home/administrador.png",
                 width=600,
                 height=500,
                 fit=ft.ImageFit.CONTAIN

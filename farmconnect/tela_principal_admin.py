@@ -1,5 +1,5 @@
 import flet as ft
-from farmconnect.database import listar_medicamentos, editar_medicamento, adicionar_medicamento, listar_categorias, listar_fabricantes, deletar_medicamento
+from database import listar_medicamentos, editar_medicamento, adicionar_medicamento, listar_categorias, listar_fabricantes, deletar_medicamento
 
 class TelaAdminDashboard:
     def __init__(self, page: ft.Page):

@@ -1,6 +1,6 @@
 import flet as ft
 import asyncio
-from farmconnect.database import registrar_admin, verificar_login_admin
+from database import registrar_admin, verificar_login_admin
 
 class TelaLoginAdmin:
     def __init__(self, page: ft.Page):
