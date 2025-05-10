@@ -683,7 +683,7 @@ class TelaAdminDashboard:
                 adicionar_categoria(nome)
                 self.load_cadastro_medicamento()
             else:
-                self.page.snack_bar = ft.SnackBar(content=ft.Text("Nome da categoria é obrigatório."), bgcolor="red")
+                self.page.snack_bar = ft.SnackBar(content=ft.Text("Nome da categoria é obrigatório"), bgcolor="red")
                 self.page.snack_bar.open = True
                 self.page.update()
 
