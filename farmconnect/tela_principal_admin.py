@@ -670,8 +670,6 @@ class TelaAdminDashboard:
 
         self.page.update()
 
-
-
     def load_cadastro_categoria(self, e=None):
         from database import adicionar_categoria
 
