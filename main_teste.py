@@ -4,8 +4,8 @@ from farmconnect.database import criar_tabelas, registrar_usuario, verificar_log
 
 #Teste
 # adicionar_medicamento(nome="Paracetamol", descricao="Medicamento com efeito analgico", imagem="/img/celular.png", estoque=10)
-adicionar_categoria("Antibioticos")
-adicionar_fabricante("Bayer")
+# adicionar_categoria("Antibioticos")
+# adicionar_fabricante("Bayer")
 
 # Cores:
 PRIMARY = ft.Colors.BLUE_600
@@ -573,7 +573,7 @@ class TelaUsuario:
 
         return ft.View(
             scroll=ft.ScrollMode.ADAPTIVE,
-            route="/usuario",
+            route="/usuarioteste",
             controls=[
                 self.page.snack_bar,
                 ft.Container(
@@ -611,8 +611,8 @@ class FarmConnectApp:
             self.page.views.append(TelaLogin(self.page).tela_login())
         elif self.page.route == "/cadastro":
             self.page.views.append(TelaCadastro(self.page).tela_cadastro())
-        elif self.page.route == "/usuario":
-            self.page.views.append(TelaUsuario(self.page).tela_usuario())
+        # elif self.page.route == "/usuario":
+        #     self.page.views.append(TelaUsuario(self.page).tela_usuario())
         self.page.update()
 
 # Teste Local:
