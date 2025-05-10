@@ -5,15 +5,17 @@ from main_teste import TelaInicial, TelaLogin, TelaCadastro, TelaUsuario
 from farmconnect.administrador.admin import TelaLoginAdmin
 from farmconnect.administrador.tela_principal import TelaAdminDashboard
 from farmconnect.usuario.usuario import TelaLoginUsuario
+from farmconnect.database import criar_tabelas
 
 # Arquivo PRINCIPAL para criação das rotas
-
+criar_tabelas()
 def main(page: ft.Page):
     page.title = "FarmConnect"
     page.padding = 0
     page.bgcolor = ft.Colors.WHITE
     page.theme_mode = ft.ThemeMode.LIGHT
     page.scroll = ft.ScrollMode.ADAPTIVE
+    
 
     def route_change(e):
         page.views.clear()

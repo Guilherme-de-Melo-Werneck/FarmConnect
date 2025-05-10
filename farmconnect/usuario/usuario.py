@@ -32,6 +32,58 @@ class TelaLoginUsuario:
             weight="bold"
         )
 
+        def cpf_change(e):
+            texto_original = self.cadastro_cpf.value
+            numeros = ''.join(filter(str.isdigit, texto_original))[:11]
+
+            if len(numeros) == 11:
+                self.cadastro_nascimento.focus()
+
+        def cpf_blur(e):
+            texto_original = self.cadastro_cpf.value
+            numeros = ''.join(filter(str.isdigit, texto_original))[:11]
+
+            formatado = ""
+            if len(numeros) >= 3:
+                formatado += numeros[:3] + "."
+            if len(numeros) >= 6:
+                formatado += numeros[3:6] + "."
+            if len(numeros) >= 9:
+                formatado += numeros[6:9] + "-"
+            if len(numeros) > 9:
+                formatado += numeros[9:]
+            elif len(numeros) > 6:
+                formatado += numeros[6:9]
+            elif len(numeros) > 3:
+                formatado += numeros[3:6]
+            elif len(numeros) > 0:
+                formatado += numeros[0:3]
+
+            self.cadastro_cpf.value = formatado
+            self.cadastro_cpf.update()
+
+        def nascimento_change(e):
+            texto_original = self.cadastro_nascimento.value
+            numeros = ''.join(filter(str.isdigit, texto_original))[:8]
+
+            if len(numeros) == 8:
+                self.cadastro_senha.focus()
+
+        def nascimento_blur(e):
+            texto_original = self.cadastro_nascimento.value
+            numeros = ''.join(filter(str.isdigit, texto_original))[:8]
+            formatado = ""
+            if len(numeros) >= 2:
+                formatado += numeros[:2] + "/"
+            if len(numeros) >= 4:
+                formatado += numeros[2:4] + "/"
+            if len(numeros) > 4:
+                formatado += numeros[4:]
+            elif len(numeros) > 2:
+                formatado += numeros[2:]
+            self.cadastro_nascimento.value = formatado
+            self.cadastro_nascimento.update()
+
         self.page.snack_bar = ft.SnackBar(content=ft.Text(""), bgcolor=ft.colors.RED_400, duration=3000)
 
         # Campos de Login
@@ -41,8 +93,8 @@ class TelaLoginUsuario:
         # Campos de Cadastro
         self.cadastro_nome = ft.TextField(label="Nome completo", prefix_icon=ft.icons.PERSON, border_radius=10, filled=True, bgcolor=ft.colors.GREY_50)
         self.cadastro_email = ft.TextField(label="Email", prefix_icon=ft.icons.EMAIL, border_radius=10, filled=True, bgcolor=ft.colors.GREY_50)
-        self.cadastro_cpf = ft.TextField(label="CPF", prefix_icon=ft.icons.BADGE, border_radius=10, filled=True, bgcolor=ft.colors.GREY_50)
-        self.cadastro_nascimento = ft.TextField(label="Nascimento", prefix_icon=ft.icons.CALENDAR_MONTH, border_radius=10, filled=True, bgcolor=ft.colors.GREY_50)
+        self.cadastro_cpf = ft.TextField(label="CPF", prefix_icon=ft.icons.BADGE, border_radius=10, filled=True, bgcolor=ft.colors.GREY_50, on_blur=cpf_blur, on_change=cpf_change)
+        self.cadastro_nascimento = ft.TextField(label="Nascimento", prefix_icon=ft.icons.CALENDAR_MONTH, border_radius=10, filled=True, bgcolor=ft.colors.GREY_50, on_blur=nascimento_blur, on_change=nascimento_change)
         self.cadastro_senha = ft.TextField(label="Senha", password=True, can_reveal_password=True, prefix_icon=ft.icons.LOCK, border_radius=10, filled=True, bgcolor=ft.colors.GREY_50)
         self.cadastro_confirmar_senha = ft.TextField(label="Confirmar Senha", password=True, can_reveal_password=True, prefix_icon=ft.icons.LOCK_OUTLINE, border_radius=10, filled=True, bgcolor=ft.colors.GREY_50)
 
@@ -70,6 +122,8 @@ class TelaLoginUsuario:
                     sucesso = registrar_usuario(
                         self.cadastro_nome.value.strip(),
                         self.cadastro_email.value.strip(),
+                        self.cadastro_cpf.value.strip(),
+                        self.cadastro_nascimento.value.strip(),
                         self.cadastro_senha.value.strip()
                     )
                     if sucesso:
@@ -77,7 +131,7 @@ class TelaLoginUsuario:
                         self.page.snack_bar.bgcolor = ft.colors.GREEN
                         self.page.snack_bar.open = True
                         self.page.update()
-                        self.page.go("/usuario")
+                        self.page.go("/login_usuario")
                     else:
                         self.page.snack_bar.content.value = "Erro: Email já cadastrado."
                         self.page.snack_bar.open = True

@@ -162,11 +162,11 @@ class TelaAdminDashboard:
                                 wrap=True,
                                 spacing=10,
                                 controls=[
-                                    ft.IconButton(ft.icons.DARK_MODE_OUTLINED, icon_color=ft.Colors.BLUE_600),
-                                    ft.IconButton(ft.icons.SCHEDULE_OUTLINED, icon_color=ft.Colors.BLUE_600),
-                                    ft.Text("Bem-vindo!", size=12, color=ft.Colors.BLUE_600),
-                                    ft.Text("DESENVOLVIMENTO", size=12, weight="bold", color=ft.Colors.BLUE_600),
-                                    ft.IconButton(ft.icons.REFRESH, icon_color=ft.Colors.BLUE_600),
+                                    ft.IconButton(ft.icons.DARK_MODE_OUTLINED, icon_color=ft.Colors.BLUE_900),
+                                    ft.IconButton(ft.icons.SCHEDULE_OUTLINED, icon_color=ft.Colors.BLUE_900),
+                                    ft.Text("Bem-vindo!", size=12, color=ft.Colors.BLUE_900),
+                                    ft.Text("DESENVOLVIMENTO", size=12, weight="bold", color=ft.Colors.BLUE_900),
+                                    ft.IconButton(ft.icons.REFRESH, icon_color=ft.Colors.BLUE_900),
                                 ]
                             )
                         ])
@@ -264,7 +264,11 @@ class TelaAdminDashboard:
                         ft.Text("Agendamentos Hoje", size=14, weight="bold"),
                         ft.Text("0", size=34, weight="bold", color="#111827"),
                         ft.Text("Valor dinâmico", size=12, color="#6B7280"),
-                        ft.OutlinedButton("+ Novo Agendamento", style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=8)))
+                        ft.OutlinedButton(
+                            "+ Novo Agendamento",
+                            style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=8)),
+                            on_click=self.load_cadastro_agendamento  # <- Aqui você adiciona a função
+                        )
                     ], spacing=10, alignment=ft.MainAxisAlignment.CENTER)
                 ),
                 ft.Container(
@@ -277,7 +281,11 @@ class TelaAdminDashboard:
                         ft.Text("Medicamentos Cadastrados", size=14, weight="bold", color="#111827"),
                         ft.Text("0", size=34, weight="bold", color="#111827"),
                         ft.Text("Valor dinâmico", size=12, color="#6B7280"),
-                        ft.OutlinedButton("+ Adicionar Medicamento", style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=8)))
+                        ft.OutlinedButton(
+                            "+ Adicionar Medicamento",
+                            style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=8)),
+                            on_click=self.load_cadastro_medicamento  # <- Aqui você adiciona a função
+                        )
                     ], spacing=10, alignment=ft.MainAxisAlignment.CENTER)
                 )
             ]
@@ -571,7 +579,7 @@ class TelaAdminDashboard:
         self.dropdown_categoria = ft.Dropdown(
             label="Categoria",
             border_radius=10,
-            bgcolor="#F0FDF4",
+            bgcolor="#F9FAFB",
             options=[ft.dropdown.Option(str(c[0]), c[1]) for c in categorias],
             expand=True
         )
@@ -579,21 +587,21 @@ class TelaAdminDashboard:
         self.dropdown_fabricante = ft.Dropdown(
             label="Fabricante",
             border_radius=10,
-            bgcolor="#F0FDF4",
+            bgcolor="#F9FAFB",
             options=[ft.dropdown.Option(str(f[0]), f[1]) for f in fabricantes],
             expand=True
         )
 
-        self.campo_nome = ft.TextField(label="Nome do Medicamento", border_radius=10, bgcolor="#F0FDF4")
-        self.campo_estoque = ft.TextField(label="Quantidade em Estoque", keyboard_type=ft.KeyboardType.NUMBER, border_radius=10, bgcolor="#F0FDF4")
-        self.campo_observacoes = ft.TextField(label="Observações", multiline=True, min_lines=3, max_lines=5, border_radius=10, bgcolor="#F0FDF4")
+        self.campo_nome = ft.TextField(label="Nome do Medicamento", border_radius=10, bgcolor="#F9FAFB")
+        self.campo_estoque = ft.TextField(label="Quantidade em Estoque", keyboard_type=ft.KeyboardType.NUMBER, border_radius=10, bgcolor="#F9FAFB")
+        self.campo_observacoes = ft.TextField(label="Observações", multiline=True, min_lines=3, max_lines=5, border_radius=10, bgcolor="#F9FAFB")
 
         self.current_view.controls.append(
             ft.Container(
                 padding=30,
                 content=ft.Column(
                     [
-                        ft.Text("Cadastrar Novo Medicamento", size=28, weight="bold", color="#059669"),
+                        ft.Text("Cadastrar Novo Medicamento", size=28, weight="bold", color=ft.Colors.BLUE_900),
                         ft.Container(height=20),
                         ft.Container(
                             padding=30,
@@ -608,7 +616,7 @@ class TelaAdminDashboard:
                                         ft.IconButton(
                                             icon=ft.icons.ADD_CIRCLE_OUTLINE,
                                             tooltip="Cadastrar nova categoria",
-                                            icon_color="#059669",
+                                            icon_color=ft.Colors.BLUE_900,
                                             on_click=self.load_cadastro_categoria
                                         )
                                     ], spacing=10),
@@ -618,7 +626,7 @@ class TelaAdminDashboard:
                                         ft.IconButton(
                                             icon=ft.icons.ADD_CIRCLE_OUTLINE,
                                             tooltip="Cadastrar novo fabricante",
-                                            icon_color="#059669",
+                                            icon_color=ft.Colors.BLUE_900,
                                             on_click=self.load_cadastro_fabricante
                                         )
                                     ], spacing=10),
@@ -631,7 +639,7 @@ class TelaAdminDashboard:
                                         [
                                             ft.ElevatedButton(
                                                 "Salvar Medicamento",
-                                                bgcolor="#059669",
+                                                bgcolor=ft.colors.BLUE_600,
                                                 color="white",
                                                 height=50,
                                                 style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12)),
@@ -662,10 +670,12 @@ class TelaAdminDashboard:
 
         self.page.update()
 
+
+
     def load_cadastro_categoria(self, e=None):
         from farmconnect.database import adicionar_categoria
 
-        campo_nome_categoria = ft.TextField(label="Nome da Categoria", border_radius=10, bgcolor="#F0FDF4")
+        campo_nome_categoria = ft.TextField(label="Nome da Categoria", border_radius=10, bgcolor="#F9FAFB")
 
         def salvar(e):
             nome = campo_nome_categoria.value.strip()
@@ -682,12 +692,12 @@ class TelaAdminDashboard:
             ft.Container(
                 padding=30,
                 content=ft.Column([
-                    ft.Text("Cadastrar Nova Categoria", size=26, weight="bold", color="#059669"),
+                    ft.Text("Cadastrar Nova Categoria", size=26, weight="bold", color=ft.Colors.BLUE_900),
                     ft.Container(height=20),
                     campo_nome_categoria,
                     ft.Container(height=20),
                     ft.Row([
-                        ft.ElevatedButton("Salvar", bgcolor="#059669", color="white", on_click=salvar, expand=True),
+                        ft.ElevatedButton("Salvar", bgcolor=ft.Colors.BLUE_600, color="white", on_click=salvar, expand=True),
                         ft.OutlinedButton("Cancelar", on_click=lambda e: self.load_cadastro_medicamento(), expand=True),
                     ], spacing=20)
                 ], spacing=10)
@@ -700,7 +710,7 @@ class TelaAdminDashboard:
     def load_cadastro_fabricante(self, e=None):
         from farmconnect.database import adicionar_fabricante
 
-        campo_nome_fabricante = ft.TextField(label="Nome do Fabricante", border_radius=10, bgcolor="#F0FDF4")
+        campo_nome_fabricante = ft.TextField(label="Nome do Fabricante", border_radius=10, bgcolor="#F9FAFB")
 
         def salvar(e):
             nome = campo_nome_fabricante.value.strip()
@@ -717,12 +727,12 @@ class TelaAdminDashboard:
             ft.Container(
                 padding=30,
                 content=ft.Column([
-                    ft.Text("Cadastrar Novo Fabricante", size=26, weight="bold", color="#059669"),
+                    ft.Text("Cadastrar Novo Fabricante", size=26, weight="bold", color=ft.Colors.BLUE_900),
                     ft.Container(height=20),
                     campo_nome_fabricante,
                     ft.Container(height=20),
                     ft.Row([
-                        ft.ElevatedButton("Salvar", bgcolor="#059669", color="white", on_click=salvar, expand=True),
+                        ft.ElevatedButton("Salvar", bgcolor=ft.Colors.BLUE_600, color="white", on_click=salvar, expand=True),
                         ft.OutlinedButton("Cancelar", on_click=lambda e: self.load_cadastro_medicamento(), expand=True),
                     ], spacing=20)
                 ], spacing=10)
@@ -851,7 +861,7 @@ class TelaAdminDashboard:
                                 ft.Text("📋 Lista de Agendamentos", size=20, weight="bold", color="#111827"),
                                 ft.Container(expand=True),
                                 ft.IconButton(icon=ft.icons.FILTER_LIST, icon_color=ft.Colors.BLUE_600, tooltip="Filtrar"),
-                                ft.IconButton(icon=ft.icons.REFRESH, icon_color=ft.Colors, tooltip="Atualizar Lista"),
+                                ft.IconButton(icon=ft.icons.REFRESH, icon_color=ft.Colors.BLUE_600, tooltip="Atualizar Lista"),
                             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
                             ft.Divider(),
                             ft.Container(
@@ -905,7 +915,7 @@ class TelaAdminDashboard:
             opacity=1.0 if self.editando_farmacia else 0.0,
             expand=1,
             content=ft.Column([
-                ft.Text("🏥 Editar Farmácia", size=20, weight="bold", color="#059669"),
+                ft.Text("🏥 Editar Farmácia", size=20, weight="bold", color=ft.Colors.BLUE_900),
                 ft.Divider(),
                 self.campo_nome_f,
                 self.campo_cnpj,
@@ -916,7 +926,7 @@ class TelaAdminDashboard:
                 ft.Row([
                     ft.ElevatedButton(
                         "Salvar",
-                        bgcolor="#059669",
+                        bgcolor=ft.Colors.BLUE_600,
                         color="white",
                         expand=True,
                         style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12)),
@@ -1143,7 +1153,7 @@ class TelaAdminDashboard:
                 ft.Row([
                     ft.Text("📋 Lista de Pacientes", size=20, weight="bold", color="#111827"),
                     ft.Container(expand=True),
-                    ft.IconButton(icon=ft.icons.REFRESH, icon_color="#059669", tooltip="Atualizar lista"),
+                    ft.IconButton(icon=ft.icons.REFRESH, icon_color=ft.Colors.BLUE_600, tooltip="Atualizar lista"),
                 ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
                 ft.Divider(),
                 ft.ResponsiveRow(
@@ -1212,7 +1222,7 @@ class TelaAdminDashboard:
                                         [
                                             ft.ElevatedButton(
                                                 "Salvar Paciente",
-                                                bgcolor=ft.Colors.BLUE_900,
+                                                bgcolor=ft.Colors.BLUE_600,
                                                 color="white",
                                                 height=50,
                                                 style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12)),
@@ -1268,6 +1278,102 @@ class TelaAdminDashboard:
         # Voltar para a lista de pacientes
         self.load_pacientes()
 
+    def load_cadastro_agendamento(self, e=None):
+        self.current_view.controls.clear()
+
+        # Campos do formulário de agendamento
+        self.campo_paciente = ft.TextField(label="Nome do Paciente", border_radius=10, bgcolor="#F9FAFB")
+        self.campo_medicamento = ft.TextField(label="Nome do Medicamento", border_radius=10, bgcolor="#F9FAFB")
+        self.campo_codigo = ft.TextField(label="Código do Medicamento", border_radius=10, bgcolor="#F9FAFB")
+        self.campo_quantidade = ft.TextField(label="Quantidade", border_radius=10, bgcolor="#F9FAFB", keyboard_type=ft.KeyboardType.NUMBER)
+        self.campo_data = ft.TextField(label="Data (AAAA-MM-DD)", border_radius=10, bgcolor="#F9FAFB")
+        self.campo_horario = ft.TextField(label="Horário (HH:MM)", border_radius=10, bgcolor="#F9FAFB")
+
+        # Estrutura do formulário
+        self.current_view.controls.append(
+            ft.Container(
+                padding=30,
+                content=ft.Column(
+                    [
+                        ft.Text("Cadastrar Novo Agendamento", size=28, weight="bold", color=ft.Colors.BLUE_900),
+                        ft.Container(height=20),
+                        ft.Container(
+                            padding=30,
+                            bgcolor="#FFFFFF",
+                            border_radius=20,
+                            shadow=ft.BoxShadow(blur_radius=20, spread_radius=2, color="#CBD5E1", offset=ft.Offset(0, 8)),
+                            content=ft.Column(
+                                [
+                                    self.campo_paciente,
+                                    self.campo_medicamento,
+                                    self.campo_codigo,
+                                    self.campo_quantidade,
+                                    self.campo_data,
+                                    self.campo_horario,
+                                    ft.Container(height=20),
+
+                                    ft.Row(
+                                        [
+                                            ft.ElevatedButton(
+                                                "Salvar Agendamento",
+                                                bgcolor=ft.Colors.BLUE_600,
+                                                color="white",
+                                                height=50,
+                                                style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12)),
+                                                expand=True,
+                                                on_click=self.salvar_agendamento
+                                            ),
+                                            ft.OutlinedButton(
+                                                "Cancelar",
+                                                expand=True,
+                                                height=50,
+                                                style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12)),
+                                                on_click=lambda e: self.load_agendamentos(),
+                                            ),
+                                        ],
+                                        spacing=20,
+                                    )
+                                ],
+                                spacing=15,
+                            ),
+                        )
+                    ],
+                    spacing=20,
+                    expand=True,
+                    alignment=ft.MainAxisAlignment.CENTER,
+                ),
+            )
+        )
+
+        self.page.update()
+
+
+    def salvar_agendamento(self, e=None):
+        paciente = self.campo_paciente.value.strip()
+        medicamento = self.campo_medicamento.value.strip()
+        codigo = self.campo_codigo.value.strip()
+        quantidade = self.campo_quantidade.value.strip()
+        data = self.campo_data.value.strip()
+        horario = self.campo_horario.value.strip()
+
+        # Validação básica
+        if not all([paciente, medicamento, codigo, quantidade, data, horario]):
+            self.page.snack_bar = ft.SnackBar(content=ft.Text("Todos os campos são obrigatórios."), bgcolor="red")
+            self.page.snack_bar.open = True
+            self.page.update()
+            return
+
+        # Salva no banco de dados (ajuste para usar a função real do seu banco)
+        from farmconnect.database import adicionar_agendamento
+        adicionar_agendamento(paciente, medicamento, codigo, quantidade, data, horario)
+
+        # Mensagem de sucesso
+        self.page.snack_bar = ft.SnackBar(content=ft.Text("Agendamento cadastrado com sucesso."), bgcolor="green")
+        self.page.snack_bar.open = True
+        self.page.update()
+
+        # Voltar para a lista de agendamentos
+        self.load_agendamentos()
 
 
 
