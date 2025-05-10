@@ -69,6 +69,8 @@ class TelaLoginUsuario:
                 else:
                     sucesso = registrar_usuario(
                         self.cadastro_nome.value.strip(),
+                        self.cadastro_cpf.value.strip(),
+                        self.cadastro_nascimento.value.strip(),
                         self.cadastro_email.value.strip(),
                         self.cadastro_senha.value.strip()
                     )
