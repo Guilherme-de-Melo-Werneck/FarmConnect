@@ -981,7 +981,7 @@ class TelaAdminDashboard:
             border_radius=30,
             bgcolor="#F9FAFB",
             height=50,
-            on_change=self.filtrar_farmacias
+            on_blur=self.filtrar_farmacias
         )
 
         self.campo_nome_f = ft.TextField(label="Nome da Farmácia", value=farmacia["nome"] if farmacia else "")
@@ -1193,9 +1193,11 @@ class TelaAdminDashboard:
 
     def filtrar_farmacias(self, e):
         termo = self.campo_busca_farmacia.value.strip().lower()
-        resultado = [f for f in self.farmacias_mock if termo in f[1].lower()]
+        farmacias = listar_farmacias()
+        resultado = [f for f in farmacias if termo in f[1].lower() or termo in f[4].lower() or termo in f[5].lower()]
+
         self.renderizar_tabela_farmacias(resultado)
-        self.page.set_focus(self.campo_busca_farmacia)
+        self.page.update()
 
     def load_pacientes(self, e=None):
         self.current_view.controls.clear()
