@@ -479,6 +479,69 @@ def deletar_medicamento(id):
     cursor.close()
     conn.close()
 
+def listar_farmacias():
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT id, nome, endereco, cnpj, cidade, estado, telefone
+        FROM farmacias
+        ORDER BY nome
+    """)
+    farmacias = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return farmacias
+
+
+def adicionar_farmacia(nome, endereco, cnpj, cidade, estado, telefone):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("""
+            INSERT INTO farmacias (nome, endereco, cnpj, cidade, estado, telefone)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, (nome, endereco, cnpj, cidade, estado, telefone))
+        conn.commit()
+    except sqlite3.IntegrityError as e:
+        print("Erro ao adicionar farmácia:", e)
+    finally:
+        cursor.close()
+        conn.close()
+
+
+def editar_farmacia(id, nome, endereco, cnpj, cidade, estado, telefone):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE farmacias
+        SET nome = ?, endereco = ?, cnpj = ?, cidade = ?, estado = ?, telefone = ?
+        WHERE id = ?
+    """, (nome, endereco, cnpj, cidade, estado, telefone, id))
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+
+def deletar_farmacia(id):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("DELETE FROM farmacias WHERE id = ?", (id,))
+    
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+
+
+
+
 
 
 
