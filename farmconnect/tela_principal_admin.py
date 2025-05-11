@@ -1,5 +1,5 @@
 import flet as ft
-from database import listar_medicamentos, editar_medicamento, adicionar_medicamento, listar_categorias, listar_fabricantes, deletar_medicamento
+from database import listar_medicamentos, editar_medicamento, adicionar_medicamento, listar_categorias, listar_fabricantes, deletar_medicamento, adicionar_farmacia, listar_farmacias, deletar_farmacia, editar_farmacia
 
 class TelaAdminDashboard:
     def __init__(self, page: ft.Page):
@@ -875,19 +875,106 @@ class TelaAdminDashboard:
 
         self.page.update()
 
+    def cnpj_change(self, e):
+        texto_original = self.campo_cnpj.value
+        numeros = ''.join(filter(str.isdigit, texto_original))[:14]
+
+        if len(numeros) == 14:
+            self.campo_cidade.focus()
+
+    def cnpj_blur(self, e):
+        texto_original = self.campo_cnpj.value
+        numeros = ''.join(filter(str.isdigit, texto_original))[:14]
+        formatado = ""
+
+        if len(numeros) >= 2:
+            formatado += numeros[:2] + "."
+        if len(numeros) >= 5:
+            formatado += numeros[2:5] + "."
+        if len(numeros) >= 8:
+            formatado += numeros[5:8] + "/"
+        if len(numeros) >= 12:
+            formatado += numeros[8:12] + "-"
+        if len(numeros) > 12:
+            formatado += numeros[12:]
+
+        self.campo_cnpj.value = formatado
+        self.campo_cnpj.update()
+    
+    def telefone_change(self, e):
+        texto_original = self.campo_telefone.value
+        numeros = ''.join(filter(str.isdigit, texto_original))[:13]
+
+        if len(numeros) == 13:
+            self.campo_telefone.focus()
+
+    def telefone_blur(self, e):
+        texto_original = self.campo_telefone.value
+        numeros = ''.join(filter(str.isdigit, texto_original))[:11]
+        formatado = ""
+
+        if len(numeros) >= 1:
+            formatado += "(" + numeros[:2] + ") "
+        if len(numeros) >= 7:
+            formatado += numeros[2:7] + "-"
+        if len(numeros) > 7:
+            formatado += numeros[7:]
+        elif len(numeros) > 2:
+            formatado += numeros[2:7]
+
+        self.campo_telefone.value = formatado
+        self.campo_telefone.update()
+
+    def salvar_farmacia(self, e=None):
+        nome = self.campo_nome_f.value.strip()
+        cnpj = self.campo_cnpj.value.strip()
+        endereco = self.campo_endereco.value.strip()
+        cidade = self.campo_cidade.value.strip()
+        estado = self.campo_estado.value.strip()
+        telefone = self.campo_telefone.value.strip()
+
+        if not all([nome, cnpj, endereco, cidade, estado, telefone]):
+            self.page.snack_bar = ft.SnackBar(content=ft.Text("Todos os campos são obrigatórios."), bgcolor="red")
+            self.page.snack_bar.open = True
+            self.page.update()
+            return
+
+        if self.editando_farmacia and self.farmacia_atual:
+            editar_farmacia(
+                self.farmacia_atual["id"],
+                nome=nome,
+                endereco=endereco,
+                cnpj=cnpj,
+                cidade=cidade,
+                estado=estado,
+                telefone=telefone
+            )
+            mensagem = "Farmácia atualizada com sucesso."
+        else:
+            adicionar_farmacia(
+                nome=nome,
+                endereco=endereco,
+                cnpj=cnpj,
+                cidade=cidade,
+                estado=estado,
+                telefone=telefone
+            )
+            mensagem = "Farmácia adicionada com sucesso."
+
+        self.page.snack_bar = ft.SnackBar(content=ft.Text(mensagem), bgcolor="green")
+        self.page.snack_bar.open = True
+        self.page.update()
+        self.load_farmacias()
 
     def load_farmacias(self, e=None, farmacia=None):
         self.current_view.controls.clear()
         self.editando_farmacia = farmacia is not None
         self.farmacia_atual = farmacia if farmacia else None
 
-        self.farmacias_mock = [
-            (1, "Farmácia Central", "12.345.678/0001-00", "São Paulo", "SP", "(11) 99999-9999"),
-            (2, "Drogaria Saúde", "98.765.432/0001-99", "Campinas", "SP", "(19) 88888-8888"),
-            (3, "Clínica Farma", "77.111.222/0001-33", "Rio de Janeiro", "RJ", "(21) 90000-0000"),
-            (4, "FarmaVida", "22.333.444/0001-55", "Niterói", "RJ", "(21) 95555-5555"),
-        ]
-
+        # Buscar farmácias do banco de dados
+        farmacias_db = listar_farmacias()
+        
+        # Campos de edição
         self.campo_busca_farmacia = ft.TextField(
             hint_text="Buscar farmácia...",
             prefix_icon=ft.icons.SEARCH,
@@ -898,11 +985,47 @@ class TelaAdminDashboard:
         )
 
         self.campo_nome_f = ft.TextField(label="Nome da Farmácia", value=farmacia["nome"] if farmacia else "")
-        self.campo_cnpj = ft.TextField(label="CNPJ", value=farmacia["cnpj"] if farmacia else "")
+        self.campo_endereco = ft.TextField(label="Endereço da Farmácia", value=farmacia["endereco"] if farmacia else "")
+        self.campo_cnpj = ft.TextField(label="CNPJ", on_blur=self.cnpj_blur, on_change=self.cnpj_change, value=farmacia["cnpj"] if farmacia else "")
         self.campo_cidade = ft.TextField(label="Cidade", value=farmacia["cidade"] if farmacia else "")
-        self.campo_estado = ft.TextField(label="Estado", value=farmacia["estado"] if farmacia else "")
-        self.campo_telefone = ft.TextField(label="Telefone", value=farmacia["telefone"] if farmacia else "")
+        self.campo_estado = ft.Dropdown(
+                            label="Estado",
+                            options=[
+                                ft.dropdown.Option("AC", "AC"),
+                                ft.dropdown.Option("AL", "AL"),
+                                ft.dropdown.Option("AP", "AP"),
+                                ft.dropdown.Option("AM", "AM"),
+                                ft.dropdown.Option("BA", "BA"),
+                                ft.dropdown.Option("CE", "CE"),
+                                ft.dropdown.Option("DF", "DF"),
+                                ft.dropdown.Option("ES", "ES"),
+                                ft.dropdown.Option("GO", "GO"),
+                                ft.dropdown.Option("MA", "MA"),
+                                ft.dropdown.Option("MT", "MT"),
+                                ft.dropdown.Option("MS", "MS"),
+                                ft.dropdown.Option("MG", "MG"),
+                                ft.dropdown.Option("PA", "PA"),
+                                ft.dropdown.Option("PB", "PB"),
+                                ft.dropdown.Option("PR", "PR"),
+                                ft.dropdown.Option("PE", "PE"),
+                                ft.dropdown.Option("PI", "PI"),
+                                ft.dropdown.Option("RJ", "RJ"),
+                                ft.dropdown.Option("RN", "RN"),
+                                ft.dropdown.Option("RS", "RS"),
+                                ft.dropdown.Option("RO", "RO"),
+                                ft.dropdown.Option("RR", "RR"),
+                                ft.dropdown.Option("SC", "SC"),
+                                ft.dropdown.Option("SP", "SP"),
+                                ft.dropdown.Option("SE", "SE"),
+                                ft.dropdown.Option("TO", "TO"),
+                            ],
+                            border_radius=10,
+                            bgcolor="#F3F4F6",
+                            expand=True
+                        )
+        self.campo_telefone = ft.TextField(label="Telefone", on_blur=self.telefone_blur, on_change = self.telefone_change, value=farmacia["telefone"] if farmacia else "")
 
+        # Painel lateral de edição
         self.painel_detalhes_farmacia = ft.Container(
             bgcolor="#FFFFFF",
             border_radius=20,
@@ -916,6 +1039,7 @@ class TelaAdminDashboard:
                 ft.Text("🏥 Editar Farmácia", size=20, weight="bold", color=ft.Colors.BLUE_900),
                 ft.Divider(),
                 self.campo_nome_f,
+                self.campo_endereco,
                 self.campo_cnpj,
                 self.campo_cidade,
                 self.campo_estado,
@@ -928,7 +1052,7 @@ class TelaAdminDashboard:
                         color="white",
                         expand=True,
                         style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12)),
-                        on_click=lambda e: self.load_farmacias()  # Aqui você pode trocar para salvar_farmacia() futuramente
+                        on_click=self.salvar_farmacia  # Novo método para salvar
                     ),
                     ft.OutlinedButton(
                         "Cancelar",
@@ -940,9 +1064,8 @@ class TelaAdminDashboard:
             ], spacing=12)
         )
 
-
-        self.renderizar_tabela_farmacias(self.farmacias_mock)
-
+        # Renderiza a tabela com farmácias do banco
+        self.renderizar_tabela_farmacias(farmacias_db)
 
     def renderizar_tabela_farmacias(self, lista):
         tabela = ft.DataTable(
@@ -952,6 +1075,8 @@ class TelaAdminDashboard:
             columns=[
                 ft.DataColumn(ft.Text("ID")),
                 ft.DataColumn(ft.Text("Nome")),
+                ft.DataColumn(ft.Text("Endereço")),
+                ft.DataColumn(ft.Text("CNPJ")),
                 ft.DataColumn(ft.Text("Cidade")),
                 ft.DataColumn(ft.Text("Estado")),
                 ft.DataColumn(ft.Text("Telefone")),
@@ -962,9 +1087,11 @@ class TelaAdminDashboard:
                     cells=[
                         ft.DataCell(ft.Text(str(f[0]))),
                         ft.DataCell(ft.Text(f[1])),
+                        ft.DataCell(ft.Text(f[2])),
                         ft.DataCell(ft.Text(f[3])),
                         ft.DataCell(ft.Text(f[4])),
                         ft.DataCell(ft.Text(f[5])),
+                        ft.DataCell(ft.Text(f[6])),
                         ft.DataCell(
                             ft.Row([
                                 ft.IconButton(
@@ -975,10 +1102,11 @@ class TelaAdminDashboard:
                                         setattr(self, "farmacia_atual", {
                                             "id": f[0],
                                             "nome": f[1],
-                                            "cnpj": f[2],
-                                            "cidade": f[3],
-                                            "estado": f[4],
-                                            "telefone": f[5]
+                                            "endereco": f[2],
+                                            "cnpj": f[3],
+                                            "cidade": f[4],
+                                            "estado": f[5],
+                                            "telefone": f[6]
                                         }),
                                         self.load_farmacias(farmacia=self.farmacia_atual)
                                     )
