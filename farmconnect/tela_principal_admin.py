@@ -1317,7 +1317,6 @@ class TelaAdminDashboard:
                     ft.DataColumn(ft.Text("ID")),
                     ft.DataColumn(ft.Text("Nome")),
                     ft.DataColumn(ft.Text("CPF")),
-                    ft.DataColumn(ft.Text("Email")),
                     ft.DataColumn(ft.Text("Nascimento")),
                     ft.DataColumn(ft.Text("Data de Criação")),
                     ft.DataColumn(ft.Text("Status")),
@@ -1328,10 +1327,9 @@ class TelaAdminDashboard:
                         cells=[
                             ft.DataCell(ft.Text(str(p[0]))),
                             ft.DataCell(ft.Text(p[1])),
-                            ft.DataCell(ft.Text(p[3])),
-                            ft.DataCell(ft.Text(p[2])),
-                            ft.DataCell(ft.Text(p[4])),
-                            ft.DataCell(ft.Text(p[5])),
+                            ft.DataCell(ft.Text(p[3])),  
+                            ft.DataCell(ft.Text(p[4])),  
+                            ft.DataCell(ft.Text(p[5])),  
                             ft.DataCell(
                                 ft.Container(
                                     content=status_badge(p[6]),
