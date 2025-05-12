@@ -142,7 +142,7 @@ def tela_usuario(page: ft.Page):
                                         shape=ft.RoundedRectangleBorder(radius=12),
                                         padding=ft.padding.symmetric(vertical=12),
                                     ),
-                                    on_click=lambda e: page.go("/medicamentos")
+                                    on_click=lambda e: page.go("/medicamentos_retirados")
                                 ),
                                 ft.ElevatedButton(
                                     "Agendamentos",
@@ -455,6 +455,102 @@ def tela_perfil_paciente(page: ft.Page):
         ]
     )
 
+import flet as ft
+
+# Lista simulada de medicamentos retirados
+medicamentos_retirados_mock = [
+    {"nome": "Interferon Alfa", "data_retirada": "10/05/2025", "quantidade": 2},
+    {"nome": "Rituximabe", "data_retirada": "08/05/2025", "quantidade": 1},
+    {"nome": "Adalimumabe", "data_retirada": "01/05/2025", "quantidade": 3},
+    {"nome": "Trastuzumabe", "data_retirada": "28/04/2025", "quantidade": 1},
+    {"nome": "Lenalidomida", "data_retirada": "25/04/2025", "quantidade": 2},
+]
+
+def tela_medicamentos_retirados(page: ft.Page):
+    return ft.View(
+        route="/medicamentos_retirados",
+        scroll=ft.ScrollMode.AUTO,
+        controls=[
+            ft.Container(
+                expand=True,
+                padding=40,
+                gradient=ft.LinearGradient(
+                    begin=ft.alignment.top_left,
+                    end=ft.alignment.bottom_right,
+                    colors=["#E0F2FE", "#F0F4FF"]
+                ),
+                content=ft.Column([
+                    ft.Text(
+                        "💊 MEDICAMENTOS RETIRADOS", 
+                        size=32, 
+                        weight=ft.FontWeight.BOLD, 
+                        color=ft.Colors.BLUE_900,
+                        text_align=ft.TextAlign.CENTER,
+                    ),
+                    ft.Divider(height=20, color=ft.colors.TRANSPARENT),
+                    ft.Container(
+                        padding=30,
+                        bgcolor="#FFFFFF",
+                        border_radius=20,
+                        shadow=ft.BoxShadow(blur_radius=30, color=ft.colors.BLACK12, offset=ft.Offset(0, 15)),
+                        content=ft.Column([
+                            ft.Row([
+                                ft.TextField(label="🔍 Buscar Medicamento", expand=True, on_change=lambda e: print(e.control.value)),
+                                ft.IconButton(icon=ft.icons.SEARCH, icon_color=ft.Colors.BLUE_900, on_click=lambda e: print("Buscar"))
+                            ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+                            ft.Divider(height=20, color=ft.colors.TRANSPARENT),
+                            ft.ListView(
+                                expand=True,
+                                controls=[
+                                    ft.Container(
+                                        padding=20,
+                                        bgcolor="#F8FAFC",
+                                        border_radius=16,
+                                        margin=ft.margin.only(bottom=20),
+                                        shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK12, offset=ft.Offset(0, 10)),
+                                        content=ft.Column([
+                                            ft.Text(med["nome"], size=20, weight=ft.FontWeight.BOLD, color="#111827"),
+                                            ft.Divider(height=10, color=ft.colors.TRANSPARENT),
+                                            ft.Text(f"📅 Data de Retirada: {med['data_retirada']}", size=14, color="#374151"),
+                                            ft.Text(f"📦 Quantidade: {med['quantidade']} unidades", size=14, color="#374151"),
+                                            ft.ElevatedButton(
+                                                "Ver Detalhes",
+                                                icon=ft.icons.INFO_OUTLINE,
+                                                bgcolor=ft.Colors.BLUE_900,
+                                                color=ft.colors.WHITE,
+                                                width=200,
+                                                style=ft.ButtonStyle(
+                                                    shape=ft.RoundedRectangleBorder(radius=12),
+                                                    padding=ft.padding.symmetric(vertical=10)
+                                                ),
+                                                on_click=lambda e, med=med: print(f"Detalhes de {med['nome']}")
+                                            )
+                                        ], spacing=10, alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
+                                    )
+                                    for med in medicamentos_retirados_mock
+                                ]
+                            )
+                        ], spacing=20)
+                    ),
+                    ft.Divider(height=30, color=ft.colors.TRANSPARENT),
+                    ft.ElevatedButton(
+                        "Voltar",
+                        icon=ft.icons.ARROW_BACK_IOS_NEW,
+                        bgcolor=ft.Colors.GREY_500,
+                        color=ft.colors.WHITE,
+                        width=150,
+                        style=ft.ButtonStyle(
+                            shape=ft.RoundedRectangleBorder(radius=12),
+                            padding=ft.padding.symmetric(vertical=12)
+                        ),
+                        on_click=lambda e: page.go("/usuario")
+                    )
+                ], spacing=30, alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
+            )
+        ]
+    )
+
+
 def main(page: ft.Page):
     page.title = "FarmConnect"
     page.bgcolor = "#EFF6FF"
@@ -468,6 +564,8 @@ def main(page: ft.Page):
             page.views.append(tela_documentos(page))
         elif page.route == "/perfil":
             page.views.append(tela_perfil_paciente(page))
+        elif page.route == "/medicamentos_retirados":
+            page.views.append(tela_medicamentos_retirados(page))
         page.update()
 
 
