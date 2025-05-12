@@ -19,6 +19,7 @@ def criar_tabelas():
             cpf TEXT NOT NULL UNIQUE,
             nascimento TEXT NOT NULL,
             senha TEXT NOT NULL,
+            status TEXT DEFAULT 'Pendente',
             data_criacao TEXT DEFAULT CURRENT_TIMESTAMP
         )
         """)
@@ -167,6 +168,34 @@ def criar_tabelas():
 
         conn.commit()
 
+def aprovar_usuario(usuario_id):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE usuarios
+        SET status = 'Aprovado'
+        WHERE id = ?
+    """, (usuario_id,))
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+
+def recusar_usuario(usuario_id):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        UPDATE usuarios
+        SET status = 'Recusado'
+        WHERE id = ?
+    """, (usuario_id,))
+
+    conn.commit()
+    cursor.close()
+    conn.close()
 
 def registrar_usuario(nome, email, cpf, nascimento, senha):
     conn = conectar()
@@ -537,6 +566,20 @@ def deletar_farmacia(id):
     conn.commit()
     cursor.close()
     conn.close()
+
+def listar_usuarios():
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT id, nome, email, cpf, nascimento, data_criacao, status FROM usuarios ORDER BY data_criacao DESC")
+
+    usuarios = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return usuarios
+
 
 
 
