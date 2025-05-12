@@ -21,7 +21,7 @@ class TelaEscolhaUsuario:
 
     def build_tela(self):
         logo = ft.Image(
-            src="farmconnect/home/img_home/logo.png",
+            src="home/img_home/logo.png",
             width=100,
             height=100,
         )
