@@ -1,5 +1,5 @@
 import flet as ft
-from database import listar_medicamentos, editar_medicamento, adicionar_medicamento, listar_categorias, listar_fabricantes, deletar_medicamento, adicionar_farmacia, listar_farmacias, deletar_farmacia, editar_farmacia
+from database import listar_medicamentos, editar_medicamento, adicionar_medicamento, listar_categorias, listar_fabricantes, deletar_medicamento, adicionar_farmacia, listar_farmacias, deletar_farmacia, editar_farmacia, listar_usuarios, registrar_usuario, aprovar_usuario, recusar_usuario
 
 class TelaAdminDashboard:
     def __init__(self, page: ft.Page):
@@ -457,7 +457,7 @@ class TelaAdminDashboard:
                         shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26, offset=ft.Offset(0, 8)),
                         content=ft.Column([
                             ft.Row([
-                                ft.Text("📋 Lista de Medicamentos", size=20, weight="bold", color="#111827"),
+                                ft.Text(" Lista de Medicamentos", size=20, weight="bold", color="#111827"),
                                 ft.Container(expand=True),
                                 ft.IconButton(
                                     icon=ft.icons.REFRESH,
@@ -1199,15 +1199,92 @@ class TelaAdminDashboard:
         self.renderizar_tabela_farmacias(resultado)
         self.page.update()
 
+    from database import listar_usuarios, aprovar_usuario, recusar_usuario
+
     def load_pacientes(self, e=None):
         self.current_view.controls.clear()
 
-        pacientes_mock = [
-            (1, "Ana Souza", "123.456.789-00", "ana@email.com", "(21) 99999-9999", "Pendente"),
-            (2, "Carlos Lima", "987.654.321-00", "carlos@email.com", "(21) 98888-8888", "Aprovado"),
-            (3, "Fernanda Alves", "111.222.333-44", "fernanda@email.com", "(21) 97777-7777", "Recusado"),
-        ]
+        # Busca todos os pacientes do banco
+        self.pacientes_db = listar_usuarios()
 
+        # Cria a tabela com todos os pacientes
+        self.renderizar_tabela_pacientes(self.pacientes_db)
+
+        self.current_view.controls.append(
+            ft.Container(
+                padding=30,
+                content=ft.Column([
+                    ft.Row([
+                        ft.Icon(name=ft.icons.LOCAL_PHARMACY, size=40, color=ft.Colors.BLUE_600),
+                        ft.Text("Gerenciamento de Pacientes", size=32, weight="bold", color=ft.Colors.BLUE_900),
+                    ], spacing=10, alignment=ft.MainAxisAlignment.CENTER),
+                    ft.Text(
+                        "Adicione, edite ou remova pacientes cadastrados no sistema.",
+                        size=14,
+                        color=ft.Colors.GREY_700,
+                        text_align=ft.TextAlign.CENTER
+                    ),
+                    ft.Divider(height=30),
+
+                    ft.Container(
+                        bgcolor="#FFFFFF",
+                        border_radius=20,
+                        padding=25,
+                        shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26, offset=ft.Offset(0, 8)),
+                        content=ft.Column([
+                            ft.Row([
+                                ft.Text("📋 Lista de Pacientes", size=20, weight="bold", color="#111827"),
+                                ft.Container(expand=True),
+                                ft.IconButton(
+                                    icon=ft.icons.REFRESH,
+                                    tooltip="Atualizar",
+                                    icon_color=ft.Colors.BLUE_600,
+                                    on_click=self.load_pacientes
+                                ),
+                                ft.IconButton(
+                                    icon=ft.icons.ADD,
+                                    tooltip="Adicionar novo paciente",
+                                    icon_color=ft.Colors.BLUE_600,
+                                    on_click=self.load_cadastro_paciente
+                                ),
+                            ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+                            ft.Divider(),
+
+                            ft.Row([
+                                ft.Container(
+                                    expand=True,
+                                    content=ft.TextField(
+                                        hint_text="Buscar paciente...",
+                                        prefix_icon=ft.icons.SEARCH,
+                                        border_radius=30,
+                                        bgcolor="#F9FAFB",
+                                        height=50
+                                    )
+                                )
+                            ]),
+                            ft.Container(height=20),
+
+                            ft.ResponsiveRow(
+                                columns=12,
+                                spacing=20,
+                                run_spacing=20,
+                                controls=[
+                                    ft.Container(
+                                        col={"sm": 12, "md": 12},
+                                        content=self.tabela_pacientes_container
+                                    ),
+                                ]
+                            )
+                        ], spacing=20)
+                    )
+                ], spacing=20)
+            )
+        )
+
+        self.page.update()
+
+    # Função para renderizar a tabela com filtro
+    def renderizar_tabela_pacientes(self, pacientes):
         status_cores = {
             "Pendente": ("#D97706", "#FEF3C7"),
             "Aprovado": ("#15803D", "#D1FAE5"),
@@ -1216,116 +1293,213 @@ class TelaAdminDashboard:
 
         def status_badge(status):
             cor_texto, cor_fundo = status_cores.get(status, ("#6B7280", "#E5E7EB"))
-            return ft.Row([
-                ft.Container(width=8, height=8, bgcolor=cor_texto, border_radius=20),
-                ft.Text(status, color=cor_texto, weight="bold")
-            ], spacing=6, alignment=ft.MainAxisAlignment.CENTER)
+            return ft.Row(
+                [
+                    ft.Container(width=8, height=8, bgcolor=cor_texto, border_radius=20),
+                    ft.Text(status, color=cor_texto, weight="bold")
+                ],
+                spacing=6,
+                alignment=ft.MainAxisAlignment.CENTER
+            )
 
-        tabela_pacientes = ft.DataTable(
-            heading_row_color="#F3F4F6",
-            border=ft.border.all(1, "#E5E7EB"),
-            border_radius=12,
-            data_row_max_height=60,
-            columns=[
-                ft.DataColumn(ft.Text("ID")),
-                ft.DataColumn(ft.Text("Nome")),
-                ft.DataColumn(ft.Text("CPF")),
-                ft.DataColumn(ft.Text("Email")),
-                ft.DataColumn(ft.Text("Telefone")),
-                ft.DataColumn(ft.Text("Status")),
-                ft.DataColumn(ft.Text("Ações")),
-            ],
-            rows=[
-                ft.DataRow(
-                    cells=[
-                        ft.DataCell(ft.Text(str(p[0]))),
-                        ft.DataCell(ft.Text(p[1])),
-                        ft.DataCell(ft.Text(p[2])),
-                        ft.DataCell(ft.Text(p[3])),
-                        ft.DataCell(ft.Text(p[4])),
-                        ft.DataCell(
-                            ft.Container(
-                                content=status_badge(p[5]),
-                                padding=ft.padding.symmetric(horizontal=8, vertical=4),
-                                bgcolor=status_cores[p[5]][1],
-                                border_radius=20,
-                            )
-                        ),
-                        ft.DataCell(
-                            ft.Row([
-                                ft.IconButton(
-                                    icon=ft.icons.CHECK_CIRCLE_OUTLINE,
-                                    icon_color="#059669",
-                                    tooltip="Aprovar paciente",
-                                    on_click=lambda e: print("Paciente aprovado")
-                                ),
-                                ft.IconButton(
-                                    icon=ft.icons.CANCEL_OUTLINED,
-                                    icon_color="#DC2626",
-                                    tooltip="Recusar paciente",
-                                    on_click=lambda e: print("Paciente recusado")
-                                ),
-                            ], spacing=8)
-                        )
-                    ]
-                ) for p in pacientes_mock
-            ]
-        )
-
-        content_card = ft.Container(
-            padding=20,
+        self.tabela_pacientes_container = ft.Container(
             bgcolor="#FFFFFF",
-            border_radius=16,
+            border_radius=20,
             shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26, offset=ft.Offset(0, 8)),
-            content=ft.Column([
-                ft.Row([
-                    ft.Text("📋 Lista de Pacientes", size=20, weight="bold", color="#111827"),
-                    ft.Container(expand=True),
-                    ft.IconButton(icon=ft.icons.REFRESH, icon_color=ft.Colors.BLUE_600, tooltip="Atualizar lista"),
-                ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
-                ft.Divider(),
-                ft.ResponsiveRow(
-                    columns=12,
-                    controls=[
-                        ft.Container(
-                            col={"sm": 12},
-                            content=tabela_pacientes
-                        )
-                    ]
-                )
-            ], spacing=20)
-        )
-
-        self.current_view.controls.append(
-            ft.Container(
-                padding=30,
-                content=ft.Column([
-                    ft.Row([
-                        ft.Icon(ft.icons.PERSON, size=40, color=ft.Colors.BLUE_600),
-                        ft.Text("Gerenciamento de Pacientes", size=32, weight="bold", color=ft.Colors.BLUE_900),
-                    ], spacing=10, alignment=ft.MainAxisAlignment.CENTER),
-                    ft.Text(
-                        "Acompanhe e aprove os cadastros realizados pelos pacientes no aplicativo",
-                        size=14,
-                        color=ft.Colors.GREY_700,
-                        text_align=ft.TextAlign.CENTER
-                    ),
-                    ft.Divider(height=30),
-                    content_card
-                ], spacing=20)
+            padding=30,
+            content=ft.DataTable(
+                heading_row_color="#F3F4F6",
+                border=ft.border.all(1, "#E5E7EB"),
+                border_radius=12,
+                data_row_max_height=60,
+                columns=[
+                    ft.DataColumn(ft.Text("ID")),
+                    ft.DataColumn(ft.Text("Nome")),
+                    ft.DataColumn(ft.Text("CPF")),
+                    ft.DataColumn(ft.Text("Email")),
+                    ft.DataColumn(ft.Text("Nascimento")),
+                    ft.DataColumn(ft.Text("Data de Criação")),
+                    ft.DataColumn(ft.Text("Status")),
+                    ft.DataColumn(ft.Text("Ações")),
+                ],
+                rows=[
+                    ft.DataRow(
+                        cells=[
+                            ft.DataCell(ft.Text(str(p[0]))),
+                            ft.DataCell(ft.Text(p[1])),
+                            ft.DataCell(ft.Text(p[3])),
+                            ft.DataCell(ft.Text(p[2])),
+                            ft.DataCell(ft.Text(p[4])),
+                            ft.DataCell(ft.Text(p[5])),
+                            ft.DataCell(
+                                ft.Container(
+                                    content=status_badge(p[6]),
+                                    padding=ft.padding.symmetric(horizontal=8, vertical=4),
+                                    bgcolor=status_cores.get(p[6], "#E5E7EB"),
+                                    border_radius=20,
+                                )
+                            ),
+                            ft.DataCell(
+                                ft.Row(
+                                    [
+                                        ft.IconButton(
+                                            icon=ft.icons.CHECK_CIRCLE_OUTLINE,
+                                            icon_color="#059669",
+                                            tooltip="Aprovar paciente",
+                                            on_click=lambda e, pid=p[0]: self.aprovar_usuario(pid)
+                                        ),
+                                        ft.IconButton(
+                                            icon=ft.icons.CANCEL_OUTLINED,
+                                            icon_color="#DC2626",
+                                            tooltip="Recusar paciente",
+                                            on_click=lambda e, pid=p[0]: self.recusar_usuario(pid)
+                                        ),
+                                    ],
+                                    spacing=8
+                                )
+                            )
+                        ]
+                    ) for p in pacientes
+                ]
             )
         )
 
         self.page.update()
+
+    # Função para filtrar pacientes com base no campo de busca
+    def filtrar_pacientes(self, e):
+        termo = self.campo_busca.value.strip().lower()
+        pacientes_filtrados = [
+            p for p in self.pacientes_db
+            if termo in p[1].lower() or termo in p[2].lower() or termo in p[3].lower()
+        ]
+        self.renderizar_tabela_pacientes(pacientes_filtrados)
+
+    # Funções para Aprovar e Recusar Pacientes
+    def aprovar_usuario(self, paciente_id):
+        aprovar_usuario(paciente_id)
+        self.page.snack_bar = ft.SnackBar(content=ft.Text("Paciente aprovado com sucesso!"), bgcolor="green")
+        self.page.snack_bar.open()
+        self.page.update()
+        self.load_pacientes()
+
+    def recusar_usuario(self, paciente_id):
+        recusar_usuario(paciente_id)
+        self.page.snack_bar = ft.SnackBar(content=ft.Text("Paciente recusado com sucesso!"), bgcolor="red")
+        self.page.snack_bar.open()
+        self.page.update()
+        self.load_pacientes()
+
     
+
     def load_cadastro_paciente(self, e=None):
+        def cpf_blur(e):
+            texto_original = self.campo_cpf.value
+            numeros = ''.join(filter(str.isdigit, texto_original))[:11]
+
+            formatado = ""
+            if len(numeros) >= 3:
+                formatado += numeros[:3] + "."
+            if len(numeros) >= 6:
+                formatado += numeros[3:6] + "."
+            if len(numeros) >= 9:
+                formatado += numeros[6:9] + "-"
+            if len(numeros) > 9:
+                formatado += numeros[9:]
+            elif len(numeros) > 6:
+                formatado += numeros[6:9]
+            elif len(numeros) > 3:
+                formatado += numeros[3:6]
+            elif len(numeros) > 0:
+                formatado += numeros[0:3]
+
+            self.campo_cpf.value = formatado
+            self.campo_cpf.update()
+
+        def cpf_change(e):
+            texto_original = self.campo_cpf.value
+            numeros = ''.join(filter(str.isdigit, texto_original))[:11]
+
+            if len(numeros) == 11:
+                self.campo_email.focus()
+
+        def nascimento_change(e):
+            texto_original = self.campo_nascimento.value
+            numeros = ''.join(filter(str.isdigit, texto_original))[:8]
+
+            if len(numeros) == 8:
+                self.campo_senha.focus()
+
+        def nascimento_blur(e):
+            texto_original = self.campo_nascimento.value
+            numeros = ''.join(filter(str.isdigit, texto_original))[:8]
+            formatado = ""
+            if len(numeros) >= 2:
+                formatado += numeros[:2] + "/"
+            if len(numeros) >= 4:
+                formatado += numeros[2:4] + "/"
+            if len(numeros) > 4:
+                formatado += numeros[4:]
+            elif len(numeros) > 2:
+                formatado += numeros[2:]
+            self.campo_nascimento.value = formatado
+            self.campo_nascimento.update()
+
         self.current_view.controls.clear()
 
+        # Campos do formulário
         self.campo_nome_paciente = ft.TextField(label="Nome do Paciente", border_radius=10, bgcolor="#F3F4F6")
-        self.campo_cpf = ft.TextField(label="CPF", border_radius=10, bgcolor="#F3F4F6")
+        self.campo_cpf = ft.TextField(label="CPF", on_blur=cpf_blur, on_change=cpf_change, border_radius=10, bgcolor="#F3F4F6")
         self.campo_email = ft.TextField(label="Email", border_radius=10, bgcolor="#F3F4F6")
-        self.campo_telefone = ft.TextField(label="Telefone", border_radius=10, bgcolor="#F3F4F6")
+        self.campo_nascimento = ft.TextField(label="Data de Nascimento (DD/MM/AAAA)", on_blur=nascimento_blur, on_change=nascimento_change, border_radius=10, bgcolor="#F3F4F6")
+        self.campo_senha = ft.TextField(label="Senha", password=True, can_reveal_password=True, border_radius=10, bgcolor="#F3F4F6")
+        self.campo_confirmar_senha = ft.TextField(label="Confirmar Senha", password=True, can_reveal_password=True, border_radius=10, bgcolor="#F3F4F6")
 
+        def salvar_paciente(e):
+            nome = self.campo_nome_paciente.value.strip()
+            cpf = self.campo_cpf.value.strip()
+            email = self.campo_email.value.strip()
+            nascimento = self.campo_nascimento.value.strip()
+            senha = self.campo_senha.value.strip()
+            confirmar_senha = self.campo_confirmar_senha.value.strip()
+
+            # Validação dos campos
+            if not nome or not cpf or not email or not nascimento or not senha or not confirmar_senha:
+                self.page.snack_bar = ft.SnackBar(content=ft.Text("Todos os campos são obrigatórios."), bgcolor="red")
+                self.page.snack_bar.open = True
+                self.page.update()
+                return
+            
+            if senha != confirmar_senha:
+                self.page.snack_bar = ft.SnackBar(content=ft.Text("As senhas não coincidem."), bgcolor="red")
+                self.page.snack_bar.open = True
+                self.page.update()
+                return
+
+            # Formata a data de nascimento para o formato esperado no banco (DD/MM/AAAA para AAAA-MM-DD)
+            try:
+                dia, mes, ano = nascimento.split("/")
+                nascimento_formatado = f"{ano}-{mes}-{dia}"
+            except ValueError:
+                self.page.snack_bar = ft.SnackBar(content=ft.Text("Data de nascimento inválida."), bgcolor="red")
+                self.page.snack_bar.open = True
+                self.page.update()
+                return
+
+            # Tenta registrar o usuário no banco de dados
+            sucesso = registrar_usuario(nome, email, cpf, nascimento_formatado, senha)
+            
+            if sucesso:
+                self.page.snack_bar = ft.SnackBar(content=ft.Text("Paciente cadastrado com sucesso!"), bgcolor="green")
+                self.page.snack_bar.open = True
+                self.page.update()
+                self.load_pacientes()  # Retorna para a lista de pacientes
+            else:
+                self.page.snack_bar = ft.SnackBar(content=ft.Text("Erro: CPF ou email já cadastrado."), bgcolor="red")
+                self.page.snack_bar.open = True
+                self.page.update()
+
+        # Estrutura do formulário
         self.current_view.controls.append(
             ft.Container(
                 padding=30,
@@ -1343,9 +1517,10 @@ class TelaAdminDashboard:
                                     self.campo_nome_paciente,
                                     self.campo_cpf,
                                     self.campo_email,
-                                    self.campo_telefone,
+                                    self.campo_nascimento,
+                                    self.campo_senha,
+                                    self.campo_confirmar_senha,
                                     ft.Container(height=20),
-
                                     ft.Row(
                                         [
                                             ft.ElevatedButton(
@@ -1380,7 +1555,7 @@ class TelaAdminDashboard:
         )
 
         self.page.update()
-    
+        
     def salvar_paciente(self, e=None):
         nome = self.campo_nome_paciente.value.strip()
         cpf = self.campo_cpf.value.strip()
