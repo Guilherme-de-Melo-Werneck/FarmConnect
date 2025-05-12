@@ -1258,7 +1258,8 @@ class TelaAdminDashboard:
                                         prefix_icon=ft.icons.SEARCH,
                                         border_radius=30,
                                         bgcolor="#F9FAFB",
-                                        height=50
+                                        height=50,
+                                        on_blur=self.filtrar_pacientes
                                     )
                                 )
                             ]),
@@ -1369,11 +1370,13 @@ class TelaAdminDashboard:
     # Função para filtrar pacientes com base no campo de busca
     def filtrar_pacientes(self, e):
         termo = self.campo_busca.value.strip().lower()
+        pacientes = listar_usuarios()
         pacientes_filtrados = [
             p for p in self.pacientes_db
             if termo in p[1].lower() or termo in p[2].lower() or termo in p[3].lower()
         ]
         self.renderizar_tabela_pacientes(pacientes_filtrados)
+        self.page.update()
 
     # Funções para Aprovar e Recusar Pacientes
     def aprovar_usuario(self, paciente_id):
