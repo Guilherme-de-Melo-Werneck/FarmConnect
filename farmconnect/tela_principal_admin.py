@@ -839,8 +839,8 @@ class TelaAdminDashboard:
                 ft.DataColumn(ft.Text("ID")),
                 ft.DataColumn(ft.Text("Paciente")),
                 ft.DataColumn(ft.Text("Medicamento")),
+                ft.DataColumn(ft.Text("Farmácia")),
                 ft.DataColumn(ft.Text("Código")),
-                ft.DataColumn(ft.Text("Quantidade")),
                 ft.DataColumn(ft.Text("Data")),
                 ft.DataColumn(ft.Text("Horário")),
                 ft.DataColumn(ft.Text("Status")),
@@ -856,8 +856,7 @@ class TelaAdminDashboard:
                         ft.DataCell(ft.Text(a[4])),
                         ft.DataCell(ft.Text(a[5])),
                         ft.DataCell(ft.Text(a[6])),
-                        ft.DataCell(ft.Text(a[7])),
-                         ft.DataCell(
+                        ft.DataCell(
                                 ft.Container( 
                                 content=status_badge(a[7]),
                                 padding=ft.padding.symmetric(horizontal=8, vertical=4),
@@ -1737,17 +1736,41 @@ class TelaAdminDashboard:
             self.page.update()
 
     def load_cadastro_agendamento(self, e=None):
-        self.current_view.controls.clear()
+        # Carregar dados do banco
+        pacientes = listar_usuarios()
+        medicamentos = listar_medicamentos()
+        farmacias = listar_farmacias()
 
-        # Campos do formulário de agendamento
-        self.campo_paciente = ft.TextField(label="Nome do Paciente", border_radius=10, bgcolor="#F9FAFB")
-        self.campo_medicamento = ft.TextField(label="Nome do Medicamento", border_radius=10, bgcolor="#F9FAFB")
+        self.dropdown_paciente = ft.Dropdown(
+            label="Paciente",
+            options=[ft.dropdown.Option(str(u[0]), u[1]) for u in pacientes],
+            border_radius=10,
+            bgcolor="#F9FAFB",
+            expand=True
+        )
+
+        self.dropdown_medicamento = ft.Dropdown(
+            label="Medicamento",
+            options=[ft.dropdown.Option(str(m[0]), m[1]) for m in medicamentos],
+            border_radius=10,
+            bgcolor="#F9FAFB",
+            expand=True
+        )
+
+        self.dropdown_farmacia = ft.Dropdown(
+            label="Farmácia",
+            options=[ft.dropdown.Option(str(f[0]), f[1]) for f in farmacias],
+            border_radius=10,
+            bgcolor="#F9FAFB",
+            expand=True
+        )
+
         self.campo_codigo = ft.TextField(label="Código do Medicamento", border_radius=10, bgcolor="#F9FAFB")
-        self.campo_quantidade = ft.TextField(label="Quantidade", border_radius=10, bgcolor="#F9FAFB", keyboard_type=ft.KeyboardType.NUMBER)
         self.campo_data = ft.TextField(label="Data (AAAA-MM-DD)", border_radius=10, bgcolor="#F9FAFB")
         self.campo_horario = ft.TextField(label="Horário (HH:MM)", border_radius=10, bgcolor="#F9FAFB")
 
         # Estrutura do formulário
+        self.current_view.controls.clear()
         self.current_view.controls.append(
             ft.Container(
                 padding=30,
@@ -1762,10 +1785,10 @@ class TelaAdminDashboard:
                             shadow=ft.BoxShadow(blur_radius=20, spread_radius=2, color="#CBD5E1", offset=ft.Offset(0, 8)),
                             content=ft.Column(
                                 [
-                                    self.campo_paciente,
-                                    self.campo_medicamento,
+                                    self.dropdown_paciente,
+                                    self.dropdown_medicamento,
+                                    self.dropdown_farmacia,
                                     self.campo_codigo,
-                                    self.campo_quantidade,
                                     self.campo_data,
                                     self.campo_horario,
                                     ft.Container(height=20),
@@ -1814,23 +1837,23 @@ class TelaAdminDashboard:
         self.page.update()
 
     def salvar_agendamento(self, e=None):
-        paciente = self.campo_paciente.value.strip()
-        medicamento = self.campo_medicamento.value.strip()
-        codigo = self.campo_codigo.value.strip()
-        quantidade = self.campo_quantidade.value.strip()
+        paciente_id = self.dropdown_paciente.value
+        medicamento_id = self.dropdown_medicamento.value
+        farmacia_id = self.dropdown_farmacia.value
+        codigo_medicamento = self.campo_codigo.value.strip()
         data = self.campo_data.value.strip()
         horario = self.campo_horario.value.strip()
 
         # Validação básica
-        if not all([paciente, medicamento, codigo, quantidade, data, horario]):
+        if not all([paciente_id, medicamento_id, farmacia_id, codigo_medicamento, data, horario]):
             self.page.snack_bar = ft.SnackBar(content=ft.Text("Todos os campos são obrigatórios."), bgcolor="red")
             self.page.snack_bar.open = True
             self.page.update()
             return
 
-        # Salva no banco de dados (ajuste para usar a função real do seu banco)
+        # Salva no banco de dados
         from database import adicionar_agendamento
-        adicionar_agendamento(paciente, medicamento, codigo, quantidade, data, horario)
+        adicionar_agendamento(int(paciente_id), int(medicamento_id), int(farmacia_id), codigo_medicamento, data, horario, status="Pendente")
 
         # Mensagem de sucesso
         self.page.snack_bar = ft.SnackBar(content=ft.Text("Agendamento cadastrado com sucesso."), bgcolor="green")
