@@ -1,5 +1,5 @@
 import flet as ft
-from database import listar_medicamentos, editar_medicamento, adicionar_medicamento, listar_categorias, listar_fabricantes, deletar_medicamento, adicionar_farmacia, listar_farmacias, deletar_farmacia, editar_farmacia, listar_usuarios, registrar_usuario, aprovar_usuario, recusar_usuario
+from database import listar_medicamentos, editar_medicamento, adicionar_medicamento, listar_categorias, listar_fabricantes, deletar_medicamento, adicionar_farmacia, listar_farmacias, deletar_farmacia, editar_farmacia, listar_usuarios, registrar_usuario, aprovar_usuario, recusar_usuario, listar_agendamentos, adicionar_agendamento
 
 class TelaAdminDashboard:
     def __init__(self, page: ft.Page):
@@ -69,11 +69,11 @@ class TelaAdminDashboard:
 
         # Itens do menu
         menu_items = [
-            create_menu_item(ft.icons.HOME_OUTLINED, "Início", self.load_dashboard),
-            create_menu_item(ft.icons.CALENDAR_MONTH_OUTLINED, "Agendamentos", self.load_agendamentos),  # <- AQUI
-            create_menu_item(ft.icons.LOCAL_HOSPITAL_OUTLINED, "Farmácias", self.load_farmacias),
-            create_menu_item(ft.icons.MEDICAL_SERVICES_OUTLINED, "Medicamentos", self.load_medicamentos),
-            create_menu_item(ft.icons.PERSON_OUTLINED, "Pacientes", self.load_pacientes),
+            create_menu_item(ft.Icons.HOME_OUTLINED, "Início", self.load_dashboard),
+            create_menu_item(ft.Icons.CALENDAR_MONTH_OUTLINED, "Agendamentos", self.load_agendamentos),  # <- AQUI
+            create_menu_item(ft.Icons.LOCAL_HOSPITAL_OUTLINED, "Farmácias", self.load_farmacias),
+            create_menu_item(ft.Icons.MEDICAL_SERVICES_OUTLINED, "Medicamentos", self.load_medicamentos),
+            create_menu_item(ft.Icons.PERSON_OUTLINED, "Pacientes", self.load_pacientes),
         ]
 
         # Botão de sair
@@ -81,7 +81,7 @@ class TelaAdminDashboard:
             padding=ft.padding.symmetric(vertical=12, horizontal=10),
             content=ft.Row(
                 [
-                    ft.Icon(ft.icons.LOGOUT, color="#DC2626", size=24),
+                    ft.Icon(ft.Icons.LOGOUT, color="#DC2626", size=24),
                     ft.Text("Sair", size=16, visible=self.sidebar_open, color="#DC2626"),
                 ],
                 alignment=ft.MainAxisAlignment.START,
@@ -114,7 +114,7 @@ class TelaAdminDashboard:
                                 alignment=ft.alignment.center,
                                 padding=ft.padding.symmetric(vertical=10),
                                 content=ft.IconButton(
-                                    icon=ft.icons.ARROW_BACK_IOS_NEW if self.sidebar_open else ft.icons.ARROW_FORWARD_IOS,
+                                    icon=ft.Icons.ARROW_BACK_IOS_NEW if self.sidebar_open else ft.Icons.ARROW_FORWARD_IOS,
                                     icon_color=ft.Colors.BLUE_600,
                                     on_click=self.toggle_sidebar,
                                     tooltip="Expandir/Recolher Menu",
@@ -162,11 +162,11 @@ class TelaAdminDashboard:
                                 wrap=True,
                                 spacing=10,
                                 controls=[
-                                    ft.IconButton(ft.icons.DARK_MODE_OUTLINED, icon_color=ft.Colors.BLUE_900),
-                                    ft.IconButton(ft.icons.SCHEDULE_OUTLINED, icon_color=ft.Colors.BLUE_900),
+                                    ft.IconButton(ft.Icons.DARK_MODE_OUTLINED, icon_color=ft.Colors.BLUE_900),
+                                    ft.IconButton(ft.Icons.SCHEDULE_OUTLINED, icon_color=ft.Colors.BLUE_900),
                                     ft.Text("Bem-vindo!", size=12, color=ft.Colors.BLUE_900),
                                     ft.Text("DESENVOLVIMENTO", size=12, weight="bold", color=ft.Colors.BLUE_900),
-                                    ft.IconButton(ft.icons.REFRESH, icon_color=ft.Colors.BLUE_900),
+                                    ft.IconButton(ft.Icons.REFRESH, icon_color=ft.Colors.BLUE_900),
                                 ]
                             )
                         ])
@@ -341,7 +341,7 @@ class TelaAdminDashboard:
                         ft.DataCell(
                             ft.Row([
                                 ft.IconButton(
-                                    icon=ft.icons.EDIT,
+                                    icon=ft.Icons.EDIT,
                                     icon_color="#10B981",
                                     tooltip="Editar",
                                     on_click=lambda e, m=med: (
@@ -358,7 +358,7 @@ class TelaAdminDashboard:
                                     )
                                 ),
                                 ft.IconButton(
-                                    icon=ft.icons.DELETE,
+                                    icon=ft.Icons.DELETE,
                                     icon_color="#DC2626",
                                     tooltip="Excluir",
                                     on_click=lambda e, id=med[0]: self.deletar_medicamento_click(id)
@@ -373,6 +373,7 @@ class TelaAdminDashboard:
 
         # Campos editáveis
         self.campo_nome = ft.TextField(label="Nome do Medicamento", value=medicamento.get("nome") if medicamento else "")
+        self.campo_codigo = ft.TextField(label="Código do Medicamento", value=medicamento.get("codigo") if medicamento else "")
         self.dropdown_fabricante = ft.Dropdown(
             label="Fabricante",
             border_radius=10,
@@ -407,6 +408,7 @@ class TelaAdminDashboard:
                 ft.Text("Detalhes do Medicamento", size=20, weight="bold", color="#059669"),
                 ft.Divider(),
                 self.campo_nome,
+                self.campo_codigo,
                 self.dropdown_fabricante,
                 self.dropdown_categoria,
                 self.campo_descricao,
@@ -439,7 +441,7 @@ class TelaAdminDashboard:
                 padding=30,
                 content=ft.Column([
                     ft.Row([
-                        ft.Icon(name=ft.icons.LOCAL_PHARMACY, size=40, color=ft.Colors.BLUE_600),
+                        ft.Icon(name=ft.Icons.LOCAL_PHARMACY, size=40, color=ft.Colors.BLUE_600),
                         ft.Text("Gerenciamento de Medicamentos", size=32, weight="bold", color=ft.Colors.BLUE_900),
                     ], spacing=10, alignment=ft.MainAxisAlignment.CENTER),
                     ft.Text(
@@ -460,13 +462,13 @@ class TelaAdminDashboard:
                                 ft.Text(" Lista de Medicamentos", size=20, weight="bold", color="#111827"),
                                 ft.Container(expand=True),
                                 ft.IconButton(
-                                    icon=ft.icons.REFRESH,
+                                    icon=ft.Icons.REFRESH,
                                     tooltip="Atualizar",
                                     icon_color=ft.Colors.BLUE_600,
                                     on_click=self.load_medicamentos
                                 ),
                                 ft.IconButton(
-                                    icon=ft.icons.ADD,
+                                    icon=ft.Icons.ADD,
                                     tooltip="Adicionar novo medicamento",
                                     icon_color=ft.Colors.BLUE_600,
                                     on_click=self.load_cadastro_medicamento
@@ -479,7 +481,7 @@ class TelaAdminDashboard:
                                     expand=True,
                                     content=ft.TextField(
                                         hint_text="Buscar medicamento...",
-                                        prefix_icon=ft.icons.SEARCH,
+                                        prefix_icon=ft.Icons.SEARCH,
                                         border_radius=30,
                                         bgcolor="#F9FAFB",
                                         height=50
@@ -521,6 +523,7 @@ class TelaAdminDashboard:
 
     def salvar_medicamento(self, e=None):
         nome = self.campo_nome.value.strip()
+        codigo = self.campo_codigo.value.strip()
         descricao = self.campo_descricao.value.strip()
         imagem = self.campo_imagem.value.strip()
         estoque_str = self.campo_estoque.value.strip()
@@ -548,6 +551,7 @@ class TelaAdminDashboard:
             editar_medicamento(
                 self.medicamento_atual["id"],
                 nome=nome,
+                codigo=codigo,
                 descricao=descricao,
                 imagem=imagem,
                 estoque=estoque,
@@ -557,11 +561,12 @@ class TelaAdminDashboard:
         else:
             adicionar_medicamento(
                 nome=nome,
+                codigo=codigo,
                 descricao=descricao,
                 imagem=imagem,
                 estoque=estoque,
                 categoria_id=categoria_id,
-                fabricante_id=fabricante_id
+                fabricante_id=fabricante_id,
             )
 
         # Voltar para lista
@@ -614,7 +619,7 @@ class TelaAdminDashboard:
                                     ft.Row([
                                         self.dropdown_categoria,
                                         ft.IconButton(
-                                            icon=ft.icons.ADD_CIRCLE_OUTLINE,
+                                            icon=ft.Icons.ADD_CIRCLE_OUTLINE,
                                             tooltip="Cadastrar nova categoria",
                                             icon_color=ft.Colors.BLUE_900,
                                             on_click=self.load_cadastro_categoria
@@ -624,7 +629,7 @@ class TelaAdminDashboard:
                                     ft.Row([
                                         self.dropdown_fabricante,
                                         ft.IconButton(
-                                            icon=ft.icons.ADD_CIRCLE_OUTLINE,
+                                            icon=ft.Icons.ADD_CIRCLE_OUTLINE,
                                             tooltip="Cadastrar novo fabricante",
                                             icon_color=ft.Colors.BLUE_900,
                                             on_click=self.load_cadastro_fabricante
@@ -740,9 +745,78 @@ class TelaAdminDashboard:
         self.page.update()
 
     
-    def load_agendamentos(self, e=None):
+    def load_agendamentos(self, e=None, agendamento=None):
+        self.current_view.controls.clear()
+        self.editando_agendamento = agendamento is not None
+        self.agendamento_atual = agendamento if agendamento else None
+
+        # Buscar farmácias do banco de dados
+        agendamentos_db = listar_agendamentos()
+        print("Agendamentos encontrados:", agendamentos_db)
+        
+        # Campos de edição
+        self.campo_busca_agendamentos = ft.TextField(
+            hint_text="Buscar agendamentos...",
+            prefix_icon=ft.Icons.SEARCH,
+            border_radius=30,
+            bgcolor="#F9FAFB",
+            height=50,
+            on_blur=self.filtrar_agendamentos
+        )
+        
         self.current_view.controls.clear()
 
+        # Campos do formulário
+        self.campo_paciente = ft.TextField(label="Nome do Paciente", border_radius=10, bgcolor="#F9FAFB")
+        self.campo_medicamento = ft.TextField(label="Nome do Medicamento", border_radius=10, bgcolor="#F9FAFB")
+        self.campo_codigo = ft.TextField(label="Código do Medicamento", border_radius=10, bgcolor="#F9FAFB")
+        self.campo_quantidade = ft.TextField(label="Quantidade", border_radius=10, bgcolor="#F9FAFB", keyboard_type=ft.KeyboardType.NUMBER)
+        self.campo_data = ft.TextField(label="Data (AAAA-MM-DD)", border_radius=10, bgcolor="#F9FAFB")
+        self.campo_horario = ft.TextField(label="Horário (HH:MM)", border_radius=10, bgcolor="#F9FAFB")
+
+        # Painel lateral de edição
+        self.painel_detalhes_agendamento = ft.Container(
+            bgcolor="#FFFFFF",
+            border_radius=20,
+            padding=25,
+            shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26, offset=ft.Offset(0, 8)),
+            visible=self.editando_agendamento,
+            animate_opacity=300,
+            opacity=1.0 if self.editando_agendamento else 0.0,
+            expand=1,
+            content=ft.Column([
+                ft.Text("🏥 Editar Agendamento", size=20, weight="bold", color=ft.Colors.BLUE_900),
+                ft.Divider(),
+                self.campo_paciente,
+                self.campo_medicamento,
+                self.campo_codigo,
+                self.campo_quantidade,
+                self.campo_data,
+                self.campo_horario,
+                ft.Container(height=20),
+                ft.Row([
+                    ft.ElevatedButton(
+                        "Salvar",
+                        bgcolor=ft.Colors.BLUE_600,
+                        color="white",
+                        expand=True,
+                        style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12)),
+                        on_click=self.salvar_agendamento  # Novo método para salvar
+                    ),
+                    ft.OutlinedButton(
+                        "Cancelar",
+                        expand=True,
+                        style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12)),
+                        on_click=lambda e: self.load_agendamentos()
+                    )
+                ], spacing=10)
+            ], spacing=12)
+        )
+
+        # Renderiza a tabela com farmácias do banco
+        self.renderizar_tabela_agendamentos(agendamentos_db)
+
+    def renderizar_tabela_agendamentos(self, lista):
         status_cores = {
             "Pendente": ("#D97706", "#FEF3C7"),
             "Confirmado": ("#15803D", "#D1FAE5"),
@@ -757,26 +831,16 @@ class TelaAdminDashboard:
                 ft.Text(status, color=cor_texto, weight="bold")
             ], spacing=6, alignment=ft.MainAxisAlignment.CENTER)
 
-        dados = [
-            (1, "Maria da Silva", "Losartana 50mg", "MED123456", "30", "2025-05-10", "08:00", "Pendente"),
-            (2, "João Pereira", "Paracetamol 500mg", "MED654321", "20", "2025-05-11", "09:00", "Confirmado"),
-            (3, "Ana Clara", "Ibuprofeno 400mg", "MED789012", "15", "2025-05-12", "10:00", "Cancelado"),
-            (4, "Lucas Martins", "Amoxicilina 500mg", "MED345678", "25", "2025-05-13", "11:00", "Concluído"),
-            (5, "Fernanda Lima", "Cetirizina 10mg", "MED987654", "50", "2025-05-14", "12:00", "Pendente"),
-        ]
-
         tabela = ft.DataTable(
             heading_row_color="#F9FAFB",
             border=ft.border.all(1, "#E5E7EB"),
             border_radius=12,
-            horizontal_margin=10,
-            column_spacing=20,
             columns=[
                 ft.DataColumn(ft.Text("ID")),
                 ft.DataColumn(ft.Text("Paciente")),
                 ft.DataColumn(ft.Text("Medicamento")),
                 ft.DataColumn(ft.Text("Código")),
-                ft.DataColumn(ft.Text("Qtd")),
+                ft.DataColumn(ft.Text("Quantidade")),
                 ft.DataColumn(ft.Text("Data")),
                 ft.DataColumn(ft.Text("Horário")),
                 ft.DataColumn(ft.Text("Status")),
@@ -785,29 +849,30 @@ class TelaAdminDashboard:
             rows=[
                 ft.DataRow(
                     cells=[
-                        ft.DataCell(ft.Text(str(item[0]))),
-                        ft.DataCell(ft.Text(item[1])),
-                        ft.DataCell(ft.Text(item[2])),
-                        ft.DataCell(ft.Text(item[3])),
-                        ft.DataCell(ft.Text(item[4])),
-                        ft.DataCell(ft.Text(item[5])),
-                        ft.DataCell(ft.Text(item[6])),
-                        ft.DataCell(
-                            ft.Container(
-                                content=status_badge(item[7]),
+                        ft.DataCell(ft.Text(str(a[0]))),
+                        ft.DataCell(ft.Text(a[1])),
+                        ft.DataCell(ft.Text(a[2])),
+                        ft.DataCell(ft.Text(a[3])),
+                        ft.DataCell(ft.Text(a[4])),
+                        ft.DataCell(ft.Text(a[5])),
+                        ft.DataCell(ft.Text(a[6])),
+                        ft.DataCell(ft.Text(a[7])),
+                         ft.DataCell(
+                                ft.Container( 
+                                content=status_badge(a[7]),
                                 padding=ft.padding.symmetric(horizontal=8, vertical=4),
-                                bgcolor=status_cores[item[7]][1],
+                                bgcolor=status_cores.get(a[7], ("#E5E7EB")),
                                 border_radius=20,
-                            )
-                        ),
-                        ft.DataCell(
-                            ft.Container(
+                                )
+                            ),
+                            ft.DataCell(
+                                ft.Container(
                                 width=100,
                                 alignment=ft.alignment.center,
                                 content=ft.Row(
                                     [
                                         ft.IconButton(
-                                            icon=ft.icons.CHECK_CIRCLE_OUTLINE,
+                                            icon=ft.Icons.CHECK_CIRCLE_OUTLINE,
                                             icon_color="#059669",
                                             tooltip="Confirmar Agendamento",
                                             icon_size=20,
@@ -817,7 +882,7 @@ class TelaAdminDashboard:
                                             )
                                         ),
                                         ft.IconButton(
-                                            icon=ft.icons.CANCEL_OUTLINED,
+                                            icon=ft.Icons.CANCEL_OUTLINED,
                                             icon_color="#DC2626",
                                             tooltip="Cancelar Agendamento",
                                             icon_size=20,
@@ -833,23 +898,24 @@ class TelaAdminDashboard:
                             )
                         )
                     ]
-                ) for item in dados
+                ) for a in lista
             ]
         )
 
+        self.current_view.controls.clear()
         self.current_view.controls.append(
             ft.Container(
                 padding=30,
                 content=ft.Column([
                     ft.Row([
-                        ft.Icon(name=ft.icons.CALENDAR_MONTH, size=40, color=ft.Colors.BLUE_600),
-                        ft.Text("Agendamentos de Retirada", size=32, weight="bold", color=ft.Colors.BLUE_900),
+                        ft.Icon(name=ft.Icons.LOCAL_HOSPITAL, size=40, color=ft.Colors.BLUE_600),
+                        ft.Text("Gerenciamento de Agendamentos", size=32, weight="bold", color=ft.Colors.BLUE_900)
                     ], spacing=10, alignment=ft.MainAxisAlignment.CENTER),
-                    ft.Text("Acompanhe todos os agendamentos de medicamentos realizados pelos pacientes",
+                    ft.Text("Adicione, edite ou gerencie os agendamentos cadastrados no sistema.",
                             size=14, color=ft.Colors.GREY_700, text_align=ft.TextAlign.CENTER),
                     ft.Divider(height=30),
 
-                    ft.Container(
+                   ft.Container(
                         bgcolor="#FFFFFF",
                         border_radius=20,
                         padding=25,
@@ -858,10 +924,27 @@ class TelaAdminDashboard:
                             ft.Row([
                                 ft.Text("📋 Lista de Agendamentos", size=20, weight="bold", color="#111827"),
                                 ft.Container(expand=True),
-                                ft.IconButton(icon=ft.icons.FILTER_LIST, icon_color=ft.Colors.BLUE_600, tooltip="Filtrar"),
-                                ft.IconButton(icon=ft.icons.REFRESH, icon_color=ft.Colors.BLUE_600, tooltip="Atualizar Lista"),
+                                ft.IconButton(
+                                    icon=ft.Icons.REFRESH,
+                                    tooltip="Atualizar",
+                                    icon_color=ft.Colors.BLUE_600,
+                                    on_click=self.load_agendamentos
+                                ),
+                                ft.IconButton(
+                                    icon=ft.Icons.ADD,
+                                    tooltip="Adicionar novo agendamento",
+                                    icon_color=ft.Colors.BLUE_600,
+                                    on_click=self.load_cadastro_agendamento
+                                ),
                             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
                             ft.Divider(),
+                            ft.Row([
+                                ft.Container(
+                                    expand=True,
+                                    content=self.campo_busca_agendamentos
+                                )
+                            ]),
+                            ft.Container(height=20),
                             ft.Container(
                                 content=tabela,
                                 expand=True,
@@ -977,7 +1060,7 @@ class TelaAdminDashboard:
         # Campos de edição
         self.campo_busca_farmacia = ft.TextField(
             hint_text="Buscar farmácia...",
-            prefix_icon=ft.icons.SEARCH,
+            prefix_icon=ft.Icons.SEARCH,
             border_radius=30,
             bgcolor="#F9FAFB",
             height=50,
@@ -1095,7 +1178,7 @@ class TelaAdminDashboard:
                         ft.DataCell(
                             ft.Row([
                                 ft.IconButton(
-                                    icon=ft.icons.EDIT,
+                                    icon=ft.Icons.EDIT,
                                     icon_color="#10B981",
                                     tooltip="Editar",
                                     on_click=lambda e, f=f: (
@@ -1111,7 +1194,7 @@ class TelaAdminDashboard:
                                         self.load_farmacias(farmacia=self.farmacia_atual)
                                     )
                                 ),
-                                ft.IconButton(icon=ft.icons.DELETE, icon_color="#DC2626", tooltip="Excluir")
+                                ft.IconButton(icon=ft.Icons.DELETE, icon_color="#DC2626", tooltip="Excluir")
                             ], spacing=6)
                         )
                     ]
@@ -1126,7 +1209,7 @@ class TelaAdminDashboard:
                 padding=30,
                 content=ft.Column([
                     ft.Row([
-                        ft.Icon(name=ft.icons.LOCAL_HOSPITAL, size=40, color=ft.Colors.BLUE_600),
+                        ft.Icon(name=ft.Icons.LOCAL_HOSPITAL, size=40, color=ft.Colors.BLUE_600),
                         ft.Text("Gerenciamento de Farmácias", size=32, weight="bold", color=ft.Colors.BLUE_900)
                     ], spacing=10, alignment=ft.MainAxisAlignment.CENTER),
                     ft.Text("Adicione, edite ou gerencie as farmácias cadastradas no sistema.",
@@ -1144,13 +1227,13 @@ class TelaAdminDashboard:
                                 ft.Text("📋 Lista de Farmácias", size=20, weight="bold", color="#111827"),
                                 ft.Container(expand=True),
                                 ft.IconButton(
-                                    icon=ft.icons.REFRESH,
+                                    icon=ft.Icons.REFRESH,
                                     tooltip="Atualizar Lista",
                                     icon_color=ft.Colors.BLUE_600,
                                     on_click=self.load_farmacias
                                 ),
                                 ft.IconButton(
-                                    icon=ft.icons.ADD,
+                                    icon=ft.Icons.ADD,
                                     tooltip="Adicionar nova farmácia",
                                     icon_color=ft.Colors.BLUE_600,
                                     on_click=lambda e: self.load_farmacias(farmacia={})
@@ -1237,14 +1320,14 @@ class TelaAdminDashboard:
             numeros = ''.join(filter(str.isdigit, texto_original))[:11]
 
             if len(numeros) == 11:
-                self.campo_email.focus()
+                self.campo_nascimento.focus()
 
         def nascimento_change(e):
             texto_original = self.campo_nascimento.value
             numeros = ''.join(filter(str.isdigit, texto_original))[:8]
 
             if len(numeros) == 8:
-                self.campo_senha.focus()
+                pass
 
         def nascimento_blur(e):
             texto_original = self.campo_nascimento.value
@@ -1266,7 +1349,7 @@ class TelaAdminDashboard:
         # Campos de edição
         self.campo_busca_pacientes = ft.TextField(
             hint_text="Buscar paciente...",
-            prefix_icon=ft.icons.SEARCH,
+            prefix_icon=ft.Icons.SEARCH,
             border_radius=30,
             bgcolor="#F9FAFB",
             height=50,
@@ -1291,12 +1374,14 @@ class TelaAdminDashboard:
             opacity=1.0 if self.editando_paciente else 0.0,
             expand=1,
             content=ft.Column([
-                ft.Text("🏥 Editar Paciente", size=20, weight="bold", color=ft.Colors.BLUE_900),
+                ft.Text("🏥 Adicionar Paciente", size=20, weight="bold", color=ft.Colors.BLUE_900),
                 ft.Divider(),
                 self.campo_nome_paciente,
                 self.campo_email,
                 self.campo_cpf,
                 self.campo_nascimento,
+                self.campo_senha,
+                self.campo_confirmar_senha,
                 ft.Container(height=20),
                 ft.Row([
                     ft.ElevatedButton(
@@ -1371,13 +1456,13 @@ class TelaAdminDashboard:
                                 ft.Row(
                                     [
                                         ft.IconButton(
-                                            icon=ft.icons.CHECK_CIRCLE_OUTLINE,
+                                            icon=ft.Icons.CHECK_CIRCLE_OUTLINE,
                                             icon_color="#059669",
                                             tooltip="Aprovar paciente",
                                             on_click=lambda e, pid=p[0]: self.aprovar_usuario(pid)
                                         ),
                                         ft.IconButton(
-                                            icon=ft.icons.CANCEL_OUTLINED,
+                                            icon=ft.Icons.CANCEL_OUTLINED,
                                             icon_color="#DC2626",
                                             tooltip="Recusar paciente",
                                             on_click=lambda e, pid=p[0]: self.recusar_usuario(pid)
@@ -1397,7 +1482,7 @@ class TelaAdminDashboard:
                 padding=30,
                 content=ft.Column([
                     ft.Row([
-                        ft.Icon(name=ft.icons.LOCAL_HOSPITAL, size=40, color=ft.Colors.BLUE_600),
+                        ft.Icon(name=ft.Icons.LOCAL_HOSPITAL, size=40, color=ft.Colors.BLUE_600),
                         ft.Text("Gerenciamento de Pacientes", size=32, weight="bold", color=ft.Colors.BLUE_900)
                     ], spacing=10, alignment=ft.MainAxisAlignment.CENTER),
                     ft.Text("Adicione, edite ou gerencie os pacientes cadastrados no sistema.",
@@ -1415,13 +1500,13 @@ class TelaAdminDashboard:
                                 ft.Text("📋 Lista de Pacientes", size=20, weight="bold", color="#111827"),
                                 ft.Container(expand=True),
                                 ft.IconButton(
-                                    icon=ft.icons.REFRESH,
+                                    icon=ft.Icons.REFRESH,
                                     tooltip="Atualizar Lista",
                                     icon_color=ft.Colors.BLUE_600,
                                     on_click=self.load_pacientes
                                 ),
                                 ft.IconButton(
-                                    icon=ft.icons.ADD,
+                                    icon=ft.Icons.ADD,
                                     tooltip="Adicionar novo paciente",
                                     icon_color=ft.Colors.BLUE_600,
                                     on_click=lambda e: self.load_pacientes(paciente={})
@@ -1448,7 +1533,7 @@ class TelaAdminDashboard:
                                             width=1200,
                                         ),
                                         ft.AnimatedSwitcher(
-                                            content=self.painel_detalhes_pacientes if self.editando_paciente else ft.Container(),
+                                            content=self.painel_detalhes_paciente if self.editando_paciente else ft.Container(),
                                             transition=ft.Animation(300, "easeInOut")
                                         )
                                     ]
@@ -1509,21 +1594,21 @@ class TelaAdminDashboard:
             self.campo_cpf.value = formatado
             self.campo_cpf.update()
 
-        def cpf_change(e):
+        def cpf_change_cadastro(e):
             texto_original = self.campo_cpf.value
             numeros = ''.join(filter(str.isdigit, texto_original))[:11]
 
             if len(numeros) == 11:
-                self.campo_email.focus()
+                self.campo_nascimento.focus()
 
-        def nascimento_change(e):
+        def nascimento_change_cadastro(e):
             texto_original = self.campo_nascimento.value
             numeros = ''.join(filter(str.isdigit, texto_original))[:8]
 
             if len(numeros) == 8:
-                self.campo_senha.focus()
+                pass
 
-        def nascimento_blur(e):
+        def nascimento_blur_cadastro(e):
             texto_original = self.campo_nascimento.value
             numeros = ''.join(filter(str.isdigit, texto_original))[:8]
             formatado = ""
@@ -1542,55 +1627,13 @@ class TelaAdminDashboard:
 
         # Campos do formulário
         self.campo_nome_paciente = ft.TextField(label="Nome do Paciente", border_radius=10, bgcolor="#F3F4F6")
-        self.campo_cpf = ft.TextField(label="CPF", on_blur=cpf_blur, on_change=cpf_change, border_radius=10, bgcolor="#F3F4F6")
+        self.campo_cpf = ft.TextField(label="CPF", on_blur=cpf_blur, on_change=cpf_change_cadastro, border_radius=10, bgcolor="#F3F4F6")
         self.campo_email = ft.TextField(label="Email", border_radius=10, bgcolor="#F3F4F6")
-        self.campo_nascimento = ft.TextField(label="Data de Nascimento (DD/MM/AAAA)", on_blur=nascimento_blur, on_change=nascimento_change, border_radius=10, bgcolor="#F3F4F6")
+        self.campo_nascimento = ft.TextField(label="Data de Nascimento (DD/MM/AAAA)", on_blur=nascimento_blur_cadastro, on_change=nascimento_change_cadastro, border_radius=10, bgcolor="#F3F4F6")
         self.campo_senha = ft.TextField(label="Senha", password=True, can_reveal_password=True, border_radius=10, bgcolor="#F3F4F6")
         self.campo_confirmar_senha = ft.TextField(label="Confirmar Senha", password=True, can_reveal_password=True, border_radius=10, bgcolor="#F3F4F6")
 
-        def salvar_paciente(e):
-            nome = self.campo_nome_paciente.value.strip()
-            cpf = self.campo_cpf.value.strip()
-            email = self.campo_email.value.strip()
-            nascimento = self.campo_nascimento.value.strip()
-            senha = self.campo_senha.value.strip()
-            confirmar_senha = self.campo_confirmar_senha.value.strip()
-
-            # Validação dos campos
-            if not nome or not cpf or not email or not nascimento or not senha or not confirmar_senha:
-                self.page.snack_bar = ft.SnackBar(content=ft.Text("Todos os campos são obrigatórios."), bgcolor="red")
-                self.page.snack_bar.open = True
-                self.page.update()
-                return
-            
-            if senha != confirmar_senha:
-                self.page.snack_bar = ft.SnackBar(content=ft.Text("As senhas não coincidem."), bgcolor="red")
-                self.page.snack_bar.open = True
-                self.page.update()
-                return
-
-            # Formata a data de nascimento para o formato esperado no banco (DD/MM/AAAA para AAAA-MM-DD)
-            try:
-                dia, mes, ano = nascimento.split("/")
-                nascimento_formatado = f"{ano}-{mes}-{dia}"
-            except ValueError:
-                self.page.snack_bar = ft.SnackBar(content=ft.Text("Data de nascimento inválida."), bgcolor="red")
-                self.page.snack_bar.open = True
-                self.page.update()
-                return
-
-            # Tenta registrar o usuário no banco de dados
-            sucesso = registrar_usuario(nome, email, cpf, nascimento_formatado, senha)
-            
-            if sucesso:
-                self.page.snack_bar = ft.SnackBar(content=ft.Text("Paciente cadastrado com sucesso!"), bgcolor="green")
-                self.page.snack_bar.open = True
-                self.page.update()
-                self.load_pacientes()  # Retorna para a lista de pacientes
-            else:
-                self.page.snack_bar = ft.SnackBar(content=ft.Text("Erro: CPF ou email já cadastrado."), bgcolor="red")
-                self.page.snack_bar.open = True
-                self.page.update()
+    
 
         # Estrutura do formulário
         self.current_view.controls.append(
@@ -1648,31 +1691,50 @@ class TelaAdminDashboard:
         )
 
         self.page.update()
-        
-    def salvar_paciente(self, e=None):
+
+    def salvar_paciente(self, e):
         nome = self.campo_nome_paciente.value.strip()
         cpf = self.campo_cpf.value.strip()
         email = self.campo_email.value.strip()
-        telefone = self.campo_telefone.value.strip()
+        nascimento = self.campo_nascimento.value.strip()
+        senha = self.campo_senha.value.strip()
+        confirmar_senha = self.campo_confirmar_senha.value.strip()
 
-        # Validação simples
-        if not nome or not cpf or not email or not telefone:
+        # Validação dos campos
+        if not nome or not cpf or not email or not nascimento or not senha or not confirmar_senha:
             self.page.snack_bar = ft.SnackBar(content=ft.Text("Todos os campos são obrigatórios."), bgcolor="red")
             self.page.snack_bar.open = True
             self.page.update()
             return
+        
+        if senha != confirmar_senha:
+            self.page.snack_bar = ft.SnackBar(content=ft.Text("As senhas não coincidem."), bgcolor="red")
+            self.page.snack_bar.open = True
+            self.page.update()
+            return
 
-        # Salva no banco de dados (ajuste para usar a função real do seu banco)
-        from database import adicionar_paciente
-        adicionar_paciente(nome, cpf, email, telefone)
+        # Formata a data de nascimento para o formato esperado no banco (DD/MM/AAAA para AAAA-MM-DD)
+        try:
+            dia, mes, ano = nascimento.split("/")
+            nascimento_formatado = f"{ano}-{mes}-{dia}"
+        except ValueError:
+            self.page.snack_bar = ft.SnackBar(content=ft.Text("Data de nascimento inválida."), bgcolor="red")
+            self.page.snack_bar.open = True
+            self.page.update()
+            return
 
-        # Mensagem de sucesso
-        self.page.snack_bar = ft.SnackBar(content=ft.Text("Paciente cadastrado com sucesso."), bgcolor="green")
-        self.page.snack_bar.open = True
-        self.page.update()
-
-        # Voltar para a lista de pacientes
-        self.load_pacientes()
+        # Tenta registrar o usuário no banco de dados
+        sucesso = registrar_usuario(nome, email, cpf, nascimento_formatado, senha)
+        
+        if sucesso:
+            self.page.snack_bar = ft.SnackBar(content=ft.Text("Paciente cadastrado com sucesso!"), bgcolor="green")
+            self.page.snack_bar.open = True
+            self.page.update()
+            self.load_pacientes()  # Retorna para a lista de pacientes
+        else:
+            self.page.snack_bar = ft.SnackBar(content=ft.Text("Erro: CPF ou email já cadastrado."), bgcolor="red")
+            self.page.snack_bar.open = True
+            self.page.update()
 
     def load_cadastro_agendamento(self, e=None):
         self.current_view.controls.clear()
@@ -1743,6 +1805,13 @@ class TelaAdminDashboard:
 
         self.page.update()
 
+    def filtrar_agendamentos(self, e):
+        termo = self.campo_busca_agendamentos.value.strip().lower()
+        agendamentos = listar_agendamentos()
+        resultado = [a for a in agendamentos if termo in a[1].lower() or termo in a[2].lower() or termo in a[3].lower()]
+
+        self.renderizar_tabela_agendamentos(resultado)
+        self.page.update()
 
     def salvar_agendamento(self, e=None):
         paciente = self.campo_paciente.value.strip()
@@ -1770,8 +1839,6 @@ class TelaAdminDashboard:
 
         # Voltar para a lista de agendamentos
         self.load_agendamentos()
-
-
 
     def build_tela(self):
         return ft.View(
