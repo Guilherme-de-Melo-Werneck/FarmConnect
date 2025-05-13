@@ -459,7 +459,7 @@ class TelaAdminDashboard:
                         shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26, offset=ft.Offset(0, 8)),
                         content=ft.Column([
                             ft.Row([
-                                ft.Text(" Lista de Medicamentos", size=20, weight="bold", color="#111827"),
+                                ft.Text("📋 Lista de Medicamentos", size=20, weight="bold", color="#111827"),
                                 ft.Container(expand=True),
                                 ft.IconButton(
                                     icon=ft.Icons.REFRESH,
@@ -1482,7 +1482,7 @@ class TelaAdminDashboard:
                 content=ft.Column([
                     ft.Row([
                         ft.Icon(name=ft.Icons.LOCAL_HOSPITAL, size=40, color=ft.Colors.BLUE_600),
-                        ft.Text("Gerenciamento de Pacientes", size=32, weight="bold", color=ft.Colors.BLUE_900)
+                        ft.Text("📋 Gerenciamento de Pacientes", size=32, weight="bold", color=ft.Colors.BLUE_900)
                     ], spacing=10, alignment=ft.MainAxisAlignment.CENTER),
                     ft.Text("Adicione, edite ou gerencie os pacientes cadastrados no sistema.",
                             size=14, color=ft.Colors.GREY_700, text_align=ft.TextAlign.CENTER),
@@ -1631,8 +1631,6 @@ class TelaAdminDashboard:
         self.campo_nascimento = ft.TextField(label="Data de Nascimento (DD/MM/AAAA)", on_blur=nascimento_blur_cadastro, on_change=nascimento_change_cadastro, border_radius=10, bgcolor="#F3F4F6")
         self.campo_senha = ft.TextField(label="Senha", password=True, can_reveal_password=True, border_radius=10, bgcolor="#F3F4F6")
         self.campo_confirmar_senha = ft.TextField(label="Confirmar Senha", password=True, can_reveal_password=True, border_radius=10, bgcolor="#F3F4F6")
-
-    
 
         # Estrutura do formulário
         self.current_view.controls.append(
