@@ -39,6 +39,7 @@ def criar_tabelas():
         CREATE TABLE IF NOT EXISTS medicamentos (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             nome TEXT NOT NULL,
+            codigo TEXT NOT NULL UNIQUE,
             descricao TEXT,
             imagem TEXT,
             estoque INTEGER DEFAULT 0,
@@ -100,6 +101,7 @@ def criar_tabelas():
             usuario_id INTEGER NOT NULL,
             medicamento_id INTEGER NOT NULL,
             farmacia_id INTEGER NOT NULL,
+            codigo TEXT NOT NULL,
             data TEXT NOT NULL,
             horario TEXT NOT NULL,
             status TEXT DEFAULT 'PENDENTE',
@@ -266,21 +268,21 @@ def listar_medicamentos():
     return medicamentos
 
 
-def adicionar_medicamento(nome, descricao, imagem, estoque, categoria_id=None, fabricante_id=None):
+def adicionar_medicamento(codigo, nome, descricao, imagem, estoque, categoria_id=None, fabricante_id=None):
     conn = conectar()
     cursor = conn.cursor()
 
     cursor.execute("""
-        INSERT INTO medicamentos (nome, descricao, imagem, estoque, categoria_id, fabricante_id)
-        VALUES (?, ?, ?, ?, ?, ?)
-    """, (nome, descricao, imagem, estoque, categoria_id, fabricante_id))
+        INSERT INTO medicamentos (codigo, nome, descricao, imagem, estoque, categoria_id, fabricante_id)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    """, (codigo, nome, descricao, imagem, estoque, categoria_id, fabricante_id))
 
     conn.commit()
     cursor.close()
     conn.close()
 
 
-def agendar_medicamento(usuario_email, medicamento_id):
+def agendar_medicamento(usuario_email, medicamento_id, codigo, data, horario, status):
     conn = conectar()
     cursor = conn.cursor()
 
@@ -290,19 +292,12 @@ def agendar_medicamento(usuario_email, medicamento_id):
     if user:
         usuario_id = user[0]
 
-        # Pegar a primeira farmacia cadastrada por enquanto
-        cursor.execute("SELECT id FROM farmacias LIMIT 1")
-        farmacia = cursor.fetchone()
+        cursor.execute("""
+            INSERT INTO agendamentos (usuario_id, medicamento_id, codigo, data, horario, status)
+            VALUES (?, ?, ?, ?, ?, 'PENDENTE')
+        """, (usuario_id, medicamento_id, codigo, data, horario, status))
 
-        if farmacia:
-            farmacia_id = farmacia[0]
-
-            cursor.execute("""
-                INSERT INTO agendamentos (usuario_id, medicamento_id, farmacia_id, data, horario, status)
-                VALUES (?, ?, ?, DATE('now'), TIME('now'), 'PENDENTE')
-            """, (usuario_id, medicamento_id, farmacia_id))
-
-            conn.commit()
+        conn.commit()
 
     cursor.close()
     conn.close()
@@ -579,6 +574,55 @@ def listar_usuarios():
     conn.close()
 
     return usuarios
+
+def listar_agendamentos():
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT 
+            a.id, 
+            u.nome AS paciente, 
+            m.nome AS medicamento,
+            f.nome AS farmacia, 
+            a.codigo,
+            a.data, 
+            a.horario, 
+            a.status,
+            a.data_criacao
+        FROM agendamentos a
+        JOIN usuarios u ON a.usuario_id = u.id
+        JOIN medicamentos m ON a.medicamento_id = m.id
+        JOIN farmacias f ON a.farmacia_id = f.id
+        ORDER BY a.data_criacao DESC
+    """)
+
+    agendamentos = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return agendamentos
+
+def adicionar_agendamento(usuario_id, medicamento_id, farmacia_id, codigo, data, horario, status="Pendente"):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("""
+            INSERT INTO agendamentos (usuario_id, medicamento_id, farmacia_id, codigo, data, horario, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        """, (usuario_id, medicamento_id, farmacia_id, codigo, data, horario, status))
+
+        conn.commit()
+        return True
+    except sqlite3.IntegrityError as e:
+        print("Erro ao adicionar agendamento:", e)
+        return False
+    finally:
+        cursor.close()
+        conn.close()
+
 
 
 
