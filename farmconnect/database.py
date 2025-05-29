@@ -253,7 +253,7 @@ def listar_medicamentos():
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT m.id, m.nome, m.descricao, m.imagem, m.estoque,
+        SELECT m.id, m.nome, m.codigo, m.descricao, m.imagem, m.estoque,
                c.nome AS categoria, f.nome AS fabricante
         FROM medicamentos m
         LEFT JOIN categorias c ON m.categoria_id = c.id

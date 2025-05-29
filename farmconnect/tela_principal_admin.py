@@ -325,6 +325,7 @@ class TelaAdminDashboard:
             columns=[
                 ft.DataColumn(ft.Text("ID")),
                 ft.DataColumn(ft.Text("Nome")),
+                ft.DataColumn(ft.Text("Código")),
                 ft.DataColumn(ft.Text("Categoria")),
                 ft.DataColumn(ft.Text("Fabricante")),
                 ft.DataColumn(ft.Text("Estoque")),
@@ -335,8 +336,9 @@ class TelaAdminDashboard:
                     cells=[
                         ft.DataCell(ft.Text(str(med[0]))),
                         ft.DataCell(ft.Text(med[1])),
-                        ft.DataCell(ft.Text(med[5] or "-")),
+                        ft.DataCell(ft.Text(med[2])),
                         ft.DataCell(ft.Text(med[6] or "-")),
+                        ft.DataCell(ft.Text(med[7] or "-")),
                         ft.DataCell(ft.Text(str(med[4]))),
                         ft.DataCell(
                             ft.Row([
@@ -348,11 +350,12 @@ class TelaAdminDashboard:
                                         setattr(self, "medicamento_atual", {
                                             "id": m[0],
                                             "nome": m[1],
-                                            "descricao": m[2] or "",
-                                            "imagem": m[3] or "",
-                                            "estoque": m[4],
-                                            "categoria": m[5] or "",
-                                            "fabricante": m[6] or ""
+                                            "codigo": m[2],
+                                            "descricao": m[3] or "",
+                                            "imagem": m[4] or "",
+                                            "estoque": m[5],
+                                            "categoria": m[6] or "",
+                                            "fabricante": m[7] or ""
                                         }),
                                         self.load_medicamentos(medicamento=self.medicamento_atual)
                                     )
