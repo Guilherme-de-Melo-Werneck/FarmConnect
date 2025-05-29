@@ -380,15 +380,15 @@ def solicitar_notificacao(usuario_email, medicamento_id):
     cursor.close()
     conn.close()
 
-def editar_medicamento(id, nome, descricao, imagem, estoque,categoria_id=None, fabricante_id=None,):
+def editar_medicamento(id, nome, codigo, descricao, imagem, estoque, categoria_id=None, fabricante_id=None):
     conn = conectar()
     cursor = conn.cursor()
 
     cursor.execute("""
         UPDATE medicamentos
-        SET nome = ?, descricao = ?, imagem = ?, estoque = ?, categoria_id = ?, fabricante_id = ? 
+        SET nome = ?, codigo = ?, descricao = ?, imagem = ?, estoque = ?, categoria_id = ?, fabricante_id = ?
         WHERE id = ?
-    """, (nome, descricao, imagem, estoque, categoria_id, fabricante_id, id))
+    """, (nome, codigo, descricao, imagem, estoque, categoria_id, fabricante_id, id))
 
     conn.commit()
     cursor.close()

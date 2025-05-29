@@ -412,7 +412,6 @@ class TelaAdminDashboard:
                 self.dropdown_fabricante,
                 self.dropdown_categoria,
                 self.campo_descricao,
-                self.campo_imagem,
                 self.campo_estoque,
                 ft.TextField(label="Observações", multiline=True, min_lines=3, max_lines=5),
                 ft.Container(height=20),
