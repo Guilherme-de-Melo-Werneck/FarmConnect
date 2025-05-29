@@ -339,7 +339,7 @@ class TelaAdminDashboard:
                         ft.DataCell(ft.Text(med[2])),
                         ft.DataCell(ft.Text(med[6] or "-")),
                         ft.DataCell(ft.Text(med[7] or "-")),
-                        ft.DataCell(ft.Text(str(med[4]))),
+                        ft.DataCell(ft.Text(str(med[5]))),
                         ft.DataCell(
                             ft.Row([
                                 ft.IconButton(
@@ -352,10 +352,9 @@ class TelaAdminDashboard:
                                             "nome": m[1],
                                             "codigo": m[2],
                                             "descricao": m[3] or "",
-                                            "imagem": m[4] or "",
                                             "estoque": m[5],
-                                            "categoria": m[6] or "",
-                                            "fabricante": m[7] or ""
+                                            "categoria": m[6],
+                                            "fabricante": m[7]
                                         }),
                                         self.load_medicamentos(medicamento=self.medicamento_atual)
                                     )
@@ -408,7 +407,7 @@ class TelaAdminDashboard:
             animate_opacity=300,
             opacity=1.0 if self.editando_medicamento else 0.0,
             content=ft.Column([
-                ft.Text("Detalhes do Medicamento", size=20, weight="bold", color="#059669"),
+                ft.Text("Detalhes do Medicamento", size=20, weight="bold", color=ft.Colors.BLUE_900),
                 ft.Divider(),
                 self.campo_nome,
                 self.campo_codigo,
@@ -421,7 +420,7 @@ class TelaAdminDashboard:
                 ft.Row([
                     ft.ElevatedButton(
                         "Salvar",
-                        bgcolor="#059669",
+                        bgcolor=ft.Colors.BLUE_600,
                         color="white",
                         expand=True,
                         style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12)),
