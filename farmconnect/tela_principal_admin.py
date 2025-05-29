@@ -510,7 +510,7 @@ class TelaAdminDashboard:
                                         )
                                     ),
                                     ft.Container(
-                                        col={"sm": 12, "md": 4},
+                                        col={"sm": 12, "md": 12},
                                         content=detalhes_medicamento
                                     )
                                 ]
