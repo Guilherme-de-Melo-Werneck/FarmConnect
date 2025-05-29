@@ -1365,12 +1365,12 @@ class TelaAdminDashboard:
             on_blur=self.filtrar_pacientes
         )
 
-        self.campo_nome_paciente = ft.TextField(label="Nome do Paciente", border_radius=10, bgcolor="#F3F4F6")
-        self.campo_cpf = ft.TextField(label="CPF", on_blur=cpf_blur, on_change=cpf_change, border_radius=10, bgcolor="#F3F4F6")
-        self.campo_email = ft.TextField(label="Email", border_radius=10, bgcolor="#F3F4F6")
-        self.campo_nascimento = ft.TextField(label="Data de Nascimento (DD/MM/AAAA)", on_blur=nascimento_blur, on_change=nascimento_change, border_radius=10, bgcolor="#F3F4F6")
-        self.campo_senha = ft.TextField(label="Senha", password=True, can_reveal_password=True, border_radius=10, bgcolor="#F3F4F6")
-        self.campo_confirmar_senha = ft.TextField(label="Confirmar Senha", password=True, can_reveal_password=True, border_radius=10, bgcolor="#F3F4F6")
+        self.campo_nome_paciente = ft.TextField(label="Nome do Paciente", border_radius=10, bgcolor="#F9FAFB")
+        self.campo_cpf = ft.TextField(label="CPF", on_blur=cpf_blur, on_change=cpf_change, border_radius=10, bgcolor="#F9FAFB")
+        self.campo_email = ft.TextField(label="Email", border_radius=10, bgcolor="#F9FAFB")
+        self.campo_nascimento = ft.TextField(label="Data de Nascimento (DD/MM/AAAA)", on_blur=nascimento_blur, on_change=nascimento_change, border_radius=10, bgcolor="#F9FAFB")
+        self.campo_senha = ft.TextField(label="Senha", password=True, can_reveal_password=True, border_radius=10, bgcolor="#F9FAFB")
+        self.campo_confirmar_senha = ft.TextField(label="Confirmar Senha", password=True, can_reveal_password=True, border_radius=10, bgcolor="#F9FAFB")
 
         # Painel lateral de edição
         self.painel_detalhes_paciente = ft.Container(
