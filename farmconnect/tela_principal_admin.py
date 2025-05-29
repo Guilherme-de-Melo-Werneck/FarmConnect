@@ -505,6 +505,7 @@ class TelaAdminDashboard:
                                             scroll=ft.ScrollMode.ALWAYS,
                                             controls = [
                                                 ft.Container(
+                                                    expand=True,
                                                     content=tabela_medicamentos
                                                 )
                                             ],
