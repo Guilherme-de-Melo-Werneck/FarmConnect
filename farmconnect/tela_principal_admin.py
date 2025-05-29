@@ -492,7 +492,6 @@ class TelaAdminDashboard:
                             ft.Container(height=20),
 
                             ft.ResponsiveRow(
-                                
                                 columns=12,
                                 spacing=20,
                                 run_spacing=20,
@@ -500,13 +499,12 @@ class TelaAdminDashboard:
                                     ft.Container(
                                         col={"sm": 12, "md": 12},
                                         expand=True,
-                                        clip_behavior=ft.ClipBehavior.HARD_EDGE,
                                         content=ft.Row(
                                             scroll=ft.ScrollMode.ALWAYS,
                                             controls = [
                                                 ft.Container(
-                                                    expand=True,
-                                                    content=tabela_medicamentos
+                                                    content=tabela_medicamentos,
+                                                    width=1000
                                                 )
                                             ],
                                         )
