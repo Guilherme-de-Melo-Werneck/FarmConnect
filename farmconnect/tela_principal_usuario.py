@@ -3,21 +3,21 @@ import flet as ft
 # Lista completa de medicamentos com dados diferentes
 medicamentos_mock = [
     {"nome": "Interferon Alfa", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
-    {"nome": "Interferon Alfa", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
-    {"nome": "Interferon Alfa", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
-    {"nome": "Interferon Alfa", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
-    {"nome": "Interferon Alfa", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
-    {"nome": "Interferon Alfa", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
-    {"nome": "Interferon Alfa", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
-    {"nome": "Interferon Alfa", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
-    {"nome": "Interferon Alfa", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
-    {"nome": "Interferon Alfa", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
-    {"nome": "Interferon Alfa", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
-    {"nome": "Rituximabe", "imagem": "/images/remedio2.png", "descricao": "Imunossupressor"},
-    {"nome": "Rituximabe", "imagem": "/images/remedio2.png", "descricao": "Imunossupressor"},
-    {"nome": "Etanercepte", "imagem": "/images/remedio3.png", "descricao": "Artrite reumatoide"},
-    {"nome": "Adalimumabe", "imagem": "/images/remedio4.png", "descricao": "Inflamações crônicas"},
-    {"nome": "Tocilizumabe", "imagem": "/images/remedio5.png", "descricao": "Uso hospitalar"},
+    {"nome": "Teriflunomida 14 mg", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
+    {"nome": "Betainterferona 1A 12.000.000 UI", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
+    {"nome": "Clozapina 100 mg", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
+    {"nome": "Donepezila 5 mg", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
+    {"nome": "Everolimo 0,75 mg", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
+    {"nome": "Gabapentina 300 mg", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
+    {"nome": "Leuprorrelina 45 mg", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
+    {"nome": "Memantina 10 mg", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
+    {"nome": "Miglustate 100 mg", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
+    {"nome": "Olanzapina 10 mg", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
+    {"nome": "Pramipexol 0,25 mg", "imagem": "/images/remedio2.png", "descricao": "Imunossupressor"},
+    {"nome": "Quetiapina 200 mg", "imagem": "/images/remedio2.png", "descricao": "Imunossupressor"},
+    {"nome": "Sapropterina 100 mg", "imagem": "/images/remedio3.png", "descricao": "Artrite reumatoide"},
+    {"nome": "Selegilina 5 mg", "imagem": "/images/remedio4.png", "descricao": "Inflamações crônicas"},
+    {"nome": "Ziprasidona 40 mg", "imagem": "/images/remedio5.png", "descricao": "Uso hospitalar"},
 ]
 
 medicamentos_por_pagina = 8
@@ -40,19 +40,8 @@ def tela_usuario(page: ft.Page):
                     col={"xs": 12, "sm": 6, "md": 4, "lg": 3},
                     content=ft.Column([
                         ft.Image(src=med["imagem"], width=100, height=100),
-                        ft.Text(
-                            med["nome"],
-                            text_align=ft.TextAlign.CENTER,
-                            size=13,
-                            weight=ft.FontWeight.BOLD,
-                            color="#111827",
-                        ),
-                        ft.Text(
-                            med["descricao"],
-                            size=11,
-                            text_align=ft.TextAlign.CENTER,
-                            color="#111827",
-                        ),
+                        ft.Text(med["nome"], text_align=ft.TextAlign.CENTER, size=13, weight=ft.FontWeight.BOLD, color="#111827"),
+                        ft.Text(med["descricao"], size=11, text_align=ft.TextAlign.CENTER, color="#111827"),
                         ft.ElevatedButton(
                             "ADICIONAR",
                             width=130,
@@ -81,6 +70,60 @@ def tela_usuario(page: ft.Page):
 
     gerar_cards(pagina_atual)
 
+    def create_menu_item(icon, text, route):
+        container = ft.Container(
+            padding=ft.padding.symmetric(vertical=12, horizontal=10),
+            content=ft.Row([
+                ft.Icon(icon, color=ft.Colors.BLUE_600, size=24),
+                ft.Text(text, size=16, color="#111827")
+            ], spacing=15, alignment=ft.MainAxisAlignment.START),
+            ink=True,
+            border_radius=8,
+            bgcolor="#FFFFFF",
+            on_click=lambda e: page.go(route),
+            animate=ft.Animation(200, "easeInOut"),
+            margin=ft.margin.only(bottom=8)
+        )
+
+        def on_hover(e):
+            container.bgcolor = "#d1eefa" if e.data == "true" else "#FFFFFF"
+            container.update()
+
+        container.on_hover = on_hover
+        return container
+
+    sidebar = ft.Container(
+        width=280,
+        bgcolor="#F9FAFB",
+        border=ft.border.only(right=ft.BorderSide(1, "#E5E7EB")),
+        padding=ft.padding.symmetric(vertical=20, horizontal=10),
+        content=ft.Column([
+            ft.Container(
+                alignment=ft.alignment.center,
+                padding=ft.padding.symmetric(vertical=10),
+                content=ft.Image(src="logo.png", width=120, height=40)
+            ),
+            ft.Divider(thickness=1),
+            create_menu_item(ft.Icons.PERSON_OUTLINED, "Meu Perfil", "/perfil"),
+            create_menu_item(ft.Icons.MEDICAL_SERVICES_OUTLINED, "Histórico de Retiradas", "/medicamentos_retirados"),
+            create_menu_item(ft.Icons.CALENDAR_MONTH_OUTLINED, "Meus Agendamentos", "/agendamentos"),
+            create_menu_item(ft.Icons.DESCRIPTION_OUTLINED, "Documentos Requeridos", "/documentos"),
+            ft.Container(expand=True),
+            ft.Container(
+                padding=ft.padding.symmetric(vertical=12, horizontal=10),
+                content=ft.Row([
+                    ft.Icon(ft.Icons.LOGOUT, color="#DC2626", size=24),
+                    ft.Text("Sair", size=16, color="#DC2626"),
+                ], spacing=15, alignment=ft.MainAxisAlignment.START),
+                border_radius=8,
+                bgcolor="#FEE2E2",
+                ink=True,
+                on_click=lambda e: page.go("/"),
+                animate=ft.Animation(200, "easeInOut")
+            )
+        ], spacing=10, expand=True)
+    )
+
     return ft.View(
         route="/usuario",
         controls=[
@@ -91,164 +134,57 @@ def tela_usuario(page: ft.Page):
                     end=ft.alignment.bottom_right,
                     colors=["#EFF6FF", "#DBEAFE"]
                 ),
-                content=ft.ResponsiveRow([
-                    # SIDEBAR
-                    ft.Container(
-                        width=260,
-                        padding=20,
-                        bgcolor=ft.Colors.BLUE_600,
-                        border_radius=16,
-                        col={"xs": 12, "md": 3, "lg": 2},
-                        content=ft.Column([
-                            ft.Image(src="logo.png", width=120, height=40),
-                            ft.Divider(height=20, color=ft.colors.TRANSPARENT),
-                            *[
-                                 ft.ElevatedButton(
-                                    "Ver Perfil",
-                                    width=220,
-                                    style=ft.ButtonStyle(
-                                        bgcolor=ft.colors.WHITE,
-                                        color="#111827",
-                                        shape=ft.RoundedRectangleBorder(radius=12),
-                                        padding=ft.padding.symmetric(vertical=12),
-                                    ),
-                                    on_click=lambda e: page.go("/perfil")
-                                ),
-                                ft.ElevatedButton(
-                                    "Medicamentos Retirados",
-                                    width=220,
-                                    style=ft.ButtonStyle(
-                                        bgcolor=ft.colors.WHITE,
-                                        color="#111827",
-                                        shape=ft.RoundedRectangleBorder(radius=12),
-                                        padding=ft.padding.symmetric(vertical=12),
-                                    ),
-                                    on_click=lambda e: page.go("/medicamentos_retirados")
-                                ),
-                                ft.ElevatedButton(
-                                    "Agendamentos",
-                                    width=220,
-                                    style=ft.ButtonStyle(
-                                        bgcolor=ft.colors.WHITE,
-                                        color="#111827",
-                                        shape=ft.RoundedRectangleBorder(radius=12),
-                                        padding=ft.padding.symmetric(vertical=12),
-                                    ),
-                                    on_click=lambda e: page.go("/agendamentos")
-                                ),
-                                ft.ElevatedButton(
-                                    "Documentos Necessários",
-                                    width=220,
-                                    style=ft.ButtonStyle(
-                                        bgcolor=ft.colors.WHITE,
-                                        color="#111827",
-                                        shape=ft.RoundedRectangleBorder(radius=12),
-                                        padding=ft.padding.symmetric(vertical=12),
-                                    ),
-                                    on_click=lambda e: page.go("/documentos")
-                                ),
-                            ],
-                            ft.Container(expand=True),
-                            ft.ElevatedButton(
-                                "Sair",
-                                width=220,
-                                style=ft.ButtonStyle(
-                                    bgcolor=ft.colors.RED_400,
-                                    color=ft.colors.WHITE,
-                                    shape=ft.RoundedRectangleBorder(radius=12),
-                                    padding=ft.padding.symmetric(vertical=12),
-                                ),
-                                on_click=lambda e: page.go("/")
-                            ),
-                        ], spacing=16, alignment=ft.MainAxisAlignment.START, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
-                    ),
-
-                    # CONTEÚDO PRINCIPAL COM SCROLL
+                content=ft.Row([
+                    sidebar,
                     ft.Container(
                         expand=True,
                         padding=20,
-                        col={"xs": 12, "md": 9, "lg": 10},
-                        content=ft.Column(
-                            scroll=ft.ScrollMode.ADAPTIVE,
-                            controls=[
-                                # TOPO
-                                ft.Container(
-                                    bgcolor=ft.Colors.BLUE_600,
-                                    border_radius=16,
-                                    padding=ft.padding.symmetric(horizontal=20, vertical=18),
-                                    shadow=ft.BoxShadow(blur_radius=12, color=ft.colors.BLACK12, offset=ft.Offset(0, 3)),
-                                    content=ft.ResponsiveRow([
-                                        ft.Image(src="logo.png", width=110, col={"xs": 12, "md": 2}),
-                                        ft.TextField(
-                                            hint_text="Buscar medicamentos...",
-                                            prefix_icon=ft.icons.SEARCH,
-                                            border_radius=12,
-                                            bgcolor=ft.colors.WHITE,
-                                            height=45,
-                                            col={"xs": 12, "md": 6}
-                                        ),
-                                        ft.Row([
-                                            ft.CircleAvatar(foreground_image_src="/images/profile.jpg", radius=20),
-                                            ft.Text("JOÃO NASCIMENTO", size=13, weight=ft.FontWeight.BOLD, color=ft.colors.WHITE),
-                                        ], spacing=10, alignment=ft.MainAxisAlignment.END, col={"xs": 12, "md": 4})
-                                    ])
-                                ),
-
-                                # CONTEÚDO DOS MEDICAMENTOS
-                                ft.Container(
-                                    alignment=ft.alignment.top_center,
-                                    padding=30,
-                                    content=ft.Column([
-                                        ft.Row([
-                                            ft.Text(
-                                                "MEDICAMENTOS DISPONÍVEIS",
-                                                size=24,
-                                                weight=ft.FontWeight.W_600,
-                                                color="#111827",
-                                            )
-                                        ], alignment=ft.MainAxisAlignment.CENTER),
-
-                                        ft.Row([
-                                            ft.OutlinedButton(
-                                                "Mais Buscados",
-                                                style=ft.ButtonStyle(
-                                                    color="#111827",
-                                                    shape=ft.RoundedRectangleBorder(radius=8),
-                                                    padding=ft.padding.symmetric(horizontal=20, vertical=10)
-                                                )
-                                            ),
-                                            ft.OutlinedButton(
-                                                "Meus Agendamentos",
-                                                style=ft.ButtonStyle(
-                                                    color="#111827",
-                                                    shape=ft.RoundedRectangleBorder(radius=8),
-                                                    padding=ft.padding.symmetric(horizontal=20, vertical=10)
-                                                )
-                                            ),
-                                            ft.OutlinedButton(
-                                                "Feedback",
-                                                style=ft.ButtonStyle(
-                                                    color="#111827",
-                                                    shape=ft.RoundedRectangleBorder(radius=8),
-                                                    padding=ft.padding.symmetric(horizontal=20, vertical=10)
-                                                )
-                                            ),
-                                        ], alignment=ft.MainAxisAlignment.CENTER, spacing=16),
-                                        
-                                        ft.Divider(height=25),
-                                        cards_container,
-                                        ft.Divider(height=30),
-                                        botoes_paginacao
-                                    ], spacing=30)
-                                )
-                            ],
-                            spacing=20
-                        )
+                        content=ft.Column([
+                            ft.Container(
+                                bgcolor="#F8FAFC",
+                                border_radius=16,
+                                padding=ft.padding.symmetric(horizontal=20, vertical=18),
+                                shadow=ft.BoxShadow(blur_radius=12, color=ft.colors.BLACK12, offset=ft.Offset(0, 3)),
+                                content=ft.ResponsiveRow([
+                                    ft.Image(src="logo.png", width=110, col={"xs": 12, "md": 2}),
+                                    ft.TextField(
+                                        hint_text="Buscar medicamentos...",
+                                        prefix_icon=ft.icons.SEARCH,
+                                        border_radius=12,
+                                        bgcolor=ft.colors.WHITE,
+                                        height=45,
+                                        col={"xs": 12, "md": 6}
+                                    ),
+                                    ft.Row([
+                                        ft.CircleAvatar(foreground_image_src="/images/profile.jpg", radius=20),
+                                        ft.Text("JOÃO NASCIMENTO", size=13, weight=ft.FontWeight.BOLD, color=ft.colors.BLACK),
+                                    ], spacing=10, alignment=ft.MainAxisAlignment.END, col={"xs": 12, "md": 4})
+                                ])
+                            ),
+                            ft.Container(
+                                alignment=ft.alignment.top_center,
+                                padding=30,
+                                content=ft.Column([
+                                    ft.Text("MEDICAMENTOS DISPONÍVEIS", size=24, weight=ft.FontWeight.W_600, color="#111827"),
+                                    ft.Row([
+                                        ft.OutlinedButton("Mais Buscados"),
+                                        ft.OutlinedButton("Meus Agendamentos"),
+                                        ft.OutlinedButton("Feedback"),
+                                    ], alignment=ft.MainAxisAlignment.CENTER, spacing=16),
+                                    ft.Divider(height=25),
+                                    cards_container,
+                                    ft.Divider(height=30),
+                                    botoes_paginacao
+                                ], spacing=30)
+                            )
+                        ], scroll=ft.ScrollMode.ADAPTIVE, spacing=20)
                     )
                 ])
             )
         ]
     )
+
+
 
 def tela_documentos(page: ft.Page):
     return ft.View(
@@ -464,7 +400,7 @@ def tela_medicamentos_retirados(page: ft.Page):
                         "💊 MEDICAMENTOS RETIRADOS", 
                         size=32, 
                         weight=ft.FontWeight.BOLD, 
-                        color=ft.Colors.BLUE_900,
+                        color=ft.Colors.BLUE_900    ,
                         text_align=ft.TextAlign.CENTER,
                     ),
                     ft.Divider(height=20, color=ft.colors.TRANSPARENT),
