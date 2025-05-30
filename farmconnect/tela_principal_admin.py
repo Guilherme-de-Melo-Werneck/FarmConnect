@@ -349,6 +349,7 @@ class TelaAdminDashboard:
             columns=[
                 ft.DataColumn(ft.Text("ID")),
                 ft.DataColumn(ft.Text("Nome")),
+                ft.DataColumn(ft.Text("Código")),
                 ft.DataColumn(ft.Text("Categoria")),
                 ft.DataColumn(ft.Text("Fabricante")),
                 ft.DataColumn(ft.Text("Estoque")),
@@ -357,6 +358,7 @@ class TelaAdminDashboard:
             rows=[
                 ft.DataRow(
                     cells=[
+<<<<<<< HEAD
                         ft.DataCell(ft.Text(str(med[0]), color="red" if med[0] in self.cancelados else None)),
                         ft.DataCell(ft.Text(med[1], color="red" if med[0] in self.cancelados else None)),
                         ft.DataCell(ft.Text(med[5] or "-", color="red" if med[0] in self.cancelados else None)),
@@ -378,6 +380,40 @@ class TelaAdminDashboard:
                                 style=ft.ButtonStyle(padding=0),
                                 on_click=lambda e, id=med[0]: self.marcar_cancelado(id)
                             )
+=======
+                        ft.DataCell(ft.Text(str(med[0]))),
+                        ft.DataCell(ft.Text(med[1])),
+                        ft.DataCell(ft.Text(med[2])),
+                        ft.DataCell(ft.Text(med[6] or "-")),
+                        ft.DataCell(ft.Text(med[7] or "-")),
+                        ft.DataCell(ft.Text(str(med[5]))),
+                        ft.DataCell(
+                            ft.Row([
+                                ft.IconButton(
+                                    icon=ft.Icons.EDIT,
+                                    icon_color="#10B981",
+                                    tooltip="Editar",
+                                    on_click=lambda e, m=med: (
+                                        setattr(self, "medicamento_atual", {
+                                            "id": m[0],
+                                            "nome": m[1],
+                                            "codigo": m[2],
+                                            "descricao": m[3] or "",
+                                            "estoque": m[5],
+                                            "categoria": m[6],
+                                            "fabricante": m[7]
+                                        }),
+                                        self.load_medicamentos(medicamento=self.medicamento_atual)
+                                    )
+                                ),
+                                ft.IconButton(
+                                    icon=ft.Icons.DELETE,
+                                    icon_color="#DC2626",
+                                    tooltip="Excluir",
+                                    on_click=lambda e, id=med[0]: self.deletar_medicamento_click(id)
+                                )
+                            ], spacing=6)
+>>>>>>> af242fc29f4427a4c533c2fc8fb924b32b3262c9
                         )
                     ]
                 )
@@ -418,21 +454,20 @@ class TelaAdminDashboard:
             animate_opacity=300,
             opacity=1.0 if self.editando_medicamento else 0.0,
             content=ft.Column([
-                ft.Text("Detalhes do Medicamento", size=20, weight="bold", color="#059669"),
+                ft.Text("Detalhes do Medicamento", size=20, weight="bold", color=ft.Colors.BLUE_900),
                 ft.Divider(),
                 self.campo_nome,
                 self.campo_codigo,
                 self.dropdown_fabricante,
                 self.dropdown_categoria,
                 self.campo_descricao,
-                self.campo_imagem,
                 self.campo_estoque,
                 ft.TextField(label="Observações", multiline=True, min_lines=3, max_lines=5),
                 ft.Container(height=20),
                 ft.Row([
                     ft.ElevatedButton(
                         "Salvar",
-                        bgcolor="#059669",
+                        bgcolor=ft.Colors.BLUE_600,
                         color="white",
                         expand=True,
                         style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12)),
@@ -509,10 +544,19 @@ class TelaAdminDashboard:
                                 controls=[
                                     ft.Container(
                                         col={"sm": 12, "md": 12},
-                                        content=tabela_medicamentos
+                                        expand=True,
+                                        content=ft.Row(
+                                            scroll=ft.ScrollMode.ALWAYS,
+                                            controls = [
+                                                ft.Container(
+                                                    content=tabela_medicamentos,
+                                                    width=1000
+                                                )
+                                            ],
+                                        )
                                     ),
                                     ft.Container(
-                                        col={"sm": 12, "md": 4},
+                                        col={"sm": 12, "md": 12},
                                         content=detalhes_medicamento
                                     )
                                 ]
@@ -1371,12 +1415,12 @@ class TelaAdminDashboard:
             on_blur=self.filtrar_pacientes
         )
 
-        self.campo_nome_paciente = ft.TextField(label="Nome do Paciente", border_radius=10, bgcolor="#F3F4F6")
-        self.campo_cpf = ft.TextField(label="CPF", on_blur=cpf_blur, on_change=cpf_change, border_radius=10, bgcolor="#F3F4F6")
-        self.campo_email = ft.TextField(label="Email", border_radius=10, bgcolor="#F3F4F6")
-        self.campo_nascimento = ft.TextField(label="Data de Nascimento (DD/MM/AAAA)", on_blur=nascimento_blur, on_change=nascimento_change, border_radius=10, bgcolor="#F3F4F6")
-        self.campo_senha = ft.TextField(label="Senha", password=True, can_reveal_password=True, border_radius=10, bgcolor="#F3F4F6")
-        self.campo_confirmar_senha = ft.TextField(label="Confirmar Senha", password=True, can_reveal_password=True, border_radius=10, bgcolor="#F3F4F6")
+        self.campo_nome_paciente = ft.TextField(label="Nome do Paciente", border_radius=10, bgcolor="#F9FAFB")
+        self.campo_cpf = ft.TextField(label="CPF", on_blur=cpf_blur, on_change=cpf_change, border_radius=10, bgcolor="#F9FAFB")
+        self.campo_email = ft.TextField(label="Email", border_radius=10, bgcolor="#F9FAFB")
+        self.campo_nascimento = ft.TextField(label="Data de Nascimento (DD/MM/AAAA)", on_blur=nascimento_blur, on_change=nascimento_change, border_radius=10, bgcolor="#F9FAFB")
+        self.campo_senha = ft.TextField(label="Senha", password=True, can_reveal_password=True, border_radius=10, bgcolor="#F9FAFB")
+        self.campo_confirmar_senha = ft.TextField(label="Confirmar Senha", password=True, can_reveal_password=True, border_radius=10, bgcolor="#F9FAFB")
 
         # Painel lateral de edição
         self.painel_detalhes_paciente = ft.Container(

@@ -253,7 +253,7 @@ def listar_medicamentos():
     cursor = conn.cursor()
 
     cursor.execute("""
-        SELECT m.id, m.nome, m.descricao, m.imagem, m.estoque,
+        SELECT m.id, m.nome, m.codigo, m.descricao, m.imagem, m.estoque,
                c.nome AS categoria, f.nome AS fabricante
         FROM medicamentos m
         LEFT JOIN categorias c ON m.categoria_id = c.id
@@ -380,15 +380,15 @@ def solicitar_notificacao(usuario_email, medicamento_id):
     cursor.close()
     conn.close()
 
-def editar_medicamento(id, nome, descricao, imagem, estoque,categoria_id=None, fabricante_id=None,):
+def editar_medicamento(id, nome, codigo, descricao, imagem, estoque, categoria_id=None, fabricante_id=None):
     conn = conectar()
     cursor = conn.cursor()
 
     cursor.execute("""
         UPDATE medicamentos
-        SET nome = ?, descricao = ?, imagem = ?, estoque = ?, categoria_id = ?, fabricante_id = ? 
+        SET nome = ?, codigo = ?, descricao = ?, imagem = ?, estoque = ?, categoria_id = ?, fabricante_id = ?
         WHERE id = ?
-    """, (nome, descricao, imagem, estoque, categoria_id, fabricante_id, id))
+    """, (nome, codigo, descricao, imagem, estoque, categoria_id, fabricante_id, id))
 
     conn.commit()
     cursor.close()
