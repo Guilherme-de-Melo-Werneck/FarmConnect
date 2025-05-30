@@ -358,12 +358,12 @@ class TelaAdminDashboard:
             rows=[
                 ft.DataRow(
                     cells=[
-<<<<<<< HEAD
                         ft.DataCell(ft.Text(str(med[0]), color="red" if med[0] in self.cancelados else None)),
                         ft.DataCell(ft.Text(med[1], color="red" if med[0] in self.cancelados else None)),
-                        ft.DataCell(ft.Text(med[5] or "-", color="red" if med[0] in self.cancelados else None)),
+                        ft.DataCell(ft.Text(med[2] or "-", color="red" if med[0] in self.cancelados else None)),
                         ft.DataCell(ft.Text(med[6] or "-", color="red" if med[0] in self.cancelados else None)),
-                        ft.DataCell(ft.Text(str(med[4]), color="red" if med[0] in self.cancelados else None)),
+                        ft.DataCell(ft.Text(med[7] or "-", color="red" if med[0] in self.cancelados else None)),
+                        ft.DataCell(ft.Text(str(med[5]), color="red" if med[0] in self.cancelados else None)),
                         ft.DataCell(
                             ft.IconButton(
                                 icon=ft.icons.LOCK_OPEN,
@@ -380,40 +380,6 @@ class TelaAdminDashboard:
                                 style=ft.ButtonStyle(padding=0),
                                 on_click=lambda e, id=med[0]: self.marcar_cancelado(id)
                             )
-=======
-                        ft.DataCell(ft.Text(str(med[0]))),
-                        ft.DataCell(ft.Text(med[1])),
-                        ft.DataCell(ft.Text(med[2])),
-                        ft.DataCell(ft.Text(med[6] or "-")),
-                        ft.DataCell(ft.Text(med[7] or "-")),
-                        ft.DataCell(ft.Text(str(med[5]))),
-                        ft.DataCell(
-                            ft.Row([
-                                ft.IconButton(
-                                    icon=ft.Icons.EDIT,
-                                    icon_color="#10B981",
-                                    tooltip="Editar",
-                                    on_click=lambda e, m=med: (
-                                        setattr(self, "medicamento_atual", {
-                                            "id": m[0],
-                                            "nome": m[1],
-                                            "codigo": m[2],
-                                            "descricao": m[3] or "",
-                                            "estoque": m[5],
-                                            "categoria": m[6],
-                                            "fabricante": m[7]
-                                        }),
-                                        self.load_medicamentos(medicamento=self.medicamento_atual)
-                                    )
-                                ),
-                                ft.IconButton(
-                                    icon=ft.Icons.DELETE,
-                                    icon_color="#DC2626",
-                                    tooltip="Excluir",
-                                    on_click=lambda e, id=med[0]: self.deletar_medicamento_click(id)
-                                )
-                            ], spacing=6)
->>>>>>> af242fc29f4427a4c533c2fc8fb924b32b3262c9
                         )
                     ]
                 )
@@ -454,20 +420,21 @@ class TelaAdminDashboard:
             animate_opacity=300,
             opacity=1.0 if self.editando_medicamento else 0.0,
             content=ft.Column([
-                ft.Text("Detalhes do Medicamento", size=20, weight="bold", color=ft.Colors.BLUE_900),
+                ft.Text("Detalhes do Medicamento", size=20, weight="bold", color="#059669"),
                 ft.Divider(),
                 self.campo_nome,
                 self.campo_codigo,
                 self.dropdown_fabricante,
                 self.dropdown_categoria,
                 self.campo_descricao,
+                self.campo_imagem,
                 self.campo_estoque,
                 ft.TextField(label="Observações", multiline=True, min_lines=3, max_lines=5),
                 ft.Container(height=20),
                 ft.Row([
                     ft.ElevatedButton(
                         "Salvar",
-                        bgcolor=ft.Colors.BLUE_600,
+                        bgcolor="#059669",
                         color="white",
                         expand=True,
                         style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12)),
@@ -538,6 +505,7 @@ class TelaAdminDashboard:
                             ft.Container(height=20),
 
                             ft.ResponsiveRow(
+                                
                                 columns=12,
                                 spacing=20,
                                 run_spacing=20,
@@ -556,7 +524,7 @@ class TelaAdminDashboard:
                                         )
                                     ),
                                     ft.Container(
-                                        col={"sm": 12, "md": 12},
+                                        col={"sm": 12, "md": 4},
                                         content=detalhes_medicamento
                                     )
                                 ]
