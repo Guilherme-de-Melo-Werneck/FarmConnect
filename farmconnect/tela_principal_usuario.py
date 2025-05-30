@@ -267,12 +267,90 @@ def tela_documentos(page: ft.Page):
         ]
     )
 
+import flet as ft
+
 def tela_perfil_paciente(page: ft.Page):
+    # Refs
+    editando_nome = ft.Ref[bool]()
+    editando_cpf = ft.Ref[bool]()
+    editando_nasc = ft.Ref[bool]()
+    editando_email = ft.Ref[bool]()
+    editando_tel = ft.Ref[bool]()
+
+    nome_field = ft.Ref[ft.TextField]()
+    cpf_field = ft.Ref[ft.TextField]()
+    nasc_field = ft.Ref[ft.TextField]()
+    email_field = ft.Ref[ft.TextField]()
+    tel_field = ft.Ref[ft.TextField]()
+
+    # Inicializa edição como falso
+    editando_nome.current = False
+    editando_cpf.current = False
+    editando_nasc.current = False
+    editando_email.current = False
+    editando_tel.current = False
+
+    # Dados simulados
+    dados_usuario = {
+        "nome": "João Nascimento",
+        "cpf": "123.456.789-00",
+        "nasc": "01/01/1990",
+        "email": "joao@gmail.com",
+        "tel": "(11) 98765-4321"
+    }
+
+    # Alternar edição e focar
+    def iniciar_edicao(ref_bool, input_ref):
+        ref_bool.current = True
+        page.update()
+        input_ref.current.focus()
+
+    # Salvar valor
+    def salvar(ref_bool, campo, input_ref):
+        dados_usuario[campo] = input_ref.current.value
+        ref_bool.current = False
+        page.snack_bar = ft.SnackBar(ft.Text(f"{campo.capitalize()} atualizado com sucesso!"), bgcolor=ft.colors.GREEN_100)
+        page.snack_bar.open = True
+        page.update()
+
+    # Campo editável
+    def campo_editavel(label, campo, ref_bool, input_ref):
+        return ft.Column(
+            spacing=2,
+            controls=[
+                ft.Row(
+                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                    vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                    controls=[
+                        ft.Text(label, size=16, color=ft.Colors.GREY_700),
+                        ft.IconButton(
+                            icon=ft.icons.EDIT,
+                            icon_color=ft.colors.BLUE,
+                            tooltip="Editar",
+                            on_click=lambda e: iniciar_edicao(ref_bool, input_ref)
+                        )
+                    ]
+                ),
+                ft.TextField(
+                    ref=input_ref,
+                    value=dados_usuario[campo],
+                    read_only=not ref_bool.current,
+                    filled=True,
+                    dense=True,
+                    border_radius=12,
+                    content_padding=10,
+                    text_size=16,
+                    on_submit=lambda e: salvar(ref_bool, campo, input_ref)
+                )
+            ]
+        )
+
     return ft.View(
         route="/perfil",
         controls=[
             ft.Container(
                 expand=True,
+                padding=30,
                 alignment=ft.alignment.center,
                 gradient=ft.LinearGradient(
                     begin=ft.alignment.top_left,
@@ -280,97 +358,58 @@ def tela_perfil_paciente(page: ft.Page):
                     colors=["#E0F2FE", "#F0F4FF"]
                 ),
                 content=ft.Column(
+                    scroll=ft.ScrollMode.AUTO,
                     alignment=ft.MainAxisAlignment.CENTER,
                     horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                    spacing=40,
+                    spacing=30,
                     controls=[
-                        # Cartão de Saúde
+                        ft.Text("Perfil do Paciente", size=32, weight=ft.FontWeight.BOLD, color=ft.colors.BLUE_900),
                         ft.Container(
                             width=700,
-                            padding=30,
+                            padding=25,
                             bgcolor=ft.colors.WHITE,
                             border_radius=20,
-                            shadow=ft.BoxShadow(blur_radius=30, color=ft.colors.BLACK12, offset=ft.Offset(0, 15)),
-                            content=ft.Row(
-                                alignment=ft.MainAxisAlignment.CENTER,
-                                spacing=20,
+                            shadow=ft.BoxShadow(blur_radius=24, color=ft.colors.BLACK12, offset=ft.Offset(0, 12)),
+                            content=ft.Column(
+                                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                                spacing=30,
                                 controls=[
-                                    # Avatar e Nome
-                                    ft.Container(
-                                        width=200,
-                                        padding=10,
-                                        border_radius=100,
-                                        bgcolor=ft.colors.WHITE,
-                                        shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK12, offset=ft.Offset(0, 10)),
-                                        content=ft.CircleAvatar(
-                                            foreground_image_src="/images/profile.jpg",
-                                            radius=70
-                                        )
+                                    ft.Column(
+                                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                                        spacing=10,
+                                        controls=[
+                                            ft.CircleAvatar(foreground_image_src="/images/profile.jpg", radius=60),
+                                            ft.Text(dados_usuario["nome"], size=24, weight=ft.FontWeight.BOLD),
+                                            ft.Text("Paciente FarmConnect", size=16, color=ft.Colors.GREY_600)
+                                        ]
                                     ),
-                                    # Dados do Paciente
-                                    ft.Container(
-                                        expand=True,
-                                        padding=20,
-                                        bgcolor="#FAFAFA",
-                                        border_radius=16,
-                                        shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK12, offset=ft.Offset(0, 10)),
-                                        content=ft.Column(
-                                            alignment=ft.MainAxisAlignment.CENTER,
-                                            horizontal_alignment=ft.CrossAxisAlignment.START,
-                                            spacing=10,
-                                            controls=[
-                                                ft.Text("JOÃO NASCIMENTO", size=26, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
-                                                ft.Text("Paciente FarmConnect", size=16, color=ft.Colors.GREY_600),
-                                                ft.Divider(height=15, color=ft.colors.TRANSPARENT),
-                                                ft.Text("Nome: João Nascimento", size=18, color=ft.Colors.GREY_700),
-                                                ft.Text("CPF: 123.456.789-00", size=18, color=ft.Colors.GREY_700),
-                                                ft.Text("Data de Nascimento: 01/01/1990", size=18, color=ft.Colors.GREY_700),
-                                                ft.Text("Email: joao@gmail.com", size=18, color=ft.Colors.GREY_700),
-                                                ft.Text("Telefone: (11) 98765-4321", size=18, color=ft.Colors.GREY_700),
-                                            ]
-                                        )
-                                    )
+                                    campo_editavel("Nome", "nome", editando_nome, nome_field),
+                                    campo_editavel("CPF", "cpf", editando_cpf, cpf_field),
+                                    campo_editavel("Data de Nascimento", "nasc", editando_nasc, nasc_field),
+                                    campo_editavel("Email", "email", editando_email, email_field),
+                                    campo_editavel("Telefone", "tel", editando_tel, tel_field),
                                 ]
                             )
                         ),
-                        # Botões Editar e Voltar
-                        ft.Row(
-                            alignment=ft.MainAxisAlignment.CENTER,
-                            spacing=20,
-                            controls=[
-                                ft.ElevatedButton(
-                                    "Editar Perfil",
-                                    icon=ft.icons.EDIT,
-                                    bgcolor=ft.Colors.BLUE_900,
-                                    color=ft.colors.WHITE,
-                                    width=180,
-                                    style=ft.ButtonStyle(
-                                        shape=ft.RoundedRectangleBorder(radius=16),
-                                        padding=ft.padding.symmetric(vertical=10),
-                                        elevation=4
-                                    ),
-                                    on_click=lambda e: page.go("/editar")
-                                ),
-                                ft.ElevatedButton(
-                                    "Voltar",
-                                    icon=ft.icons.ARROW_BACK_IOS_NEW,
-                                    bgcolor=ft.Colors.GREY_500,
-                                    color=ft.colors.WHITE,
-                                    width=140,
-                                    style=ft.ButtonStyle(
-                                        shape=ft.RoundedRectangleBorder(radius=16),
-                                        padding=ft.padding.symmetric(vertical=10),
-                                        elevation=4
-                                    ),
-                                    on_click=lambda e: page.go("/usuario")
-                                )
-                            ]
+                        ft.ElevatedButton(
+                            "Voltar",
+                            icon=ft.icons.ARROW_BACK,
+                            bgcolor=ft.Colors.GREY_500,
+                            color=ft.colors.WHITE,
+                            width=160,
+                            style=ft.ButtonStyle(
+                                shape=ft.RoundedRectangleBorder(radius=16),
+                                padding=ft.padding.symmetric(vertical=12),
+                                elevation=4
+                            ),
+                            on_click=lambda e: page.go("/usuario")
                         )
                     ]
                 )
             )
         ]
     )
+
 
 
 # Lista simulada de medicamentos retirados
