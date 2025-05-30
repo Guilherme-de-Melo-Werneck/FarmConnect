@@ -298,17 +298,41 @@ class TelaAdminDashboard:
                 content=ft.Column([
                     self.graph_cards(),
                     ft.Container(height=20),
-                    self.metric_cards()
+                    self.metric_cards(),
+                    ft.Container(height=40),
+
+                    # Botão no final da página
+                    ft.Container(
+                        alignment=ft.alignment.center,
+                        padding=20,
+                        content=ft.ElevatedButton(
+                            text="Baixar Relatório",
+                            icon=ft.icons.DOWNLOAD,
+                            bgcolor=ft.Colors.BLUE_300,
+                            color=ft.colors.WHITE,
+                            height=55,
+                            width=260,
+                            style=ft.ButtonStyle(
+                                shape=ft.RoundedRectangleBorder(radius=14),
+                                padding=ft.padding.symmetric(vertical=12),
+                                elevation=6
+                            ),
+                            on_click=lambda e: print("Botão de relatório clicado")
+                        )
+                    )
                 ], spacing=20)
             )
         ]
         self.page.update()
 
+
     def load_medicamentos(self, e=None, medicamento=None):
-        from database import listar_medicamentos
 
         self.current_view.controls.clear()
         self.editando_medicamento = medicamento is not None
+
+        if not hasattr(self, "cancelados"):
+            self.cancelados = set()
 
         categorias = listar_categorias()
         fabricantes = listar_fabricantes()
@@ -333,45 +357,35 @@ class TelaAdminDashboard:
             rows=[
                 ft.DataRow(
                     cells=[
-                        ft.DataCell(ft.Text(str(med[0]))),
-                        ft.DataCell(ft.Text(med[1])),
-                        ft.DataCell(ft.Text(med[5] or "-")),
-                        ft.DataCell(ft.Text(med[6] or "-")),
-                        ft.DataCell(ft.Text(str(med[4]))),
+                        ft.DataCell(ft.Text(str(med[0]), color="red" if med[0] in self.cancelados else None)),
+                        ft.DataCell(ft.Text(med[1], color="red" if med[0] in self.cancelados else None)),
+                        ft.DataCell(ft.Text(med[5] or "-", color="red" if med[0] in self.cancelados else None)),
+                        ft.DataCell(ft.Text(med[6] or "-", color="red" if med[0] in self.cancelados else None)),
+                        ft.DataCell(ft.Text(str(med[4]), color="red" if med[0] in self.cancelados else None)),
                         ft.DataCell(
-                            ft.Row([
-                                ft.IconButton(
-                                    icon=ft.Icons.EDIT,
-                                    icon_color="#10B981",
-                                    tooltip="Editar",
-                                    on_click=lambda e, m=med: (
-                                        setattr(self, "medicamento_atual", {
-                                            "id": m[0],
-                                            "nome": m[1],
-                                            "descricao": m[2] or "",
-                                            "imagem": m[3] or "",
-                                            "estoque": m[4],
-                                            "categoria": m[5] or "",
-                                            "fabricante": m[6] or ""
-                                        }),
-                                        self.load_medicamentos(medicamento=self.medicamento_atual)
-                                    )
-                                ),
-                                ft.IconButton(
-                                    icon=ft.Icons.DELETE,
-                                    icon_color="#DC2626",
-                                    tooltip="Excluir",
-                                    on_click=lambda e, id=med[0]: self.deletar_medicamento_click(id)
-                                )
-                            ], spacing=6)
+                            ft.IconButton(
+                                icon=ft.icons.LOCK_OPEN,
+                                icon_color=ft.Colors.GREEN_400,
+                                tooltip="Reativar",
+                                icon_size=22,
+                                style=ft.ButtonStyle(padding=0),
+                                on_click=lambda e, id=med[0]: self.reativar_medicamento(id)
+                            ) if med[0] in self.cancelados else ft.IconButton(
+                                icon=ft.icons.CANCEL_OUTLINED,
+                                icon_color=ft.Colors.RED,
+                                tooltip="Desativar",
+                                icon_size=22,
+                                style=ft.ButtonStyle(padding=0),
+                                on_click=lambda e, id=med[0]: self.marcar_cancelado(id)
+                            )
                         )
                     ]
-                ) for med in medicamentos
+                )
+                for med in medicamentos
             ]
         )
 
-
-        # Campos editáveis
+        # Painel lateral opcional (se estiver editando)
         self.campo_nome = ft.TextField(label="Nome do Medicamento", value=medicamento.get("nome") if medicamento else "")
         self.campo_codigo = ft.TextField(label="Código do Medicamento", value=medicamento.get("codigo") if medicamento else "")
         self.dropdown_fabricante = ft.Dropdown(
@@ -394,7 +408,6 @@ class TelaAdminDashboard:
         self.campo_imagem = ft.TextField(label="Imagem", value=medicamento.get("imagem") if medicamento else "")
         self.campo_estoque = ft.TextField(label="Estoque Atual", keyboard_type=ft.KeyboardType.NUMBER, value=str(medicamento.get("estoque")) if medicamento else "")
 
-        # Painel lateral: Detalhes do medicamento (aparece só se estiver editando)
         detalhes_medicamento = ft.Container(
             bgcolor="white",
             border_radius=12,
@@ -435,7 +448,6 @@ class TelaAdminDashboard:
             ], spacing=12)
         )
 
-        # Interface completa
         self.current_view.controls.append(
             ft.Container(
                 padding=30,
@@ -513,13 +525,17 @@ class TelaAdminDashboard:
 
         self.page.update()
 
-    def deletar_medicamento_click(self, id):
-        deletar_medicamento(id)  # Remove do banco
-        self.page.snack_bar = ft.SnackBar(content=ft.Text("Medicamento apagado com sucesso."), bgcolor="green")
-        self.page.snack_bar.open = True
-        self.page.update()
-        self.load_medicamentos()  # Recarrega a lista atualizada
-        
+
+
+    def marcar_cancelado(self, id):
+        self.cancelados.add(id)
+        self.load_medicamentos()
+
+    def reativar_medicamento(self, id):
+        if hasattr(self, "cancelados") and id in self.cancelados:
+            self.cancelados.remove(id)
+            self.load_medicamentos()
+
 
     def salvar_medicamento(self, e=None):
         nome = self.campo_nome.value.strip()

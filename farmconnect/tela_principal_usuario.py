@@ -18,25 +18,6 @@ medicamentos_mock = [
     {"nome": "Etanercepte", "imagem": "/images/remedio3.png", "descricao": "Artrite reumatoide"},
     {"nome": "Adalimumabe", "imagem": "/images/remedio4.png", "descricao": "Inflamações crônicas"},
     {"nome": "Tocilizumabe", "imagem": "/images/remedio5.png", "descricao": "Uso hospitalar"},
-    {"nome": "Somatropina", "imagem": "/images/remedio6.png", "descricao": "Deficiência de crescimento"},
-    {"nome": "Bevacizumabe", "imagem": "/images/remedio7.png", "descricao": "Tratamento oncológico"},
-    {"nome": "Trastuzumabe", "imagem": "/images/remedio8.png", "descricao": "Câncer de mama"},
-    {"nome": "Infliximabe", "imagem": "/images/remedio9.png", "descricao": "Doença de Crohn"},
-    {"nome": "Lenalidomida", "imagem": "/images/remedio10.png", "descricao": "Mieloma múltiplo"},
-    {"nome": "Imatinibe", "imagem": "/images/remedio11.png", "descricao": "Leucemia mieloide crônica"},
-    {"nome": "Eculizumabe", "imagem": "/images/remedio12.png", "descricao": "Síndromes raras"},
-    {"nome": "Nusinersen", "imagem": "/images/remedio13.png", "descricao": "Atrofia muscular espinhal"},
-    {"nome": "Canakinumabe", "imagem": "/images/remedio14.png", "descricao": "Inflamações genéticas"},
-    {"nome": "Fingolimode", "imagem": "/images/remedio15.png", "descricao": "Esclerose múltipla"},
-    {"nome": "Everolimo", "imagem": "/images/remedio16.png", "descricao": "Antineoplásico"},
-    {"nome": "Belimumabe", "imagem": "/images/remedio17.png", "descricao": "Lúpus eritematoso"},
-    {"nome": "Cerliponase Alfa", "imagem": "/images/remedio18.png", "descricao": "Lipofuscinose ceroid"},
-    {"nome": "Vimizim", "imagem": "/images/remedio19.png", "descricao": "Síndrome de Morquio"},
-    {"nome": "Spinraza", "imagem": "/images/remedio20.png", "descricao": "Atrofia muscular"},
-    {"nome": "Zolgensma", "imagem": "/images/remedio21.png", "descricao": "Terapia gênica"},
-    {"nome": "Onasemnogene", "imagem": "/images/remedio22.png", "descricao": "Trata mutações genéticas"},
-    {"nome": "Alglucosidase Alfa", "imagem": "/images/remedio23.png", "descricao": "Doença de Pompe"},
-    {"nome": "Cerdelga", "imagem": "/images/remedio24.png", "descricao": "Doença de Gaucher"},
 ]
 
 medicamentos_por_pagina = 8
@@ -455,7 +436,6 @@ def tela_perfil_paciente(page: ft.Page):
         ]
     )
 
-import flet as ft
 
 # Lista simulada de medicamentos retirados
 medicamentos_retirados_mock = [
