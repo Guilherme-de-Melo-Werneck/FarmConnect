@@ -27,6 +27,33 @@ class TelaAdminDashboard:
         agendamentos = listar_agendamentos()
         total_hoje = sum(1 for a in agendamentos if a[5] == hoje.strftime("%Y-%m-%d"))
         return total_hoje
+    
+    def card_estoque_medicamentos(self):
+        medicamentos = listar_medicamentos()
+        total_estoque = sum([m[5] for m in medicamentos])  # m[5] = estoque
+        abaixo_limite = [(m[1], m[5]) for m in medicamentos if m[5] < 5]  # m[1] = nome
+
+        lista_criticos = ft.Column(
+            controls=[
+                ft.Text(f"- {nome} ({qtd} un.)", size=12, color=ft.colors.RED_700)
+                for nome, qtd in abaixo_limite
+            ],
+            spacing=4
+        ) if abaixo_limite else ft.Text("✔️ Estoque suficiente", size=12, color=ft.colors.GREEN_700)
+
+        return ft.Container(
+            col={"sm": 12, "md": 4},
+            bgcolor="#FFFFFF",
+            border_radius=12,
+            shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26),
+            padding=20,
+            content=ft.Column([
+                ft.Text("Estoque de Medicamentos", size=16, weight="bold", color="#111827"),
+                ft.Text(f"Total em estoque: {total_estoque} unidades", size=14, weight="bold", color="#1E3A8A"),
+                ft.Text("Medicamentos críticos (< 5 un.):", size=13, color="#6B7280"),
+                lista_criticos
+            ], spacing=10)
+        )
 
     def menu_item(self, icon, text, on_click=None):
         item = ft.Container(
@@ -204,24 +231,7 @@ class TelaAdminDashboard:
                         )
                     ], spacing=10)
                 ),
-                ft.Container(
-                    col={"sm": 12, "md": 4},
-                    bgcolor="#FFFFFF",
-                    border_radius=12,
-                    shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26),
-                    padding=20,
-                    content=ft.Column([
-                        ft.Text("Estoque de Medicamentos (%)", size=16, weight="bold", color="#111827"),
-                        ft.Container(
-                            width=100,
-                            height=100,
-                            bgcolor="#d1eefa",
-                            border_radius=50,
-                            alignment=ft.alignment.center,
-                            content=ft.Text("80%", size=18, weight="bold", color=ft.Colors.BLUE_600)
-                        )
-                    ], spacing=10, alignment=ft.MainAxisAlignment.CENTER)
-                ),
+                self.card_estoque_medicamentos(),
                 ft.Container(
                     col={"sm": 12, "md": 4},
                     bgcolor="#FFFFFF",
@@ -633,6 +643,7 @@ class TelaAdminDashboard:
         )
 
         self.campo_nome = ft.TextField(label="Nome do Medicamento", border_radius=10, bgcolor="#F9FAFB")
+        self.campo_codigo = ft.TextField(label="Código do Medicamento", border_radius=10, bgcolor="#F9FAFB")
         self.campo_estoque = ft.TextField(label="Quantidade em Estoque", keyboard_type=ft.KeyboardType.NUMBER, border_radius=10, bgcolor="#F9FAFB")
         self.campo_observacoes = ft.TextField(label="Observações", multiline=True, min_lines=3, max_lines=5, border_radius=10, bgcolor="#F9FAFB")
 
