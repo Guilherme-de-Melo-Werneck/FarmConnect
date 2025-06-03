@@ -1,5 +1,6 @@
 import flet as ft
 from database import listar_medicamentos, editar_medicamento, adicionar_medicamento, listar_categorias, listar_fabricantes, deletar_medicamento, adicionar_farmacia, listar_farmacias, deletar_farmacia, editar_farmacia, listar_usuarios, registrar_usuario, aprovar_usuario, recusar_usuario, listar_agendamentos, adicionar_agendamento
+from datetime import datetime
 
 class TelaAdminDashboard:
     def __init__(self, page: ft.Page):
@@ -20,6 +21,12 @@ class TelaAdminDashboard:
     def toggle_sidebar(self, e):
         self.sidebar_open = not self.sidebar_open
         self.page.update()
+
+    def count_agendamentos_do_dia(self):
+        hoje = datetime.now().date()
+        agendamentos = listar_agendamentos()
+        total_hoje = sum(1 for a in agendamentos if a[5] == hoje.strftime("%Y-%m-%d"))
+        return total_hoje
 
     def menu_item(self, icon, text, on_click=None):
         item = ft.Container(
@@ -249,7 +256,7 @@ class TelaAdminDashboard:
                     padding=20,
                     content=ft.Column([
                         ft.Text("Pacientes Cadastrados", size=14, weight="bold", color="#111827"),
-                        ft.Text("0", size=34, weight="bold", color="#111827"),
+                        ft.Text(len(listar_usuarios()), size=34, weight="bold", color="#111827"),
                         ft.Text("Valor dinâmico", size=12, color="#6B7280"),
                         ft.OutlinedButton("+ Adicionar Paciente", style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=8)), on_click=self.load_cadastro_paciente)
                     ], spacing=10, alignment=ft.MainAxisAlignment.CENTER)
@@ -262,7 +269,7 @@ class TelaAdminDashboard:
                     padding=20,
                     content=ft.Column([
                         ft.Text("Agendamentos Hoje", size=14, weight="bold"),
-                        ft.Text("0", size=34, weight="bold", color="#111827"),
+                        ft.Text(str(self.count_agendamentos_do_dia()), size=34, weight="bold", color="#111827"),
                         ft.Text("Valor dinâmico", size=12, color="#6B7280"),
                         ft.OutlinedButton(
                             "+ Novo Agendamento",
@@ -279,7 +286,7 @@ class TelaAdminDashboard:
                     padding=20,
                     content=ft.Column([
                         ft.Text("Medicamentos Cadastrados", size=14, weight="bold", color="#111827"),
-                        ft.Text("0", size=34, weight="bold", color="#111827"),
+                        ft.Text(len(listar_medicamentos()), size=34, weight="bold", color="#111827"),
                         ft.Text("Valor dinâmico", size=12, color="#6B7280"),
                         ft.OutlinedButton(
                             "+ Adicionar Medicamento",
@@ -644,6 +651,7 @@ class TelaAdminDashboard:
                             content=ft.Column(
                                 [
                                     self.campo_nome,
+                                    self.campo_codigo,
                                     ft.Row([
                                         self.dropdown_categoria,
                                         ft.IconButton(
@@ -663,7 +671,7 @@ class TelaAdminDashboard:
                                             on_click=self.load_cadastro_fabricante
                                         )
                                     ], spacing=10),
-
+                        
                                     self.campo_estoque,
                                     self.campo_observacoes,
                                     ft.Container(height=20),
