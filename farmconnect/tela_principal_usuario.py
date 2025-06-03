@@ -1,5 +1,6 @@
 import flet as ft
 
+
 # Lista completa de medicamentos com dados diferentes
 medicamentos_mock = [
     {"nome": "Interferon Alfa", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
@@ -25,6 +26,15 @@ medicamentos_por_pagina = 8
 def tela_usuario(page: ft.Page):
     cards_container = ft.ResponsiveRow(run_spacing=20, spacing=20)
     pagina_atual = 1
+    carrinho_count = ft.Ref[ft.Text]()
+
+    contador = {"valor": 0}
+
+    def adicionar_ao_carrinho(e):
+        contador["valor"] += 1
+        carrinho_count.current.value = str(contador["valor"])
+        carrinho_count.current.visible = True
+        carrinho_count.current.update()
 
     def gerar_cards(pagina):
         inicio = (pagina - 1) * medicamentos_por_pagina
@@ -38,7 +48,7 @@ def tela_usuario(page: ft.Page):
                     bgcolor="#F8FAFC",
                     border_radius=16,
                     col={"xs": 12, "sm": 6, "md": 4, "lg": 3},
-                    content=ft.Column([
+                    content=ft.Column([ 
                         ft.Image(src=med["imagem"], width=100, height=100),
                         ft.Text(med["nome"], text_align=ft.TextAlign.CENTER, size=13, weight=ft.FontWeight.BOLD, color="#111827"),
                         ft.Text(med["descricao"], size=11, text_align=ft.TextAlign.CENTER, color="#111827"),
@@ -47,7 +57,8 @@ def tela_usuario(page: ft.Page):
                             width=130,
                             bgcolor=ft.Colors.BLUE_900,
                             color=ft.colors.WHITE,
-                            style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10))
+                            style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10)),
+                            on_click=adicionar_ao_carrinho
                         )
                     ], spacing=10, alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
                 )
@@ -69,6 +80,23 @@ def tela_usuario(page: ft.Page):
     )
 
     gerar_cards(pagina_atual)
+
+    def icone_carrinho():
+        return ft.Stack([
+            ft.Icon(name=ft.icons.SHOPPING_BAG_OUTLINED, size=30, color="#1E3A8A"),
+            ft.Container(
+                ref=carrinho_count,
+                content=ft.Text("0", size=10, color=ft.colors.WHITE),
+                width=16,
+                height=16,
+                alignment=ft.alignment.center,
+                bgcolor=ft.colors.RED,
+                border_radius=8,
+                right=0,
+                top=0,
+                visible=False
+            )
+        ])
 
     def create_menu_item(icon, text, route):
         container = ft.Container(
@@ -156,6 +184,7 @@ def tela_usuario(page: ft.Page):
                                         col={"xs": 12, "md": 6}
                                     ),
                                     ft.Row([
+                                        icone_carrinho(),
                                         ft.CircleAvatar(foreground_image_src="/images/profile.jpg", radius=20),
                                         ft.Text("JOÃO NASCIMENTO", size=13, weight=ft.FontWeight.BOLD, color=ft.colors.BLACK),
                                     ], spacing=10, alignment=ft.MainAxisAlignment.END, col={"xs": 12, "md": 4})
