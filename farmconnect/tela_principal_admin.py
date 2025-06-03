@@ -1510,7 +1510,7 @@ class TelaAdminDashboard:
                     ) for p in lista
                 ]
             )
-
+        #Teste
         self.current_view.controls.clear()
         self.current_view.controls.append(
             ft.Container(
