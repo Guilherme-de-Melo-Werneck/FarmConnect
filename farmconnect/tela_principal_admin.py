@@ -1,5 +1,5 @@
 import flet as ft
-from database import listar_medicamentos, editar_medicamento, adicionar_medicamento, listar_categorias, listar_fabricantes, deletar_medicamento, adicionar_farmacia, listar_farmacias, deletar_farmacia, editar_farmacia, listar_usuarios, registrar_usuario, aprovar_usuario, recusar_usuario, listar_agendamentos, adicionar_agendamento
+from database import listar_medicamentos, editar_medicamento, adicionar_medicamento, listar_categorias, listar_fabricantes, desativar_medicamento, adicionar_farmacia, listar_farmacias, deletar_farmacia, editar_farmacia, listar_usuarios, registrar_usuario, aprovar_usuario, recusar_usuario, listar_agendamentos, adicionar_agendamento, reativar_medicamento
 from datetime import datetime
 
 class TelaAdminDashboard:
@@ -28,8 +28,22 @@ class TelaAdminDashboard:
         total_hoje = sum(1 for a in agendamentos if a[5] == hoje.strftime("%Y-%m-%d"))
         return total_hoje
     
+    def desativar_medicamento(self, id):
+        desativar_medicamento(id)
+        self.page.snack_bar = ft.SnackBar(content=ft.Text("Medicamento desativado."), bgcolor="red")
+        self.page.snack_bar.open = True
+        self.page.update()
+        self.load_medicamentos()
+
+    def reativar_medicamento(self, id):
+        reativar_medicamento(id)
+        self.page.snack_bar = ft.SnackBar(content=ft.Text("Medicamento reativado."), bgcolor="green")
+        self.page.snack_bar.open = True
+        self.page.update()
+        self.load_medicamentos()
+    
     def card_estoque_medicamentos(self):
-        medicamentos = listar_medicamentos()
+        medicamentos = listar_medicamentos(include_inativos=False)
         total_estoque = sum([m[5] for m in medicamentos])  # m[5] = estoque
         abaixo_limite = [(m[1], m[5]) for m in medicamentos if m[5] < 5]  # m[1] = nome
 
@@ -375,12 +389,12 @@ class TelaAdminDashboard:
             rows=[
                 ft.DataRow(
                     cells=[
-                        ft.DataCell(ft.Text(str(med[0]), color="red" if med[0] in self.cancelados else None)),
-                        ft.DataCell(ft.Text(med[1], color="red" if med[0] in self.cancelados else None)),
-                        ft.DataCell(ft.Text(med[2] or "-", color="red" if med[0] in self.cancelados else None)),
-                        ft.DataCell(ft.Text(med[6] or "-", color="red" if med[0] in self.cancelados else None)),
-                        ft.DataCell(ft.Text(med[7] or "-", color="red" if med[0] in self.cancelados else None)),
-                        ft.DataCell(ft.Text(str(med[5]), color="red" if med[0] in self.cancelados else None)),
+                        ft.DataCell(ft.Text(str(med[0]), color="red" if med[8] == 0 else None)),
+                        ft.DataCell(ft.Text(med[1], color="red" if med[8] == 0 else None)),
+                        ft.DataCell(ft.Text(med[2] or "-", color="red" if med[8] == 0 else None)),
+                        ft.DataCell(ft.Text(med[6] or "-", color="red" if med[8] == 0 else None)),
+                        ft.DataCell(ft.Text(med[7] or "-", color="red" if med[8] == 0 else None)),
+                        ft.DataCell(ft.Text(str(med[5]), color="red" if med[8] == 0 else None)),
                         ft.DataCell(
                             ft.IconButton(
                                 icon=ft.icons.LOCK_OPEN,
@@ -389,13 +403,13 @@ class TelaAdminDashboard:
                                 icon_size=22,
                                 style=ft.ButtonStyle(padding=0),
                                 on_click=lambda e, id=med[0]: self.reativar_medicamento(id)
-                            ) if med[0] in self.cancelados else ft.IconButton(
+                            ) if med[8] == 0 else ft.IconButton(
                                 icon=ft.icons.CANCEL_OUTLINED,
                                 icon_color=ft.Colors.RED,
                                 tooltip="Desativar",
                                 icon_size=22,
                                 style=ft.ButtonStyle(padding=0),
-                                on_click=lambda e, id=med[0]: self.marcar_cancelado(id)
+                                on_click=lambda e, id=med[0]: self.desativar_medicamento(id)
                             )
                         )
                     ]
@@ -553,18 +567,6 @@ class TelaAdminDashboard:
         )
 
         self.page.update()
-
-
-
-    def marcar_cancelado(self, id):
-        self.cancelados.add(id)
-        self.load_medicamentos()
-
-    def reativar_medicamento(self, id):
-        if hasattr(self, "cancelados") and id in self.cancelados:
-            self.cancelados.remove(id)
-            self.load_medicamentos()
-
 
     def salvar_medicamento(self, e=None):
         nome = self.campo_nome.value.strip()
