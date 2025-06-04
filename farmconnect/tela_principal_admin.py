@@ -47,13 +47,26 @@ class TelaAdminDashboard:
         total_estoque = sum([m[5] for m in medicamentos])  # m[5] = estoque
         abaixo_limite = [(m[1], m[5]) for m in medicamentos if m[5] < 5]  # m[1] = nome
 
+        if not medicamentos: # Nenhum medicamento ativo no banco
+            return ft.Container(
+                col={"sm": 12, "md": 4},
+                bgcolor="#FFFFFF",
+                border_radius=12,
+                shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26),
+                padding=20,
+                content=ft.Column([
+                    ft.Text("Estoque de Medicamentos", size=16, weight="bold", color="#111827"),
+                    ft.Text("Nenhum medicamento ativo.", size=14, color=ft.colors.RED_700),
+                ], spacing=10)
+            )
+
         lista_criticos = ft.Column(
             controls=[
                 ft.Text(f"- {nome} ({qtd} un.)", size=12, color=ft.colors.RED_700)
                 for nome, qtd in abaixo_limite
             ],
             spacing=4
-        ) if abaixo_limite else ft.Text("✔️ Estoque suficiente", size=12, color=ft.colors.GREEN_700)
+        ) if abaixo_limite else ft.Text("✔️ Estoque suficiente", size=12, color=ft.colors.GREEN_700) 
 
         return ft.Container(
             col={"sm": 12, "md": 4},
