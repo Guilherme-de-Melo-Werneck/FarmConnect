@@ -46,11 +46,13 @@ def criar_tabelas():
             categoria_id INTEGER,
             fabricante_id INTEGER,
             data_criacao TEXT DEFAULT CURRENT_TIMESTAMP,
+            ativo INTEGER DEFAULT 1,
             FOREIGN KEY (categoria_id) REFERENCES categorias(id),
             FOREIGN KEY (fabricante_id) REFERENCES fabricantes(id)
         )
         """)
 
+        # cursor.execute("ALTER TABLE medicamentos ADD COLUMN ativo INTEGER DEFAULT 1;")
 
         # Farmácias
         cursor.execute("""
@@ -248,18 +250,22 @@ def buscar_nome_usuario(email):
     else:
         return None
         
-def listar_medicamentos():
+def listar_medicamentos(include_inativos=True):
     conn = conectar()
     cursor = conn.cursor()
 
-    cursor.execute("""
+    sql = """
         SELECT m.id, m.nome, m.codigo, m.descricao, m.imagem, m.estoque,
-               c.nome AS categoria, f.nome AS fabricante
+               c.nome AS categoria, f.nome AS fabricante, m.ativo
         FROM medicamentos m
         LEFT JOIN categorias c ON m.categoria_id = c.id
         LEFT JOIN fabricantes f ON m.fabricante_id = f.id
-    """)
+    """
+    
+    if not include_inativos:
+        sql += "WHERE m.ativo = 1"
 
+    cursor.execute(sql)
     medicamentos = cursor.fetchall()
 
     cursor.close()
@@ -281,6 +287,25 @@ def adicionar_medicamento(codigo, nome, descricao, imagem, estoque, categoria_id
     cursor.close()
     conn.close()
 
+def desativar_medicamento(id):
+    conn = conectar()
+    cursor = conn.cursor()
+    
+    cursor.execute("UPDATE medicamentos SET ativo = 0 WHERE id = ?", (id,))
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+def reativar_medicamento(id):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("UPDATE medicamentos SET ativo = 1 WHERE id = ?", (id,))
+
+    conn.commit()
+    cursor.close()
+    conn.close()
 
 def agendar_medicamento(usuario_email, medicamento_id, codigo, data, horario, status):
     conn = conectar()
@@ -493,11 +518,11 @@ def adicionar_categoria(nome):
         cursor.close()
         conn.close()
 
-def deletar_medicamento(id):
+def desativar_medicamento(id):
     conn = conectar()
     cursor = conn.cursor()
 
-    cursor.execute("DELETE FROM medicamentos WHERE id = ?", (id,))
+    cursor.execute("UPDATE medicamentos SET ativo = 0 WHERE id = ?", (id,))
     
     conn.commit()
     cursor.close()
