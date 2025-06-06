@@ -28,8 +28,10 @@ def tela_usuario(page: ft.Page):
     cards_container = ft.ResponsiveRow(run_spacing=20, spacing=20)
     pagina_atual = 1
     carrinho_count = ft.Ref[ft.Text]()
+    busca_ref = ft.Ref[ft.TextField]()
     contador = {"valor": 0}
     carrinho = []
+    botoes_paginacao = ft.Row(alignment=ft.MainAxisAlignment.CENTER, spacing=10)
 
     def remover_do_carrinho(e, item):
         carrinho.remove(item)
@@ -67,7 +69,6 @@ def tela_usuario(page: ft.Page):
         carrinho_drawer.visible = False
         page.update()
 
-
     carrinho_drawer = ft.Container(
         width=360,
         bgcolor="#FFFFFF",
@@ -96,12 +97,7 @@ def tela_usuario(page: ft.Page):
             ),
             ft.Divider(thickness=1),
             ft.Column([], spacing=10, scroll=ft.ScrollMode.ALWAYS),
-            ft.Container(
-                padding=10,
-                bgcolor="#F1F5F9",
-                border_radius=12,
-                shadow=ft.BoxShadow(blur_radius=6, color=ft.colors.BLACK12, offset=ft.Offset(0, 2)),
-            ),
+            ft.Container(),
             ft.ElevatedButton(
                 "Confirmar",
                 icon=ft.icons.CHECK,
@@ -121,13 +117,31 @@ def tela_usuario(page: ft.Page):
         ], spacing=16)
     )
 
-
-
     def gerar_cards(pagina):
-        inicio = (pagina - 1) * medicamentos_por_pagina
-        fim = inicio + medicamentos_por_pagina
+        nonlocal pagina_atual
+        busca = busca_ref.current.value.lower() if busca_ref.current and busca_ref.current.value else ""
+        pagina_atual = 1 if pagina is None else pagina
         cards_container.controls.clear()
-        for med in medicamentos_mock[inicio:fim]:
+
+        medicamentos_filtrados = [
+            med for med in medicamentos_mock
+            if busca in med["nome"].lower() or busca in med["descricao"].lower()
+        ]
+
+        total_paginas = max(1, (len(medicamentos_filtrados) + medicamentos_por_pagina - 1) // medicamentos_por_pagina)
+
+        botoes_paginacao.controls.clear()
+        for i in range(1, total_paginas + 1):
+            if i != 3:
+                botoes_paginacao.controls.append(
+                    ft.ElevatedButton(str(i), on_click=lambda e, p=i: gerar_cards(p))
+                )
+
+        inicio = (pagina_atual - 1) * medicamentos_por_pagina
+        fim = inicio + medicamentos_por_pagina
+        medicamentos_exibidos = medicamentos_filtrados[inicio:fim]
+
+        for med in medicamentos_exibidos:
             def handler_adicionar(e, med=med):
                 adicionar_ao_carrinho(med)
 
@@ -140,8 +154,8 @@ def tela_usuario(page: ft.Page):
                     col={"xs": 12, "sm": 6, "md": 4, "lg": 3},
                     content=ft.Column([
                         ft.Image(src=med["imagem"], width=100, height=100),
-                        ft.Text(med["nome"], text_align=ft.TextAlign.CENTER, size=13, weight=ft.FontWeight.BOLD, color="#111827"),
-                        ft.Text(med["descricao"], size=11, text_align=ft.TextAlign.CENTER, color="#111827"),
+                        ft.Text(med["nome"], text_align=ft.TextAlign.CENTER, size=13, weight=ft.FontWeight.BOLD),
+                        ft.Text(med["descricao"], size=11, text_align=ft.TextAlign.CENTER),
                         ft.ElevatedButton(
                             "ADICIONAR",
                             width=130,
@@ -153,21 +167,8 @@ def tela_usuario(page: ft.Page):
                     ], spacing=10, alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
                 )
             )
+
         page.update()
-
-    def mudar_pagina(e):
-        nonlocal pagina_atual
-        pagina_atual = int(e.control.text)
-        gerar_cards(pagina_atual)
-
-    botoes_paginacao = ft.Row(
-        controls=[
-            ft.ElevatedButton(str(i), on_click=mudar_pagina)
-            for i in range(1, (len(medicamentos_mock) // medicamentos_por_pagina) + 2)
-        ],
-        alignment=ft.MainAxisAlignment.CENTER,
-        spacing=10
-    )
 
     def icone_carrinho():
         return ft.Stack([
@@ -196,7 +197,7 @@ def tela_usuario(page: ft.Page):
             content=ft.Row([
                 ft.Icon(icon, color=ft.Colors.BLUE_600, size=24),
                 ft.Text(text, size=16, color="#111827")
-            ], spacing=15, alignment=ft.MainAxisAlignment.START),
+            ], spacing=15),
             ink=True,
             border_radius=8,
             bgcolor="#FFFFFF",
@@ -234,7 +235,7 @@ def tela_usuario(page: ft.Page):
                 content=ft.Row([
                     ft.Icon(ft.Icons.LOGOUT, color="#DC2626", size=24),
                     ft.Text("Sair", size=16, color="#DC2626"),
-                ], spacing=15, alignment=ft.MainAxisAlignment.START),
+                ], spacing=15),
                 border_radius=8,
                 bgcolor="#FEE2E2",
                 ink=True,
@@ -271,17 +272,19 @@ def tela_usuario(page: ft.Page):
                                 content=ft.ResponsiveRow([
                                     ft.Image(src="logo.png", width=110, col={"xs": 12, "md": 2}),
                                     ft.TextField(
+                                        ref=busca_ref,
                                         hint_text="Buscar medicamentos...",
                                         prefix_icon=ft.icons.SEARCH,
                                         border_radius=12,
                                         bgcolor=ft.colors.WHITE,
                                         height=45,
-                                        col={"xs": 12, "md": 6}
+                                        col={"xs": 12, "md": 6},
+                                        on_change=lambda e: gerar_cards(None)
                                     ),
                                     ft.Row([
                                         icone_carrinho(),
                                         ft.CircleAvatar(foreground_image_src="/images/profile.jpg", radius=20),
-                                        ft.Text("JOÃO NASCIMENTO", size=13, weight=ft.FontWeight.BOLD, color=ft.colors.BLACK),
+                                        ft.Text("JOÃO NASCIMENTO", size=13, weight=ft.FontWeight.BOLD),
                                     ], spacing=10, alignment=ft.MainAxisAlignment.END, col={"xs": 12, "md": 4})
                                 ])
                             ),
@@ -289,7 +292,7 @@ def tela_usuario(page: ft.Page):
                                 alignment=ft.alignment.top_center,
                                 padding=30,
                                 content=ft.Column([
-                                    ft.Text("MEDICAMENTOS DISPONÍVEIS", size=24, weight=ft.FontWeight.W_600, color="#111827"),
+                                    ft.Text("MEDICAMENTOS DISPONÍVEIS", size=24, weight=ft.FontWeight.W_600),
                                     ft.Row([
                                         ft.OutlinedButton("Mais Buscados"),
                                         ft.OutlinedButton("Meus Agendamentos"),
@@ -307,9 +310,6 @@ def tela_usuario(page: ft.Page):
             )
         ]
     )
-
-
-
 
 def tela_documentos(page: ft.Page):
     return ft.View(
@@ -391,8 +391,6 @@ def tela_documentos(page: ft.Page):
             )
         ]
     )
-
-import flet as ft
 
 def tela_perfil_paciente(page: ft.Page):
     # Refs
