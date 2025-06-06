@@ -24,23 +24,113 @@ medicamentos_mock = [
 medicamentos_por_pagina = 8
 
 def tela_usuario(page: ft.Page):
+    medicamentos_por_pagina = 8
     cards_container = ft.ResponsiveRow(run_spacing=20, spacing=20)
     pagina_atual = 1
     carrinho_count = ft.Ref[ft.Text]()
-
     contador = {"valor": 0}
+    carrinho = []
 
-    def adicionar_ao_carrinho(e):
+    def remover_do_carrinho(e, item):
+        carrinho.remove(item)
+        contador["valor"] -= 1
+        carrinho_count.current.value = str(contador["valor"])
+        carrinho_count.current.update()
+        abrir_carrinho(None)
+
+    def adicionar_ao_carrinho(medicamento):
         contador["valor"] += 1
         carrinho_count.current.value = str(contador["valor"])
-        carrinho_count.current.visible = True
         carrinho_count.current.update()
+        carrinho.append(medicamento)
+        page.update()
+
+    def abrir_carrinho(e):
+        itens_coluna = carrinho_drawer.content.controls[2]
+        itens_coluna.controls.clear()
+        for item in carrinho:
+            itens_coluna.controls.append(
+                ft.Container(
+                    padding=10,
+                    bgcolor="#FFFFFF",
+                    border_radius=8,
+                    content=ft.Row([
+                        ft.Text(item["nome"], size=12, expand=True),
+                        ft.IconButton(icon=ft.icons.DELETE_OUTLINE, icon_color=ft.colors.RED, tooltip="Remover", on_click=lambda e, med=item: remover_do_carrinho(e, med))
+                    ])
+                )
+            )
+        carrinho_drawer.visible = True
+        page.update()
+
+    def fechar_carrinho():
+        carrinho_drawer.visible = False
+        page.update()
+
+
+    carrinho_drawer = ft.Container(
+        width=360,
+        bgcolor="#FFFFFF",
+        padding=20,
+        visible=False,
+        animate=ft.Animation(300, "easeInOut"),
+        border_radius=24,
+        shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK26, offset=ft.Offset(0, 6)),
+        border=ft.border.all(1, color="#E2E8F0"),
+        content=ft.Column([
+            ft.Container(
+                padding=10,
+                border_radius=12,
+                bgcolor="#F8FAFC",
+                content=ft.Row([
+                    ft.Icon(name=ft.icons.SHOPPING_CART_OUTLINED, size=26, color="#1D4ED8"),
+                    ft.Text("Meu Carrinho", size=22, weight=ft.FontWeight.BOLD, color="#1D4ED8"),
+                    ft.IconButton(
+                        icon=ft.icons.CLOSE,
+                        icon_color=ft.colors.RED,
+                        tooltip="Fechar",
+                        icon_size=22,
+                        on_click=lambda e: fechar_carrinho()
+                    )
+                ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
+            ),
+            ft.Divider(thickness=1),
+            ft.Column([], spacing=10, scroll=ft.ScrollMode.ALWAYS),
+            ft.Container(
+                padding=10,
+                bgcolor="#F1F5F9",
+                border_radius=12,
+                shadow=ft.BoxShadow(blur_radius=6, color=ft.colors.BLACK12, offset=ft.Offset(0, 2)),
+            ),
+            ft.ElevatedButton(
+                "Confirmar",
+                icon=ft.icons.CHECK,
+                bgcolor="#16A34A",
+                color=ft.colors.WHITE,
+                style=ft.ButtonStyle(
+                    shape=ft.RoundedRectangleBorder(radius=12),
+                    padding=ft.padding.symmetric(horizontal=20, vertical=14)
+                ),
+                on_click=lambda e: page.snack_bar.open(
+                    ft.SnackBar(
+                        ft.Text("Agendamento confirmado!", color=ft.colors.WHITE),
+                        bgcolor=ft.colors.GREEN
+                    )
+                )
+            )
+        ], spacing=16)
+    )
+
+
 
     def gerar_cards(pagina):
         inicio = (pagina - 1) * medicamentos_por_pagina
         fim = inicio + medicamentos_por_pagina
         cards_container.controls.clear()
         for med in medicamentos_mock[inicio:fim]:
+            def handler_adicionar(e, med=med):
+                adicionar_ao_carrinho(med)
+
             cards_container.controls.append(
                 ft.Container(
                     alignment=ft.alignment.center,
@@ -48,7 +138,7 @@ def tela_usuario(page: ft.Page):
                     bgcolor="#F8FAFC",
                     border_radius=16,
                     col={"xs": 12, "sm": 6, "md": 4, "lg": 3},
-                    content=ft.Column([ 
+                    content=ft.Column([
                         ft.Image(src=med["imagem"], width=100, height=100),
                         ft.Text(med["nome"], text_align=ft.TextAlign.CENTER, size=13, weight=ft.FontWeight.BOLD, color="#111827"),
                         ft.Text(med["descricao"], size=11, text_align=ft.TextAlign.CENTER, color="#111827"),
@@ -58,7 +148,7 @@ def tela_usuario(page: ft.Page):
                             bgcolor=ft.Colors.BLUE_900,
                             color=ft.colors.WHITE,
                             style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10)),
-                            on_click=adicionar_ao_carrinho
+                            on_click=handler_adicionar
                         )
                     ], spacing=10, alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
                 )
@@ -73,20 +163,22 @@ def tela_usuario(page: ft.Page):
     botoes_paginacao = ft.Row(
         controls=[
             ft.ElevatedButton(str(i), on_click=mudar_pagina)
-            for i in range(1, (len(medicamentos_mock) // medicamentos_por_pagina) + 1)
+            for i in range(1, (len(medicamentos_mock) // medicamentos_por_pagina) + 2)
         ],
         alignment=ft.MainAxisAlignment.CENTER,
         spacing=10
     )
 
-    gerar_cards(pagina_atual)
-
     def icone_carrinho():
         return ft.Stack([
-            ft.Icon(name=ft.icons.SHOPPING_BAG_OUTLINED, size=30, color="#1E3A8A"),
+            ft.IconButton(
+                icon=ft.icons.SHOPPING_BAG_OUTLINED,
+                icon_size=30,
+                icon_color="#1E3A8A",
+                on_click=abrir_carrinho
+            ),
             ft.Container(
-                ref=carrinho_count,
-                content=ft.Text("0", size=10, color=ft.colors.WHITE),
+                content=ft.Text("0", size=10, color=ft.colors.WHITE, ref=carrinho_count),
                 width=16,
                 height=16,
                 alignment=ft.alignment.center,
@@ -94,7 +186,7 @@ def tela_usuario(page: ft.Page):
                 border_radius=8,
                 right=0,
                 top=0,
-                visible=False
+                visible=True
             )
         ])
 
@@ -152,6 +244,8 @@ def tela_usuario(page: ft.Page):
         ], spacing=10, expand=True)
     )
 
+    gerar_cards(pagina_atual)
+
     return ft.View(
         route="/usuario",
         controls=[
@@ -164,6 +258,7 @@ def tela_usuario(page: ft.Page):
                 ),
                 content=ft.Row([
                     sidebar,
+                    carrinho_drawer,
                     ft.Container(
                         expand=True,
                         padding=20,
@@ -212,6 +307,7 @@ def tela_usuario(page: ft.Page):
             )
         ]
     )
+
 
 
 
