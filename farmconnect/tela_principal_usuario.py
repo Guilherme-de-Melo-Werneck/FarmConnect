@@ -107,12 +107,7 @@ def tela_usuario(page: ft.Page):
                     shape=ft.RoundedRectangleBorder(radius=12),
                     padding=ft.padding.symmetric(horizontal=20, vertical=14)
                 ),
-                on_click=lambda e: page.snack_bar.open(
-                    ft.SnackBar(
-                        ft.Text("Agendamento confirmado!", color=ft.colors.WHITE),
-                        bgcolor=ft.colors.GREEN
-                    )
-                )
+                on_click=lambda e: page.go("/agendamento")
             )
         ], spacing=16)
     )
@@ -628,6 +623,121 @@ def tela_medicamentos_retirados(page: ft.Page):
         ]
     )
 
+def tela_agendamento(page: ft.Page):
+    # Refs
+    data_picker = ft.DatePicker()
+    hora_picker = ft.TimePicker()
+
+    data_selecionada = ft.Text("Nenhuma data selecionada", size=16, color=ft.colors.GREY_700)
+    hora_selecionada = ft.Text("Nenhum horário selecionado", size=16, color=ft.colors.GREY_700)
+
+    def confirmar_agendamento(e):
+        if "Nenhuma" in data_selecionada.value or "Nenhum" in hora_selecionada.value:
+            page.snack_bar = ft.SnackBar(ft.Text("Por favor, selecione data e horário."), bgcolor=ft.colors.RED_400)
+        else:
+            page.snack_bar = ft.SnackBar(ft.Text("✅ Agendamento realizado com sucesso!"), bgcolor=ft.colors.GREEN_500)
+        page.snack_bar.open = True
+        page.update()
+
+    def selecionar_data(e):
+        data_selecionada.value = f"📅 Data: {data_picker.value.strftime('%d/%m/%Y')}"
+        page.update()
+
+    def selecionar_hora(e):
+        hora_selecionada.value = f"⏰ Horário: {hora_picker.value.strftime('%H:%M')}"
+        page.update()
+
+    # Eventos
+    data_picker.on_change = selecionar_data
+    hora_picker.on_change = selecionar_hora
+
+    page.overlay.extend([data_picker, hora_picker])
+
+    return ft.View(
+        route="/agendamento",
+        controls=[
+            ft.Container(
+                expand=True,
+                bgcolor=ft.colors.WHITE,
+                alignment=ft.alignment.center,
+                padding=40,
+                content=ft.Column(
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                    spacing=30,
+                    controls=[
+                        ft.Text("🗓️ Agendamento de Retirada", size=32, weight=ft.FontWeight.BOLD, color=ft.colors.BLUE_900),
+                        ft.Container(
+                            width=500,
+                            padding=30,
+                            border_radius=20,
+                            bgcolor=ft.colors.BLUE_50,
+                            shadow=ft.BoxShadow(blur_radius=25, color=ft.colors.BLACK12, offset=ft.Offset(0, 10)),
+                            content=ft.Column(
+                                spacing=25,
+                                alignment=ft.MainAxisAlignment.CENTER,
+                                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                                controls=[
+                                    ft.Text("Escolha a data e o horário desejado:", size=18, color=ft.colors.GREY_800, text_align=ft.TextAlign.CENTER),
+                                    
+                                    ft.ElevatedButton(
+                                        "Selecionar Data",
+                                        icon=ft.icons.DATE_RANGE,
+                                        on_click=lambda e: data_picker.pick_date(),
+                                        style=ft.ButtonStyle(
+                                            bgcolor=ft.colors.BLUE_800,
+                                            color=ft.colors.WHITE,
+                                            padding=ft.padding.symmetric(vertical=12, horizontal=20),
+                                            shape=ft.RoundedRectangleBorder(radius=12)
+                                        )
+                                    ),
+                                    data_selecionada,
+
+                                    ft.ElevatedButton(
+                                        "Selecionar Horário",
+                                        icon=ft.icons.ACCESS_TIME,
+                                        on_click=lambda e: hora_picker.pick_time(),
+                                        style=ft.ButtonStyle(
+                                            bgcolor=ft.colors.BLUE_800,
+                                            color=ft.colors.WHITE,
+                                            padding=ft.padding.symmetric(vertical=12, horizontal=20),
+                                            shape=ft.RoundedRectangleBorder(radius=12)
+                                        )
+                                    ),
+                                    hora_selecionada,
+
+                                    ft.ElevatedButton(
+                                        "Confirmar Agendamento",
+                                        icon=ft.icons.CHECK,
+                                        on_click=confirmar_agendamento,
+                                        style=ft.ButtonStyle(
+                                            bgcolor=ft.colors.GREEN_600,
+                                            color=ft.colors.WHITE,
+                                            padding=ft.padding.symmetric(vertical=14),
+                                            shape=ft.RoundedRectangleBorder(radius=16)
+                                        )
+                                    )
+                                ]
+                            )
+                        ),
+                        ft.ElevatedButton(
+                            "Voltar",
+                            icon=ft.icons.ARROW_BACK,
+                            on_click=lambda e: page.go("/usuario"),
+                            style=ft.ButtonStyle(
+                                bgcolor=ft.colors.GREY_500,
+                                color=ft.colors.WHITE,
+                                padding=ft.padding.symmetric(vertical=12, horizontal=24),
+                                shape=ft.RoundedRectangleBorder(radius=12)
+                            )
+                        )
+                    ]
+                )
+            )
+        ]
+    )
+
+
 
 def main(page: ft.Page):
     page.title = "FarmConnect"
@@ -644,7 +754,11 @@ def main(page: ft.Page):
             page.views.append(tela_perfil_paciente(page))
         elif page.route == "/medicamentos_retirados":
             page.views.append(tela_medicamentos_retirados(page))
+        elif page.route == "/agendamento":
+            page.views.append(tela_agendamento(page))
         page.update()
+       
+
 
 
 
