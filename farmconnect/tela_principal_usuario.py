@@ -62,7 +62,7 @@ def tela_usuario(page: ft.Page):
                     border_radius=8,
                     content=ft.Row([
                         ft.Text(item["nome"], size=12, expand=True),
-                        ft.IconButton(icon=ft.icons.DELETE_OUTLINE, icon_color=ft.colors.RED, tooltip="Remover", on_click=lambda e, med=item: remover_do_carrinho(e, med))
+                        ft.IconButton(icon=ft.Icons.DELETE_OUTLINE, icon_color=ft.Colors.RED, tooltip="Remover", on_click=lambda e, med=item: remover_do_carrinho(e, med))
                     ])
                 )
             )
@@ -80,7 +80,7 @@ def tela_usuario(page: ft.Page):
         visible=False,
         animate=ft.Animation(300, "easeInOut"),
         border_radius=24,
-        shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK26, offset=ft.Offset(0, 6)),
+        shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26, offset=ft.Offset(0, 6)),
         border=ft.border.all(1, color="#E2E8F0"),
         content=ft.Column([
             ft.Container(
@@ -88,11 +88,11 @@ def tela_usuario(page: ft.Page):
                 border_radius=12,
                 bgcolor="#F8FAFC",
                 content=ft.Row([
-                    ft.Icon(name=ft.icons.SHOPPING_CART_OUTLINED, size=26, color="#1D4ED8"),
+                    ft.Icon(name=ft.Icons.SHOPPING_CART_OUTLINED, size=26, color="#1D4ED8"),
                     ft.Text("Meu Carrinho", size=22, weight=ft.FontWeight.BOLD, color="#1D4ED8"),
                     ft.IconButton(
-                        icon=ft.icons.CLOSE,
-                        icon_color=ft.colors.RED,
+                        icon=ft.Icons.CLOSE,
+                        icon_color=ft.Colors.RED,
                         tooltip="Fechar",
                         icon_size=22,
                         on_click=lambda e: fechar_carrinho()
@@ -104,9 +104,9 @@ def tela_usuario(page: ft.Page):
             ft.Container(),
             ft.ElevatedButton(
                 "Confirmar",
-                icon=ft.icons.CHECK,
+                icon=ft.Icons.CHECK,
                 bgcolor="#16A34A",
-                color=ft.colors.WHITE,
+                color=ft.Colors.WHITE,
                 style=ft.ButtonStyle(
                     shape=ft.RoundedRectangleBorder(radius=12),
                     padding=ft.padding.symmetric(horizontal=20, vertical=14)
@@ -159,7 +159,7 @@ def tela_usuario(page: ft.Page):
                             "ADICIONAR",
                             width=130,
                             bgcolor=ft.Colors.BLUE_900,
-                            color=ft.colors.WHITE,
+                            color=ft.Colors.WHITE,
                             style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10)),
                             on_click=handler_adicionar
                         )
@@ -172,17 +172,17 @@ def tela_usuario(page: ft.Page):
     def icone_carrinho():
         return ft.Stack([
             ft.IconButton(
-                icon=ft.icons.SHOPPING_BAG_OUTLINED,
+                icon=ft.Icons.SHOPPING_BAG_OUTLINED,
                 icon_size=30,
                 icon_color="#1E3A8A",
                 on_click=abrir_carrinho
             ),
             ft.Container(
-                content=ft.Text("0", size=10, color=ft.colors.WHITE, ref=carrinho_count),
+                content=ft.Text("0", size=10, color=ft.Colors.WHITE, ref=carrinho_count),
                 width=16,
                 height=16,
                 alignment=ft.alignment.center,
-                bgcolor=ft.colors.RED,
+                bgcolor=ft.Colors.RED,
                 border_radius=8,
                 right=0,
                 top=0,
@@ -267,15 +267,15 @@ def tela_usuario(page: ft.Page):
                                 bgcolor="#F8FAFC",
                                 border_radius=16,
                                 padding=ft.padding.symmetric(horizontal=20, vertical=18),
-                                shadow=ft.BoxShadow(blur_radius=12, color=ft.colors.BLACK12, offset=ft.Offset(0, 3)),
+                                shadow=ft.BoxShadow(blur_radius=12, color=ft.Colors.BLACK12, offset=ft.Offset(0, 3)),
                                 content=ft.ResponsiveRow([
                                     ft.Image(src="logo.png", width=110, col={"xs": 12, "md": 2}),
                                     ft.TextField(
                                         ref=busca_ref,
                                         hint_text="Buscar medicamentos...",
-                                        prefix_icon=ft.icons.SEARCH,
+                                        prefix_icon=ft.Icons.SEARCH,
                                         border_radius=12,
-                                        bgcolor=ft.colors.WHITE,
+                                        bgcolor=ft.Colors.WHITE,
                                         height=45,
                                         col={"xs": 12, "md": 6},
                                         on_change=lambda e: gerar_cards(None)
@@ -331,13 +331,13 @@ def tela_documentos(page: ft.Page):
                         color=ft.Colors.BLUE_900,
                         text_align=ft.TextAlign.CENTER,
                     ),
-                    ft.Divider(height=30, color=ft.colors.TRANSPARENT),
+                    ft.Divider(height=30, color=ft.Colors.TRANSPARENT),
                     # Caixa de Documentos
                     ft.Container(
                         padding=30,
-                        bgcolor=ft.colors.WHITE,
+                        bgcolor=ft.Colors.WHITE,
                         border_radius=20,
-                        shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK12, offset=ft.Offset(0, 10)),
+                        shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK12, offset=ft.Offset(0, 10)),
                         content=ft.Column([
                             ft.Text(
                                 "Para retirar medicamentos é necessário apresentar:",
@@ -358,14 +358,14 @@ def tela_documentos(page: ft.Page):
                             ),
                         ], spacing=10)
                     ),
-                    ft.Divider(height=30, color=ft.colors.TRANSPARENT),
+                    ft.Divider(height=30, color=ft.Colors.TRANSPARENT),
                     # Botões de Ação
                     ft.Row([
                         ft.ElevatedButton(
                             "Baixar Documento de Autorização",
-                            icon=ft.icons.FILE_DOWNLOAD,
+                            icon=ft.Icons.FILE_DOWNLOAD,
                             bgcolor=ft.Colors.BLUE_900,
-                            color=ft.colors.WHITE,
+                            color=ft.Colors.WHITE,
                             width=250,
                             style=ft.ButtonStyle(
                                 shape=ft.RoundedRectangleBorder(radius=12),
@@ -375,9 +375,9 @@ def tela_documentos(page: ft.Page):
                         ),
                         ft.ElevatedButton(
                             "Voltar",
-                            icon=ft.icons.ARROW_BACK_IOS_NEW,
+                            icon=ft.Icons.ARROW_BACK_IOS_NEW,
                             bgcolor=ft.Colors.GREY_500,
-                            color=ft.colors.WHITE,
+                            color=ft.Colors.WHITE,
                             width=150,
                             style=ft.ButtonStyle(
                                 shape=ft.RoundedRectangleBorder(radius=12),
@@ -431,7 +431,7 @@ def tela_perfil_paciente(page: ft.Page):
     def salvar(ref_bool, campo, input_ref):
         dados_usuario[campo] = input_ref.current.value
         ref_bool.current = False
-        page.snack_bar = ft.SnackBar(ft.Text(f"{campo.capitalize()} atualizado com sucesso!"), bgcolor=ft.colors.GREEN_100)
+        page.snack_bar = ft.SnackBar(ft.Text(f"{campo.capitalize()} atualizado com sucesso!"), bgcolor=ft.Colors.GREEN_100)
         page.snack_bar.open = True
         page.update()
 
@@ -446,8 +446,8 @@ def tela_perfil_paciente(page: ft.Page):
                     controls=[
                         ft.Text(label, size=16, color=ft.Colors.GREY_700),
                         ft.IconButton(
-                            icon=ft.icons.EDIT,
-                            icon_color=ft.colors.BLUE,
+                            icon=ft.Icons.EDIT,
+                            icon_color=ft.Colors.BLUE,
                             tooltip="Editar",
                             on_click=lambda e: iniciar_edicao(ref_bool, input_ref)
                         )
@@ -485,13 +485,13 @@ def tela_perfil_paciente(page: ft.Page):
                     horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                     spacing=30,
                     controls=[
-                        ft.Text("Perfil do Paciente", size=32, weight=ft.FontWeight.BOLD, color=ft.colors.BLUE_900),
+                        ft.Text("Perfil do Paciente", size=32, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
                         ft.Container(
                             width=700,
                             padding=25,
-                            bgcolor=ft.colors.WHITE,
+                            bgcolor=ft.Colors.WHITE,
                             border_radius=20,
-                            shadow=ft.BoxShadow(blur_radius=24, color=ft.colors.BLACK12, offset=ft.Offset(0, 12)),
+                            shadow=ft.BoxShadow(blur_radius=24, color=ft.Colors.BLACK12, offset=ft.Offset(0, 12)),
                             content=ft.Column(
                                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                                 spacing=30,
@@ -515,9 +515,9 @@ def tela_perfil_paciente(page: ft.Page):
                         ),
                         ft.ElevatedButton(
                             "Voltar",
-                            icon=ft.icons.ARROW_BACK,
+                            icon=ft.Icons.ARROW_BACK,
                             bgcolor=ft.Colors.GREY_500,
-                            color=ft.colors.WHITE,
+                            color=ft.Colors.WHITE,
                             width=160,
                             style=ft.ButtonStyle(
                                 shape=ft.RoundedRectangleBorder(radius=16),
@@ -564,18 +564,18 @@ def tela_medicamentos_retirados(page: ft.Page):
                         color=ft.Colors.BLUE_900    ,
                         text_align=ft.TextAlign.CENTER,
                     ),
-                    ft.Divider(height=20, color=ft.colors.TRANSPARENT),
+                    ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
                     ft.Container(
                         padding=30,
                         bgcolor="#FFFFFF",
                         border_radius=20,
-                        shadow=ft.BoxShadow(blur_radius=30, color=ft.colors.BLACK12, offset=ft.Offset(0, 15)),
+                        shadow=ft.BoxShadow(blur_radius=30, color=ft.Colors.BLACK12, offset=ft.Offset(0, 15)),
                         content=ft.Column([
                             ft.Row([
                                 ft.TextField(label="🔍 Buscar Medicamento", expand=True, on_change=lambda e: print(e.control.value)),
-                                ft.IconButton(icon=ft.icons.SEARCH, icon_color=ft.Colors.BLUE_900, on_click=lambda e: print("Buscar"))
+                                ft.IconButton(icon=ft.Icons.SEARCH, icon_color=ft.Colors.BLUE_900, on_click=lambda e: print("Buscar"))
                             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
-                            ft.Divider(height=20, color=ft.colors.TRANSPARENT),
+                            ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
                             ft.ListView(
                                 expand=True,
                                 controls=[
@@ -584,17 +584,17 @@ def tela_medicamentos_retirados(page: ft.Page):
                                         bgcolor="#F8FAFC",
                                         border_radius=16,
                                         margin=ft.margin.only(bottom=20),
-                                        shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK12, offset=ft.Offset(0, 10)),
+                                        shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK12, offset=ft.Offset(0, 10)),
                                         content=ft.Column([
                                             ft.Text(med["nome"], size=20, weight=ft.FontWeight.BOLD, color="#111827"),
-                                            ft.Divider(height=10, color=ft.colors.TRANSPARENT),
+                                            ft.Divider(height=10, color=ft.Colors.TRANSPARENT),
                                             ft.Text(f"📅 Data de Retirada: {med['data_retirada']}", size=14, color="#374151"),
                                             ft.Text(f"📦 Quantidade: {med['quantidade']} unidades", size=14, color="#374151"),
                                             ft.ElevatedButton(
                                                 "Ver Detalhes",
-                                                icon=ft.icons.INFO_OUTLINE,
+                                                icon=ft.Icons.INFO_OUTLINE,
                                                 bgcolor=ft.Colors.BLUE_900,
-                                                color=ft.colors.WHITE,
+                                                color=ft.Colors.WHITE,
                                                 width=200,
                                                 style=ft.ButtonStyle(
                                                     shape=ft.RoundedRectangleBorder(radius=12),
@@ -609,12 +609,12 @@ def tela_medicamentos_retirados(page: ft.Page):
                             )
                         ], spacing=20)
                     ),
-                    ft.Divider(height=30, color=ft.colors.TRANSPARENT),
+                    ft.Divider(height=30, color=ft.Colors.TRANSPARENT),
                     ft.ElevatedButton(
                         "Voltar",
-                        icon=ft.icons.ARROW_BACK_IOS_NEW,
+                        icon=ft.Icons.ARROW_BACK_IOS_NEW,
                         bgcolor=ft.Colors.GREY_500,
-                        color=ft.colors.WHITE,
+                        color=ft.Colors.WHITE,
                         width=150,
                         style=ft.ButtonStyle(
                             shape=ft.RoundedRectangleBorder(radius=12),
@@ -632,14 +632,14 @@ def tela_agendamento(page: ft.Page):
     data_picker = ft.DatePicker()
     hora_picker = ft.TimePicker()
 
-    data_selecionada = ft.Text("Nenhuma data selecionada", size=16, color=ft.colors.GREY_700)
-    hora_selecionada = ft.Text("Nenhum horário selecionado", size=16, color=ft.colors.GREY_700)
+    data_selecionada = ft.Text("Nenhuma data selecionada", size=16, color=ft.Colors.GREY_700)
+    hora_selecionada = ft.Text("Nenhum horário selecionado", size=16, color=ft.Colors.GREY_700)
 
     def confirmar_agendamento(e):
         if "Nenhuma" in data_selecionada.value or "Nenhum" in hora_selecionada.value:
-            page.snack_bar = ft.SnackBar(ft.Text("Por favor, selecione data e horário."), bgcolor=ft.colors.RED_400)
+            page.snack_bar = ft.SnackBar(ft.Text("Por favor, selecione data e horário."), bgcolor=ft.Colors.RED_400)
         else:
-            page.snack_bar = ft.SnackBar(ft.Text("✅ Agendamento realizado com sucesso!"), bgcolor=ft.colors.GREEN_500)
+            page.snack_bar = ft.SnackBar(ft.Text("✅ Agendamento realizado com sucesso!"), bgcolor=ft.Colors.GREEN_500)
         page.snack_bar.open = True
         page.update()
 
@@ -662,7 +662,7 @@ def tela_agendamento(page: ft.Page):
         controls=[
             ft.Container(
                 expand=True,
-                bgcolor=ft.colors.WHITE,
+                bgcolor=ft.Colors.WHITE,
                 alignment=ft.alignment.center,
                 padding=40,
                 content=ft.Column(
@@ -670,27 +670,27 @@ def tela_agendamento(page: ft.Page):
                     horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                     spacing=30,
                     controls=[
-                        ft.Text("🗓️ Agendamento de Retirada", size=32, weight=ft.FontWeight.BOLD, color=ft.colors.BLUE_900),
+                        ft.Text("🗓️ Agendamento de Retirada", size=32, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
                         ft.Container(
                             width=500,
                             padding=30,
                             border_radius=20,
-                            bgcolor=ft.colors.BLUE_50,
-                            shadow=ft.BoxShadow(blur_radius=25, color=ft.colors.BLACK12, offset=ft.Offset(0, 10)),
+                            bgcolor=ft.Colors.BLUE_50,
+                            shadow=ft.BoxShadow(blur_radius=25, color=ft.Colors.BLACK12, offset=ft.Offset(0, 10)),
                             content=ft.Column(
                                 spacing=25,
                                 alignment=ft.MainAxisAlignment.CENTER,
                                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                                 controls=[
-                                    ft.Text("Escolha a data e o horário desejado:", size=18, color=ft.colors.GREY_800, text_align=ft.TextAlign.CENTER),
+                                    ft.Text("Escolha a data e o horário desejado:", size=18, color=ft.Colors.GREY_800, text_align=ft.TextAlign.CENTER),
                                     
                                     ft.ElevatedButton(
                                         "Selecionar Data",
-                                        icon=ft.icons.DATE_RANGE,
+                                        icon=ft.Icons.DATE_RANGE,
                                         on_click=lambda e: data_picker.pick_date(),
                                         style=ft.ButtonStyle(
-                                            bgcolor=ft.colors.BLUE_800,
-                                            color=ft.colors.WHITE,
+                                            bgcolor=ft.Colors.BLUE_800,
+                                            color=ft.Colors.WHITE,
                                             padding=ft.padding.symmetric(vertical=12, horizontal=20),
                                             shape=ft.RoundedRectangleBorder(radius=12)
                                         )
@@ -699,11 +699,11 @@ def tela_agendamento(page: ft.Page):
 
                                     ft.ElevatedButton(
                                         "Selecionar Horário",
-                                        icon=ft.icons.ACCESS_TIME,
+                                        icon=ft.Icons.ACCESS_TIME,
                                         on_click=lambda e: hora_picker.pick_time(),
                                         style=ft.ButtonStyle(
-                                            bgcolor=ft.colors.BLUE_800,
-                                            color=ft.colors.WHITE,
+                                            bgcolor=ft.Colors.BLUE_800,
+                                            color=ft.Colors.WHITE,
                                             padding=ft.padding.symmetric(vertical=12, horizontal=20),
                                             shape=ft.RoundedRectangleBorder(radius=12)
                                         )
@@ -712,11 +712,11 @@ def tela_agendamento(page: ft.Page):
 
                                     ft.ElevatedButton(
                                         "Confirmar Agendamento",
-                                        icon=ft.icons.CHECK,
+                                        icon=ft.Icons.CHECK,
                                         on_click=confirmar_agendamento,
                                         style=ft.ButtonStyle(
-                                            bgcolor=ft.colors.GREEN_600,
-                                            color=ft.colors.WHITE,
+                                            bgcolor=ft.Colors.GREEN_600,
+                                            color=ft.Colors.WHITE,
                                             padding=ft.padding.symmetric(vertical=14),
                                             shape=ft.RoundedRectangleBorder(radius=16)
                                         )
@@ -726,11 +726,11 @@ def tela_agendamento(page: ft.Page):
                         ),
                         ft.ElevatedButton(
                             "Voltar",
-                            icon=ft.icons.ARROW_BACK,
+                            icon=ft.Icons.ARROW_BACK,
                             on_click=lambda e: page.go("/usuario"),
                             style=ft.ButtonStyle(
-                                bgcolor=ft.colors.GREY_500,
-                                color=ft.colors.WHITE,
+                                bgcolor=ft.Colors.GREY_500,
+                                color=ft.Colors.WHITE,
                                 padding=ft.padding.symmetric(vertical=12, horizontal=24),
                                 shape=ft.RoundedRectangleBorder(radius=12)
                             )
@@ -751,7 +751,7 @@ def tela_detalhes_medicamento(page: ft.Page):
                 ft.Container(
                     expand=True,
                     alignment=ft.alignment.center,
-                    content=ft.Text("❌ Nenhum medicamento selecionado.", size=20, color=ft.colors.RED)
+                    content=ft.Text("❌ Nenhum medicamento selecionado.", size=20, color=ft.Colors.RED)
                 )
             ]
         )
@@ -791,14 +791,14 @@ def tela_detalhes_medicamento(page: ft.Page):
 
             page.snack_bar = ft.SnackBar(
                 content=ft.Text(f"✅ {qtd} unidade(s) adicionadas ao carrinho."),
-                bgcolor=ft.colors.GREEN_400
+                bgcolor=ft.Colors.GREEN_400
             )
             page.snack_bar.open = True
             page.update()
         except:
             page.snack_bar = ft.SnackBar(
                 content=ft.Text("❗ Quantidade inválida."),
-                bgcolor=ft.colors.RED_400
+                bgcolor=ft.Colors.RED_400
             )
             page.snack_bar.open = True
             page.update()
@@ -814,7 +814,7 @@ def tela_detalhes_medicamento(page: ft.Page):
         controls=[
             ft.Container(
                 expand=True,
-                bgcolor=ft.colors.WHITE,
+                bgcolor=ft.Colors.WHITE,
                 padding=40,
                 content=ft.Column(
                     scroll=ft.ScrollMode.AUTO,
@@ -822,9 +822,9 @@ def tela_detalhes_medicamento(page: ft.Page):
                     controls=[
                         ft.Row([
                             ft.IconButton(
-                                icon=ft.icons.ARROW_BACK,
+                                icon=ft.Icons.ARROW_BACK,
                                 tooltip="Voltar",
-                                icon_color=ft.colors.BLUE,
+                                icon_color=ft.Colors.BLUE,
                                 on_click=lambda e: page.go("/usuario")
                             ),
                             ft.Text("🔎 Detalhes do Medicamento", size=28, weight=ft.FontWeight.BOLD, color="#1E3A8A"),
@@ -832,18 +832,18 @@ def tela_detalhes_medicamento(page: ft.Page):
                             ft.Container(expand=True),
                             ft.Stack([
                                 ft.IconButton(
-                                    icon=ft.icons.SHOPPING_CART_OUTLINED,
+                                    icon=ft.Icons.SHOPPING_CART_OUTLINED,
                                     icon_color="#1E3A8A",
                                     icon_size=30,
                                     on_click=lambda e: page.go("/usuario")
                                 ),
                                 ft.Container(
                                     ref=carrinho_count,
-                                    content=ft.Text("0", size=10, color=ft.colors.WHITE),
+                                    content=ft.Text("0", size=10, color=ft.Colors.WHITE),
                                     width=16,
                                     height=16,
                                     alignment=ft.alignment.center,
-                                    bgcolor=ft.colors.RED,
+                                    bgcolor=ft.Colors.RED,
                                     border_radius=8,
                                     right=0,
                                     top=0,
@@ -862,7 +862,7 @@ def tela_detalhes_medicamento(page: ft.Page):
                                 padding=20,
                                 bgcolor="#F9FAFB",
                                 border_radius=20,
-                                shadow=ft.BoxShadow(blur_radius=15, color=ft.colors.BLACK12, offset=ft.Offset(0, 10)),
+                                shadow=ft.BoxShadow(blur_radius=15, color=ft.Colors.BLACK12, offset=ft.Offset(0, 10)),
                                 content=ft.Column([
                                     ft.Image(ref=imagem_principal, src=medicamento["imagem"], width=300, height=300),
                                     ft.Row([
@@ -886,9 +886,9 @@ def tela_detalhes_medicamento(page: ft.Page):
                                 padding=20,
                                 content=ft.Column([
                                     ft.Text(medicamento["nome"], size=26, weight=ft.FontWeight.BOLD, color="#1E3A8A"),
-                                    ft.Text("Tipo: Uso controlado", size=14, color=ft.colors.GREY_700),
-                                    ft.Text("Marca: Genérico", size=14, color=ft.colors.GREY_700),
-                                    ft.Text("Quantidade: 1 unidade", size=14, color=ft.colors.GREY_700),
+                                    ft.Text("Tipo: Uso controlado", size=14, color=ft.Colors.GREY_700),
+                                    ft.Text("Marca: Genérico", size=14, color=ft.Colors.GREY_700),
+                                    ft.Text("Quantidade: 1 unidade", size=14, color=ft.Colors.GREY_700),
                                     ft.Divider(height=20),
                                     ft.Row([
                                         ft.TextField(
@@ -902,10 +902,10 @@ def tela_detalhes_medicamento(page: ft.Page):
                                         ),
                                         ft.ElevatedButton(
                                             "Adicionar ao Carrinho",
-                                            icon=ft.icons.ADD_SHOPPING_CART,
+                                            icon=ft.Icons.ADD_SHOPPING_CART,
                                             style=ft.ButtonStyle(
                                                 bgcolor="#1E3A8A",
-                                                color=ft.colors.WHITE,
+                                                color=ft.Colors.WHITE,
                                                 padding=ft.padding.symmetric(vertical=14, horizontal=20),
                                                 shape=ft.RoundedRectangleBorder(radius=12)
                                             ),
@@ -963,8 +963,6 @@ def tela_detalhes_medicamento(page: ft.Page):
     )
 
 
-
-
 def main(page: ft.Page):
     page.session.set("carrinho", [])
     page.title = "FarmConnect"
@@ -991,10 +989,6 @@ def main(page: ft.Page):
 
         page.update()
        
-
-
-
-
     page.on_route_change = route_change
     page.go("/usuario")
 

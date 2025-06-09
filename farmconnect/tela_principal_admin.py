@@ -56,17 +56,17 @@ class TelaAdminDashboard:
                 padding=20,
                 content=ft.Column([
                     ft.Text("Estoque de Medicamentos", size=16, weight="bold", color="#111827"),
-                    ft.Text("Nenhum medicamento ativo.", size=14, color=ft.colors.RED_700),
+                    ft.Text("Nenhum medicamento ativo.", size=14, color=ft.Colors.RED_700),
                 ], spacing=10)
             )
 
         lista_criticos = ft.Column(
             controls=[
-                ft.Text(f"- {nome} ({qtd} un.)", size=12, color=ft.colors.RED_700)
+                ft.Text(f"- {nome} ({qtd} un.)", size=12, color=ft.Colors.RED_700)
                 for nome, qtd in abaixo_limite
             ],
             spacing=4
-        ) if abaixo_limite else ft.Text("✔️ Estoque suficiente", size=12, color=ft.colors.GREEN_700) 
+        ) if abaixo_limite else ft.Text("✔️ Estoque suficiente", size=12, color=ft.Colors.GREEN_700) 
 
         return ft.Container(
             col={"sm": 12, "md": 4},
@@ -351,9 +351,9 @@ class TelaAdminDashboard:
                         padding=20,
                         content=ft.ElevatedButton(
                             text="Baixar Relatório",
-                            icon=ft.icons.DOWNLOAD,
+                            icon=ft.Icons.DOWNLOAD,
                             bgcolor=ft.Colors.BLUE_300,
-                            color=ft.colors.WHITE,
+                            color=ft.Colors.WHITE,
                             height=55,
                             width=260,
                             style=ft.ButtonStyle(
@@ -410,14 +410,14 @@ class TelaAdminDashboard:
                         ft.DataCell(ft.Text(str(med[5]), color="red" if med[8] == 0 else None)),
                         ft.DataCell(
                             ft.IconButton(
-                                icon=ft.icons.LOCK_OPEN,
+                                icon=ft.Icons.LOCK_OPEN,
                                 icon_color=ft.Colors.GREEN_400,
                                 tooltip="Reativar",
                                 icon_size=22,
                                 style=ft.ButtonStyle(padding=0),
                                 on_click=lambda e, id=med[0]: self.reativar_medicamento(id)
                             ) if med[8] == 0 else ft.IconButton(
-                                icon=ft.icons.CANCEL_OUTLINED,
+                                icon=ft.Icons.CANCEL_OUTLINED,
                                 icon_color=ft.Colors.RED,
                                 tooltip="Desativar",
                                 icon_size=22,
@@ -706,7 +706,7 @@ class TelaAdminDashboard:
                                         [
                                             ft.ElevatedButton(
                                                 "Salvar Medicamento",
-                                                bgcolor=ft.colors.BLUE_600,
+                                                bgcolor=ft.Colors.BLUE_600,
                                                 color="white",
                                                 height=50,
                                                 style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12)),
@@ -1521,6 +1521,7 @@ class TelaAdminDashboard:
                                             icon_color="#059669",
                                             tooltip="Aprovar paciente",
                                             on_click=lambda e, pid=p[0]: self.aprovar_usuario(pid)
+                                            
                                         ),
                                         ft.IconButton(
                                             icon=ft.Icons.CANCEL_OUTLINED,
@@ -1620,14 +1621,14 @@ class TelaAdminDashboard:
     def aprovar_usuario(self, paciente_id):
         aprovar_usuario(paciente_id)
         self.page.snack_bar = ft.SnackBar(content=ft.Text("Paciente aprovado com sucesso!"), bgcolor="green")
-        self.page.snack_bar.open()
+        self.page.snack_bar.open = True
         self.page.update()
         self.load_pacientes()
 
     def recusar_usuario(self, paciente_id):
         recusar_usuario(paciente_id)
         self.page.snack_bar = ft.SnackBar(content=ft.Text("Paciente recusado com sucesso!"), bgcolor="red")
-        self.page.snack_bar.open()
+        self.page.snack_bar.open = True
         self.page.update()
         self.load_pacientes()
 

@@ -84,19 +84,19 @@ class TelaLoginUsuario:
             self.cadastro_nascimento.value = formatado
             self.cadastro_nascimento.update()
 
-        self.page.snack_bar = ft.SnackBar(content=ft.Text(""), bgcolor=ft.colors.RED_400, duration=3000)
+        self.page.snack_bar = ft.SnackBar(content=ft.Text(""), bgcolor=ft.Colors.RED_400, duration=3000)
 
         # Campos de Login
-        self.login_email = ft.TextField(label="Email", prefix_icon=ft.icons.EMAIL, border_radius=10, filled=True, bgcolor=ft.colors.GREY_50)
-        self.login_senha = ft.TextField(label="Senha", password=True, can_reveal_password=True, prefix_icon=ft.icons.LOCK, border_radius=10, filled=True, bgcolor=ft.colors.GREY_50)
+        self.login_email = ft.TextField(label="Email", prefix_icon=ft.Icons.EMAIL, border_radius=10, filled=True, bgcolor=ft.Colors.GREY_50)
+        self.login_senha = ft.TextField(label="Senha", password=True, can_reveal_password=True, prefix_icon=ft.Icons.LOCK, border_radius=10, filled=True, bgcolor=ft.Colors.GREY_50)
 
         # Campos de Cadastro
-        self.cadastro_nome = ft.TextField(label="Nome completo", prefix_icon=ft.icons.PERSON, border_radius=10, filled=True, bgcolor=ft.colors.GREY_50)
-        self.cadastro_email = ft.TextField(label="Email", prefix_icon=ft.icons.EMAIL, border_radius=10, filled=True, bgcolor=ft.colors.GREY_50)
-        self.cadastro_cpf = ft.TextField(label="CPF", prefix_icon=ft.icons.BADGE, border_radius=10, filled=True, bgcolor=ft.colors.GREY_50, on_blur=cpf_blur, on_change=cpf_change)
-        self.cadastro_nascimento = ft.TextField(label="Nascimento", prefix_icon=ft.icons.CALENDAR_MONTH, border_radius=10, filled=True, bgcolor=ft.colors.GREY_50, on_blur=nascimento_blur, on_change=nascimento_change)
-        self.cadastro_senha = ft.TextField(label="Senha", password=True, can_reveal_password=True, prefix_icon=ft.icons.LOCK, border_radius=10, filled=True, bgcolor=ft.colors.GREY_50)
-        self.cadastro_confirmar_senha = ft.TextField(label="Confirmar Senha", password=True, can_reveal_password=True, prefix_icon=ft.icons.LOCK_OUTLINE, border_radius=10, filled=True, bgcolor=ft.colors.GREY_50)
+        self.cadastro_nome = ft.TextField(label="Nome completo", prefix_icon=ft.Icons.PERSON, border_radius=10, filled=True, bgcolor=ft.Colors.GREY_50)
+        self.cadastro_email = ft.TextField(label="Email", prefix_icon=ft.Icons.EMAIL, border_radius=10, filled=True, bgcolor=ft.Colors.GREY_50)
+        self.cadastro_cpf = ft.TextField(label="CPF", prefix_icon=ft.Icons.BADGE, border_radius=10, filled=True, bgcolor=ft.Colors.GREY_50, on_blur=cpf_blur, on_change=cpf_change)
+        self.cadastro_nascimento = ft.TextField(label="Nascimento", prefix_icon=ft.Icons.CALENDAR_MONTH, border_radius=10, filled=True, bgcolor=ft.Colors.GREY_50, on_blur=nascimento_blur, on_change=nascimento_change)
+        self.cadastro_senha = ft.TextField(label="Senha", password=True, can_reveal_password=True, prefix_icon=ft.Icons.LOCK, border_radius=10, filled=True, bgcolor=ft.Colors.GREY_50)
+        self.cadastro_confirmar_senha = ft.TextField(label="Confirmar Senha", password=True, can_reveal_password=True, prefix_icon=ft.Icons.LOCK_OUTLINE, border_radius=10, filled=True, bgcolor=ft.Colors.GREY_50)
 
         def login_click(e):
             if self.login_email.value.strip() and self.login_senha.value.strip():
@@ -128,7 +128,7 @@ class TelaLoginUsuario:
                     )
                     if sucesso:
                         self.page.snack_bar.content.value = "Cadastro realizado com sucesso!"
-                        self.page.snack_bar.bgcolor = ft.colors.GREEN
+                        self.page.snack_bar.bgcolor = ft.Colors.GREEN
                         self.page.snack_bar.open = True
                         self.page.update()
                         self.page.go("/login_usuario")
@@ -155,7 +155,7 @@ class TelaLoginUsuario:
             padding=30,
             bgcolor="white",
             border_radius=20,
-            shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK26, offset=ft.Offset(0, 8)),
+            shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26, offset=ft.Offset(0, 8)),
             content=ft.Column([
                 ft.Text("Login", size=24, weight="bold", color=ft.Colors.BLUE_900),
                 self.login_email,
@@ -176,7 +176,7 @@ class TelaLoginUsuario:
             padding=30,
             bgcolor="white",
             border_radius=20,
-            shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK26, offset=ft.Offset(0, 8)),
+            shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26, offset=ft.Offset(0, 8)),
             content=ft.Column([
                 ft.Text("Cadastro", size=24, weight="bold", color=ft.Colors.BLUE_900),
                 self.cadastro_nome,
@@ -219,16 +219,16 @@ class TelaLoginUsuario:
         footer = ft.Container(
             content=ft.Column([
                 ft.Text("FarmConnect Usuário", size=18, weight=ft.FontWeight.BOLD, color="white"),
-                ft.Text("Soluções inteligentes para gestão de medicamentos.", size=14, color=ft.colors.WHITE70),
+                ft.Text("Soluções inteligentes para gestão de medicamentos.", size=14, color=ft.Colors.WHITE70),
                 ft.Row([
-                    ft.Icon(ft.icons.LOCAL_HOSPITAL, color=ft.colors.WHITE, size=26),
-                    ft.Icon(ft.icons.HEALTH_AND_SAFETY, color=ft.colors.WHITE, size=26),
-                    ft.Icon(ft.icons.GROUP, color=ft.colors.WHITE, size=26)
+                    ft.Icon(ft.Icons.LOCAL_HOSPITAL, color=ft.Colors.WHITE, size=26),
+                    ft.Icon(ft.Icons.HEALTH_AND_SAFETY, color=ft.Colors.WHITE, size=26),
+                    ft.Icon(ft.Icons.GROUP, color=ft.Colors.WHITE, size=26)
                 ], alignment=ft.MainAxisAlignment.CENTER, spacing=14)
             ], alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=8),
             padding=24,
             bgcolor=ft.Colors.BLUE_600,
-            shadow=ft.BoxShadow(blur_radius=16, color=ft.colors.BLACK26, offset=ft.Offset(0, -6))
+            shadow=ft.BoxShadow(blur_radius=16, color=ft.Colors.BLACK26, offset=ft.Offset(0, -6))
         )
 
         return ft.View(
