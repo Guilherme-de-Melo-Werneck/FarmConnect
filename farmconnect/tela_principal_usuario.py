@@ -54,7 +54,6 @@ class TelaUsuarioDashboard:
                     border_radius=12,
                     bgcolor="#F8FAFC",
                     content=ft.Row([
-<<<<<<< HEAD
                         ft.Icon(name=ft.icons.SHOPPING_CART_OUTLINED, size=26, color="#1D4ED8"),
                         ft.Text("Meu Carrinho", size=22, weight=ft.FontWeight.BOLD, color="#1D4ED8"),
                         ft.IconButton(
@@ -65,57 +64,6 @@ class TelaUsuarioDashboard:
                             on_click=lambda e: self.fechar_carrinho()
                         )
                     ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
-=======
-                        ft.Text(item["nome"], size=12, expand=True),
-                        ft.IconButton(icon=ft.Icons.DELETE_OUTLINE, icon_color=ft.Colors.RED, tooltip="Remover", on_click=lambda e, med=item: remover_do_carrinho(e, med))
-                    ])
-                )
-            )
-        carrinho_drawer.visible = True
-        page.update()
-
-    def fechar_carrinho():
-        carrinho_drawer.visible = False
-        page.update()
-
-    carrinho_drawer = ft.Container(
-        width=360,
-        bgcolor="#FFFFFF",
-        padding=20,
-        visible=False,
-        animate=ft.Animation(300, "easeInOut"),
-        border_radius=24,
-        shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26, offset=ft.Offset(0, 6)),
-        border=ft.border.all(1, color="#E2E8F0"),
-        content=ft.Column([
-            ft.Container(
-                padding=10,
-                border_radius=12,
-                bgcolor="#F8FAFC",
-                content=ft.Row([
-                    ft.Icon(name=ft.Icons.SHOPPING_CART_OUTLINED, size=26, color="#1D4ED8"),
-                    ft.Text("Meu Carrinho", size=22, weight=ft.FontWeight.BOLD, color="#1D4ED8"),
-                    ft.IconButton(
-                        icon=ft.Icons.CLOSE,
-                        icon_color=ft.Colors.RED,
-                        tooltip="Fechar",
-                        icon_size=22,
-                        on_click=lambda e: fechar_carrinho()
-                    )
-                ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
-            ),
-            ft.Divider(thickness=1),
-            ft.Column([], spacing=10, scroll=ft.ScrollMode.ALWAYS),
-            ft.Container(),
-            ft.ElevatedButton(
-                "Confirmar",
-                icon=ft.Icons.CHECK,
-                bgcolor="#16A34A",
-                color=ft.Colors.WHITE,
-                style=ft.ButtonStyle(
-                    shape=ft.RoundedRectangleBorder(radius=12),
-                    padding=ft.padding.symmetric(horizontal=20, vertical=14)
->>>>>>> c98abd843ddbbec4d3c0d55757e188e8e801caca
                 ),
                 ft.Divider(thickness=1),
                 ft.Column([], spacing=10, scroll=ft.ScrollMode.ALWAYS),  # <- index 2 usado em abrir_carrinho
@@ -302,11 +250,7 @@ class TelaUsuarioDashboard:
                 on_click=self.abrir_carrinho
             ),
             ft.Container(
-<<<<<<< HEAD
                 content=ft.Text("0", size=10, color=ft.colors.WHITE, ref=self.carrinho_count),
-=======
-                content=ft.Text("0", size=10, color=ft.Colors.WHITE, ref=carrinho_count),
->>>>>>> c98abd843ddbbec4d3c0d55757e188e8e801caca
                 width=16,
                 height=16,
                 alignment=ft.alignment.center,
@@ -354,7 +298,6 @@ class TelaUsuarioDashboard:
                     padding=ft.padding.symmetric(vertical=10),
                     content=ft.Image(src="logo.png", width=120, height=40)
                 ),
-<<<<<<< HEAD
                 ft.Divider(thickness=1),
                 self.create_menu_item(ft.Icons.PERSON_OUTLINED, "Meu Perfil", "/perfil"),
                 self.create_menu_item(ft.Icons.MEDICAL_SERVICES_OUTLINED, "Histórico de Retiradas", "/medicamentos_retirados"),
@@ -375,61 +318,6 @@ class TelaUsuarioDashboard:
                 )
             ], spacing=10, expand=True)
         )
-=======
-                content=ft.Row([
-                    sidebar,
-                    carrinho_drawer,
-                    ft.Container(
-                        expand=True,
-                        padding=20,
-                        content=ft.Column([
-                            ft.Container(
-                                bgcolor="#F8FAFC",
-                                border_radius=16,
-                                padding=ft.padding.symmetric(horizontal=20, vertical=18),
-                                shadow=ft.BoxShadow(blur_radius=12, color=ft.Colors.BLACK12, offset=ft.Offset(0, 3)),
-                                content=ft.ResponsiveRow([
-                                    ft.Image(src="logo.png", width=110, col={"xs": 12, "md": 2}),
-                                    ft.TextField(
-                                        ref=busca_ref,
-                                        hint_text="Buscar medicamentos...",
-                                        prefix_icon=ft.Icons.SEARCH,
-                                        border_radius=12,
-                                        bgcolor=ft.Colors.WHITE,
-                                        height=45,
-                                        col={"xs": 12, "md": 6},
-                                        on_change=lambda e: gerar_cards(None)
-                                    ),
-                                    ft.Row([
-                                        icone_carrinho(),
-                                        ft.CircleAvatar(foreground_image_src="/images/profile.jpg", radius=20),
-                                        ft.Text("JOÃO NASCIMENTO", size=13, weight=ft.FontWeight.BOLD),
-                                    ], spacing=10, alignment=ft.MainAxisAlignment.END, col={"xs": 12, "md": 4})
-                                ])
-                            ),
-                            ft.Container(
-                                alignment=ft.alignment.top_center,
-                                padding=30,
-                                content=ft.Column([
-                                    ft.Text("MEDICAMENTOS DISPONÍVEIS", size=24, weight=ft.FontWeight.W_600),
-                                    ft.Row([
-                                        ft.OutlinedButton("Mais Buscados"),
-                                        ft.OutlinedButton("Meus Agendamentos"),
-                                        ft.OutlinedButton("Feedback"),
-                                    ], alignment=ft.MainAxisAlignment.CENTER, spacing=16),
-                                    ft.Divider(height=25),
-                                    cards_container,
-                                    ft.Divider(height=30),
-                                    botoes_paginacao
-                                ], spacing=30)
-                            )
-                        ], scroll=ft.ScrollMode.ADAPTIVE, spacing=20)
-                    )
-                ])
-            )
-        ]
-    )
->>>>>>> c98abd843ddbbec4d3c0d55757e188e8e801caca
 
         self.gerar_cards(self.pagina_atual)
 
@@ -443,7 +331,6 @@ class TelaUsuarioDashboard:
                         end=ft.alignment.bottom_right,
                         colors=["#EFF6FF", "#DBEAFE"]
                     ),
-<<<<<<< HEAD
                     content=ft.Row([
                         sidebar,
                         self.carrinho_drawer,
@@ -538,49 +425,6 @@ class TelaUsuarioDashboard:
                             weight=ft.FontWeight.BOLD, 
                             color=ft.Colors.BLUE_900,
                             text_align=ft.TextAlign.CENTER,
-=======
-                    ft.Divider(height=30, color=ft.Colors.TRANSPARENT),
-                    # Caixa de Documentos
-                    ft.Container(
-                        padding=30,
-                        bgcolor=ft.Colors.WHITE,
-                        border_radius=20,
-                        shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK12, offset=ft.Offset(0, 10)),
-                        content=ft.Column([
-                            ft.Text(
-                                "Para retirar medicamentos é necessário apresentar:",
-                                size=20,
-                                weight=ft.FontWeight.BOLD,
-                                color=ft.Colors.BLUE_900
-                            ),
-                            ft.Text(
-                                "1. Documento com foto (RG, CNH, Passaporte)\n"
-                                "2. Receita médica válida por até 3 meses\n\n"
-                                "Se for um terceiro retirando o medicamento, é necessário:\n"
-                                "- Documento com foto do responsável\n"
-                                "- Documento com foto do paciente\n"
-                                "- Autorização assinada pelo responsável.",
-                                size=18,
-                                color=ft.Colors.GREY_700,
-                                selectable=True
-                            ),
-                        ], spacing=10)
-                    ),
-                    ft.Divider(height=30, color=ft.Colors.TRANSPARENT),
-                    # Botões de Ação
-                    ft.Row([
-                        ft.ElevatedButton(
-                            "Baixar Documento de Autorização",
-                            icon=ft.Icons.FILE_DOWNLOAD,
-                            bgcolor=ft.Colors.BLUE_900,
-                            color=ft.Colors.WHITE,
-                            width=250,
-                            style=ft.ButtonStyle(
-                                shape=ft.RoundedRectangleBorder(radius=12),
-                                padding=ft.padding.symmetric(vertical=12)
-                            ),
-                            on_click=lambda e: print("Documento baixado")
->>>>>>> c98abd843ddbbec4d3c0d55757e188e8e801caca
                         ),
                         ft.Divider(height=30, color=ft.colors.TRANSPARENT),
                         # Caixa de Documentos
@@ -868,159 +712,11 @@ class TelaUsuarioDashboard:
                             ),
                             on_click=lambda e: self.page.go("/usuario")
                         )
-<<<<<<< HEAD
                     ], spacing=30, alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
-=======
-                    ], alignment=ft.MainAxisAlignment.CENTER, spacing=20)
-                ], spacing=30, alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
-            )
-        ]
-    )
-
-def tela_perfil_paciente(page: ft.Page):
-    # Refs
-    editando_nome = ft.Ref[bool]()
-    editando_cpf = ft.Ref[bool]()
-    editando_nasc = ft.Ref[bool]()
-    editando_email = ft.Ref[bool]()
-    editando_tel = ft.Ref[bool]()
-
-    nome_field = ft.Ref[ft.TextField]()
-    cpf_field = ft.Ref[ft.TextField]()
-    nasc_field = ft.Ref[ft.TextField]()
-    email_field = ft.Ref[ft.TextField]()
-    tel_field = ft.Ref[ft.TextField]()
-
-    # Inicializa edição como falso
-    editando_nome.current = False
-    editando_cpf.current = False
-    editando_nasc.current = False
-    editando_email.current = False
-    editando_tel.current = False
-
-    # Dados simulados
-    dados_usuario = {
-        "nome": "João Nascimento",
-        "cpf": "123.456.789-00",
-        "nasc": "01/01/1990",
-        "email": "joao@gmail.com",
-        "tel": "(11) 98765-4321"
-    }
-
-    # Alternar edição e focar
-    def iniciar_edicao(ref_bool, input_ref):
-        ref_bool.current = True
-        page.update()
-        input_ref.current.focus()
-
-    # Salvar valor
-    def salvar(ref_bool, campo, input_ref):
-        dados_usuario[campo] = input_ref.current.value
-        ref_bool.current = False
-        page.snack_bar = ft.SnackBar(ft.Text(f"{campo.capitalize()} atualizado com sucesso!"), bgcolor=ft.Colors.GREEN_100)
-        page.snack_bar.open = True
-        page.update()
-
-    # Campo editável
-    def campo_editavel(label, campo, ref_bool, input_ref):
-        return ft.Column(
-            spacing=2,
-            controls=[
-                ft.Row(
-                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                    vertical_alignment=ft.CrossAxisAlignment.CENTER,
-                    controls=[
-                        ft.Text(label, size=16, color=ft.Colors.GREY_700),
-                        ft.IconButton(
-                            icon=ft.Icons.EDIT,
-                            icon_color=ft.Colors.BLUE,
-                            tooltip="Editar",
-                            on_click=lambda e: iniciar_edicao(ref_bool, input_ref)
-                        )
-                    ]
-                ),
-                ft.TextField(
-                    ref=input_ref,
-                    value=dados_usuario[campo],
-                    read_only=not ref_bool.current,
-                    filled=True,
-                    dense=True,
-                    border_radius=12,
-                    content_padding=10,
-                    text_size=16,
-                    on_submit=lambda e: salvar(ref_bool, campo, input_ref)
->>>>>>> c98abd843ddbbec4d3c0d55757e188e8e801caca
                 )
             ]
         )
 
-<<<<<<< HEAD
-=======
-    return ft.View(
-        route="/perfil",
-        controls=[
-            ft.Container(
-                expand=True,
-                padding=30,
-                alignment=ft.alignment.center,
-                gradient=ft.LinearGradient(
-                    begin=ft.alignment.top_left,
-                    end=ft.alignment.bottom_right,
-                    colors=["#E0F2FE", "#F0F4FF"]
-                ),
-                content=ft.Column(
-                    scroll=ft.ScrollMode.AUTO,
-                    alignment=ft.MainAxisAlignment.CENTER,
-                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                    spacing=30,
-                    controls=[
-                        ft.Text("Perfil do Paciente", size=32, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
-                        ft.Container(
-                            width=700,
-                            padding=25,
-                            bgcolor=ft.Colors.WHITE,
-                            border_radius=20,
-                            shadow=ft.BoxShadow(blur_radius=24, color=ft.Colors.BLACK12, offset=ft.Offset(0, 12)),
-                            content=ft.Column(
-                                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                                spacing=30,
-                                controls=[
-                                    ft.Column(
-                                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                                        spacing=10,
-                                        controls=[
-                                            ft.CircleAvatar(foreground_image_src="/images/profile.jpg", radius=60),
-                                            ft.Text(dados_usuario["nome"], size=24, weight=ft.FontWeight.BOLD),
-                                            ft.Text("Paciente FarmConnect", size=16, color=ft.Colors.GREY_600)
-                                        ]
-                                    ),
-                                    campo_editavel("Nome", "nome", editando_nome, nome_field),
-                                    campo_editavel("CPF", "cpf", editando_cpf, cpf_field),
-                                    campo_editavel("Data de Nascimento", "nasc", editando_nasc, nasc_field),
-                                    campo_editavel("Email", "email", editando_email, email_field),
-                                    campo_editavel("Telefone", "tel", editando_tel, tel_field),
-                                ]
-                            )
-                        ),
-                        ft.ElevatedButton(
-                            "Voltar",
-                            icon=ft.Icons.ARROW_BACK,
-                            bgcolor=ft.Colors.GREY_500,
-                            color=ft.Colors.WHITE,
-                            width=160,
-                            style=ft.ButtonStyle(
-                                shape=ft.RoundedRectangleBorder(radius=16),
-                                padding=ft.padding.symmetric(vertical=12),
-                                elevation=4
-                            ),
-                            on_click=lambda e: page.go("/usuario")
-                        )
-                    ]
-                )
-            )
-        ]
-    )
->>>>>>> c98abd843ddbbec4d3c0d55757e188e8e801caca
 
     def tela_agendamento(self):
         # Refs e estados
@@ -1038,7 +734,6 @@ def tela_perfil_paciente(page: ft.Page):
             self.page.snack_bar.open = True
             self.page.update()
 
-<<<<<<< HEAD
         def selecionar_data(e):
             self.data_selecionada.value = f"📅 Data: {self.data_picker.value.strftime('%d/%m/%Y')}"
             self.page.update()
@@ -1087,66 +782,6 @@ def tela_perfil_paciente(page: ft.Page):
                                                 color=ft.colors.WHITE,
                                                 padding=ft.padding.symmetric(vertical=12, horizontal=20),
                                                 shape=ft.RoundedRectangleBorder(radius=12)
-=======
-def tela_medicamentos_retirados(page: ft.Page):
-    return ft.View(
-        route="/medicamentos_retirados",
-        scroll=ft.ScrollMode.AUTO,
-        controls=[
-            ft.Container(
-                expand=True,
-                padding=40,
-                gradient=ft.LinearGradient(
-                    begin=ft.alignment.top_left,
-                    end=ft.alignment.bottom_right,
-                    colors=["#E0F2FE", "#F0F4FF"]
-                ),
-                content=ft.Column([
-                    ft.Text(
-                        "💊 MEDICAMENTOS RETIRADOS", 
-                        size=32, 
-                        weight=ft.FontWeight.BOLD, 
-                        color=ft.Colors.BLUE_900    ,
-                        text_align=ft.TextAlign.CENTER,
-                    ),
-                    ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
-                    ft.Container(
-                        padding=30,
-                        bgcolor="#FFFFFF",
-                        border_radius=20,
-                        shadow=ft.BoxShadow(blur_radius=30, color=ft.Colors.BLACK12, offset=ft.Offset(0, 15)),
-                        content=ft.Column([
-                            ft.Row([
-                                ft.TextField(label="🔍 Buscar Medicamento", expand=True, on_change=lambda e: print(e.control.value)),
-                                ft.IconButton(icon=ft.Icons.SEARCH, icon_color=ft.Colors.BLUE_900, on_click=lambda e: print("Buscar"))
-                            ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
-                            ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
-                            ft.ListView(
-                                expand=True,
-                                controls=[
-                                    ft.Container(
-                                        padding=20,
-                                        bgcolor="#F8FAFC",
-                                        border_radius=16,
-                                        margin=ft.margin.only(bottom=20),
-                                        shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK12, offset=ft.Offset(0, 10)),
-                                        content=ft.Column([
-                                            ft.Text(med["nome"], size=20, weight=ft.FontWeight.BOLD, color="#111827"),
-                                            ft.Divider(height=10, color=ft.Colors.TRANSPARENT),
-                                            ft.Text(f"📅 Data de Retirada: {med['data_retirada']}", size=14, color="#374151"),
-                                            ft.Text(f"📦 Quantidade: {med['quantidade']} unidades", size=14, color="#374151"),
-                                            ft.ElevatedButton(
-                                                "Ver Detalhes",
-                                                icon=ft.Icons.INFO_OUTLINE,
-                                                bgcolor=ft.Colors.BLUE_900,
-                                                color=ft.Colors.WHITE,
-                                                width=200,
-                                                style=ft.ButtonStyle(
-                                                    shape=ft.RoundedRectangleBorder(radius=12),
-                                                    padding=ft.padding.symmetric(vertical=10)
-                                                ),
-                                                on_click=lambda e, med=med: print(f"Detalhes de {med['nome']}")
->>>>>>> c98abd843ddbbec4d3c0d55757e188e8e801caca
                                             )
                                         ),
                                         self.data_selecionada,
@@ -1189,140 +824,8 @@ def tela_medicamentos_retirados(page: ft.Page):
                                     shape=ft.RoundedRectangleBorder(radius=12)
                                 )
                             )
-<<<<<<< HEAD
                         ]
                     )
-=======
-                        ], spacing=20)
-                    ),
-                    ft.Divider(height=30, color=ft.Colors.TRANSPARENT),
-                    ft.ElevatedButton(
-                        "Voltar",
-                        icon=ft.Icons.ARROW_BACK_IOS_NEW,
-                        bgcolor=ft.Colors.GREY_500,
-                        color=ft.Colors.WHITE,
-                        width=150,
-                        style=ft.ButtonStyle(
-                            shape=ft.RoundedRectangleBorder(radius=12),
-                            padding=ft.padding.symmetric(vertical=12)
-                        ),
-                        on_click=lambda e: page.go("/usuario")
-                    )
-                ], spacing=30, alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
-            )
-        ]
-    )
-
-def tela_agendamento(page: ft.Page):
-    # Refs
-    data_picker = ft.DatePicker()
-    hora_picker = ft.TimePicker()
-
-    data_selecionada = ft.Text("Nenhuma data selecionada", size=16, color=ft.Colors.GREY_700)
-    hora_selecionada = ft.Text("Nenhum horário selecionado", size=16, color=ft.Colors.GREY_700)
-
-    def confirmar_agendamento(e):
-        if "Nenhuma" in data_selecionada.value or "Nenhum" in hora_selecionada.value:
-            page.snack_bar = ft.SnackBar(ft.Text("Por favor, selecione data e horário."), bgcolor=ft.Colors.RED_400)
-        else:
-            page.snack_bar = ft.SnackBar(ft.Text("✅ Agendamento realizado com sucesso!"), bgcolor=ft.Colors.GREEN_500)
-        page.snack_bar.open = True
-        page.update()
-
-    def selecionar_data(e):
-        data_selecionada.value = f"📅 Data: {data_picker.value.strftime('%d/%m/%Y')}"
-        page.update()
-
-    def selecionar_hora(e):
-        hora_selecionada.value = f"⏰ Horário: {hora_picker.value.strftime('%H:%M')}"
-        page.update()
-
-    # Eventos
-    data_picker.on_change = selecionar_data
-    hora_picker.on_change = selecionar_hora
-
-    page.overlay.extend([data_picker, hora_picker])
-
-    return ft.View(
-        route="/agendamento",
-        controls=[
-            ft.Container(
-                expand=True,
-                bgcolor=ft.Colors.WHITE,
-                alignment=ft.alignment.center,
-                padding=40,
-                content=ft.Column(
-                    alignment=ft.MainAxisAlignment.CENTER,
-                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                    spacing=30,
-                    controls=[
-                        ft.Text("🗓️ Agendamento de Retirada", size=32, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
-                        ft.Container(
-                            width=500,
-                            padding=30,
-                            border_radius=20,
-                            bgcolor=ft.Colors.BLUE_50,
-                            shadow=ft.BoxShadow(blur_radius=25, color=ft.Colors.BLACK12, offset=ft.Offset(0, 10)),
-                            content=ft.Column(
-                                spacing=25,
-                                alignment=ft.MainAxisAlignment.CENTER,
-                                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                                controls=[
-                                    ft.Text("Escolha a data e o horário desejado:", size=18, color=ft.Colors.GREY_800, text_align=ft.TextAlign.CENTER),
-                                    
-                                    ft.ElevatedButton(
-                                        "Selecionar Data",
-                                        icon=ft.Icons.DATE_RANGE,
-                                        on_click=lambda e: data_picker.pick_date(),
-                                        style=ft.ButtonStyle(
-                                            bgcolor=ft.Colors.BLUE_800,
-                                            color=ft.Colors.WHITE,
-                                            padding=ft.padding.symmetric(vertical=12, horizontal=20),
-                                            shape=ft.RoundedRectangleBorder(radius=12)
-                                        )
-                                    ),
-                                    data_selecionada,
-
-                                    ft.ElevatedButton(
-                                        "Selecionar Horário",
-                                        icon=ft.Icons.ACCESS_TIME,
-                                        on_click=lambda e: hora_picker.pick_time(),
-                                        style=ft.ButtonStyle(
-                                            bgcolor=ft.Colors.BLUE_800,
-                                            color=ft.Colors.WHITE,
-                                            padding=ft.padding.symmetric(vertical=12, horizontal=20),
-                                            shape=ft.RoundedRectangleBorder(radius=12)
-                                        )
-                                    ),
-                                    hora_selecionada,
-
-                                    ft.ElevatedButton(
-                                        "Confirmar Agendamento",
-                                        icon=ft.Icons.CHECK,
-                                        on_click=confirmar_agendamento,
-                                        style=ft.ButtonStyle(
-                                            bgcolor=ft.Colors.GREEN_600,
-                                            color=ft.Colors.WHITE,
-                                            padding=ft.padding.symmetric(vertical=14),
-                                            shape=ft.RoundedRectangleBorder(radius=16)
-                                        )
-                                    )
-                                ]
-                            )
-                        ),
-                        ft.ElevatedButton(
-                            "Voltar",
-                            icon=ft.Icons.ARROW_BACK,
-                            on_click=lambda e: page.go("/usuario"),
-                            style=ft.ButtonStyle(
-                                bgcolor=ft.Colors.GREY_500,
-                                color=ft.Colors.WHITE,
-                                padding=ft.padding.symmetric(vertical=12, horizontal=24),
-                                shape=ft.RoundedRectangleBorder(radius=12)
-                            )
-                        )
-                    ]
->>>>>>> c98abd843ddbbec4d3c0d55757e188e8e801caca
                 )
             ]
         )
@@ -1400,7 +903,6 @@ def tela_agendamento(page: ft.Page):
             controls=[
                 ft.Container(
                     expand=True,
-<<<<<<< HEAD
                     bgcolor=ft.colors.WHITE,
                     padding=40,
                     content=ft.Column(
@@ -1544,222 +1046,10 @@ def tela_agendamento(page: ft.Page):
                             ], run_spacing=20, spacing=30)
                         ]
                     )
-=======
-                    alignment=ft.alignment.center,
-                    content=ft.Text("❌ Nenhum medicamento selecionado.", size=20, color=ft.Colors.RED)
->>>>>>> c98abd843ddbbec4d3c0d55757e188e8e801caca
                 )
             ]
         )
 
-<<<<<<< HEAD
-=======
-    qtd_ref = ft.Ref[ft.TextField]()
-    imagem_principal = ft.Ref[ft.Image]()
-    carrinho_count = ft.Ref[ft.Text]()
-
-    def atualizar_contador():
-        carrinho = page.session.get("carrinho") or []
-        total = sum(item["quantidade"] for item in carrinho)
-        carrinho_count.current.value = str(total)
-        carrinho_count.current.update()
-
-    def adicionar_ao_carrinho(e):
-        try:
-            qtd = int(qtd_ref.current.value)
-            if qtd <= 0:
-                raise ValueError
-
-            carrinho = page.session.get("carrinho") or []
-
-            for item in carrinho:
-                if item["nome"] == medicamento["nome"]:
-                    item["quantidade"] += qtd
-                    break
-            else:
-                carrinho.append({
-                    "nome": medicamento["nome"],
-                    "imagem": medicamento["imagem"],
-                    "descricao": medicamento["descricao"],
-                    "quantidade": qtd
-                })
-
-            page.session.set("carrinho", carrinho)
-            atualizar_contador()
-
-            page.snack_bar = ft.SnackBar(
-                content=ft.Text(f"✅ {qtd} unidade(s) adicionadas ao carrinho."),
-                bgcolor=ft.Colors.GREEN_400
-            )
-            page.snack_bar.open = True
-            page.update()
-        except:
-            page.snack_bar = ft.SnackBar(
-                content=ft.Text("❗ Quantidade inválida."),
-                bgcolor=ft.Colors.RED_400
-            )
-            page.snack_bar.open = True
-            page.update()
-
-    def trocar_imagem(nova_src):
-        def handler(e):
-            imagem_principal.current.src = nova_src
-            imagem_principal.current.update()
-        return handler
-
-    return ft.View(
-        route="/detalhes_medicamento",
-        controls=[
-            ft.Container(
-                expand=True,
-                bgcolor=ft.Colors.WHITE,
-                padding=40,
-                content=ft.Column(
-                    scroll=ft.ScrollMode.AUTO,
-                    spacing=30,
-                    controls=[
-                        ft.Row([
-                            ft.IconButton(
-                                icon=ft.Icons.ARROW_BACK,
-                                tooltip="Voltar",
-                                icon_color=ft.Colors.BLUE,
-                                on_click=lambda e: page.go("/usuario")
-                            ),
-                            ft.Text("🔎 Detalhes do Medicamento", size=28, weight=ft.FontWeight.BOLD, color="#1E3A8A"),
-
-                            ft.Container(expand=True),
-                            ft.Stack([
-                                ft.IconButton(
-                                    icon=ft.Icons.SHOPPING_CART_OUTLINED,
-                                    icon_color="#1E3A8A",
-                                    icon_size=30,
-                                    on_click=lambda e: page.go("/usuario")
-                                ),
-                                ft.Container(
-                                    ref=carrinho_count,
-                                    content=ft.Text("0", size=10, color=ft.Colors.WHITE),
-                                    width=16,
-                                    height=16,
-                                    alignment=ft.alignment.center,
-                                    bgcolor=ft.Colors.RED,
-                                    border_radius=8,
-                                    right=0,
-                                    top=0,
-                                    visible=True
-                                )
-                            ]),
-                            ft.CircleAvatar(foreground_image_src="/images/profile.jpg", radius=20),
-                            ft.Text("JOÃO NASCIMENTO", size=13, weight=ft.FontWeight.BOLD)
-                        ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
-
-                        ft.Divider(height=30),
-
-                        ft.ResponsiveRow([
-                            ft.Container(
-                                col={"sm": 12, "md": 6},
-                                padding=20,
-                                bgcolor="#F9FAFB",
-                                border_radius=20,
-                                shadow=ft.BoxShadow(blur_radius=15, color=ft.Colors.BLACK12, offset=ft.Offset(0, 10)),
-                                content=ft.Column([
-                                    ft.Image(ref=imagem_principal, src=medicamento["imagem"], width=300, height=300),
-                                    ft.Row([
-                                        ft.GestureDetector(
-                                            content=ft.Image(src=medicamento["imagem"], width=60, height=60),
-                                            on_tap=trocar_imagem(medicamento["imagem"])
-                                        ),
-                                        ft.GestureDetector(
-                                            content=ft.Image(src=medicamento["imagem"], width=60, height=60),
-                                            on_tap=trocar_imagem(medicamento["imagem"])
-                                        ),
-                                        ft.GestureDetector(
-                                            content=ft.Image(src=medicamento["imagem"], width=60, height=60),
-                                            on_tap=trocar_imagem(medicamento["imagem"])
-                                        )
-                                    ], alignment=ft.MainAxisAlignment.CENTER, spacing=10)
-                                ], spacing=15)
-                            ),
-                            ft.Container(
-                                col={"sm": 12, "md": 6},
-                                padding=20,
-                                content=ft.Column([
-                                    ft.Text(medicamento["nome"], size=26, weight=ft.FontWeight.BOLD, color="#1E3A8A"),
-                                    ft.Text("Tipo: Uso controlado", size=14, color=ft.Colors.GREY_700),
-                                    ft.Text("Marca: Genérico", size=14, color=ft.Colors.GREY_700),
-                                    ft.Text("Quantidade: 1 unidade", size=14, color=ft.Colors.GREY_700),
-                                    ft.Divider(height=20),
-                                    ft.Row([
-                                        ft.TextField(
-                                            ref=qtd_ref,
-                                            value="1",
-                                            width=80,
-                                            label="Qtd.",
-                                            keyboard_type=ft.KeyboardType.NUMBER,
-                                            border_radius=10,
-                                            text_align=ft.TextAlign.CENTER
-                                        ),
-                                        ft.ElevatedButton(
-                                            "Adicionar ao Carrinho",
-                                            icon=ft.Icons.ADD_SHOPPING_CART,
-                                            style=ft.ButtonStyle(
-                                                bgcolor="#1E3A8A",
-                                                color=ft.Colors.WHITE,
-                                                padding=ft.padding.symmetric(vertical=14, horizontal=20),
-                                                shape=ft.RoundedRectangleBorder(radius=12)
-                                            ),
-                                            on_click=adicionar_ao_carrinho
-                                        )
-                                    ], spacing=20)
-                                ], spacing=10)
-                            )
-                        ], run_spacing=30, spacing=30),
-
-                        ft.Divider(height=40),
-
-                        ft.ResponsiveRow([
-                            ft.Container(
-                                col={"sm": 12, "md": 8},
-                                padding=20,
-                                bgcolor="#F9FAFB",
-                                border_radius=16,
-                                content=ft.Column([
-                                    ft.Text("Detalhes do produto", size=20, weight=ft.FontWeight.BOLD),
-                                    ft.Divider(height=10),
-                                    ft.Text("Descrição do Produto:", weight=ft.FontWeight.BOLD),
-                                    ft.Text("Este medicamento oferece alívio e cuidado conforme prescrição médica.", size=15),
-                                    ft.Divider(height=10),
-                                    ft.Text("Benefícios:", weight=ft.FontWeight.BOLD),
-                                    ft.Text("- Hidratante\n- Hipoalergênico\n- Aplicação fácil", size=15),
-                                    ft.Divider(height=10),
-                                    ft.Text("Como usar:", weight=ft.FontWeight.BOLD),
-                                    ft.Text("Aplicar conforme orientação médica, em área limpa e seca.", size=15),
-                                    ft.Divider(height=10),
-                                    ft.Text("Advertências:", weight=ft.FontWeight.BOLD),
-                                    ft.Text("- Uso externo\n- Evitar contato com olhos\n- Manter fora do alcance de crianças", size=15)
-                                ], spacing=10)
-                            ),
-                            ft.Container(
-                                col={"sm": 12, "md": 4},
-                                padding=20,
-                                bgcolor="#F9FAFB",
-                                border_radius=16,
-                                content=ft.Column([
-                                    ft.Text("Características", size=20, weight=ft.FontWeight.BOLD),
-                                    ft.Divider(),
-                                    ft.Row([ft.Text("Código:", expand=True), ft.Text("1275221")]),
-                                    ft.Divider(),
-                                    ft.Row([ft.Text("Quantidade:", expand=True), ft.Text("1g")]),
-                                    ft.Divider(),
-                                    ft.Row([ft.Text("Marca:", expand=True), ft.Text("Genérico")])
-                                ], spacing=8)
-                            )
-                        ], run_spacing=20, spacing=30)
-                    ]
-                )
-            )
-        ]
-    )
->>>>>>> c98abd843ddbbec4d3c0d55757e188e8e801caca
 
 
 
