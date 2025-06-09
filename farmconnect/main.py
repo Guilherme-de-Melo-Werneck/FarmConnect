@@ -4,6 +4,7 @@ from tela_escolha import TelaEscolhaUsuario
 # from main_teste import TelaInicial, TelaLogin, TelaCadastro, TelaUsuario
 from admin import TelaLoginAdmin
 from tela_principal_admin import TelaAdminDashboard
+from tela_principal_usuario import TelaUsuarioDashboard
 from usuario import TelaLoginUsuario
 from database import criar_tabelas
 
@@ -28,8 +29,8 @@ def main(page: ft.Page):
         #     page.views.append(TelaLogin(page).tela_login()) 
         # elif page.route == "/cadastro":
         #     page.views.append(TelaCadastro(page).tela_cadastro())
-        # elif page.route == "/usuario":
-        #     page.views.append(TelaUsuario(page).tela_usuario())
+        elif page.route == "/usuario":
+            page.views.append(TelaUsuarioDashboard(page).tela_usuario())
         elif page.route == "/login_admin":
             page.views.append(TelaLoginAdmin(page).build_tela())
         elif page.route == "/admin_dashboard":

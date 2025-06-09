@@ -10,7 +10,7 @@ class TelaLoginUsuario:
 
     def page_settings(self):
         self.page.title = "FarmConnect - Usuário"
-        self.page.bgcolor = "#ECFDF5"
+        self.page.bgcolor = "#EFF6FF"
         self.page.theme_mode = ft.ThemeMode.LIGHT
         self.page.bgcolor = ft.Colors.WHITE
         self.page.scroll = ft.ScrollMode.ADAPTIVE

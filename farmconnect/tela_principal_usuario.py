@@ -963,6 +963,8 @@ def tela_detalhes_medicamento(page: ft.Page):
     )
 
 
+
+
 def main(page: ft.Page):
     page.session.set("carrinho", [])
     page.title = "FarmConnect"
@@ -989,6 +991,10 @@ def main(page: ft.Page):
 
         page.update()
        
+
+
+
+
     page.on_route_change = route_change
     page.go("/usuario")
 

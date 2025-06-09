@@ -10,10 +10,9 @@ class TelaAdminDashboard:
         self.current_view = ft.Column(expand=True)
         self.load_dashboard()  
 
-
     def page_settings(self):
         self.page.title = "FarmConnect - Painel Admin"
-        self.page.bgcolor = "#F0FDF4"
+        self.page.bgcolor = "#EFF6FF"
         self.page.padding = 0
         self.page.scroll = ft.ScrollMode.ADAPTIVE
         self.page.theme_mode = ft.ThemeMode.LIGHT
