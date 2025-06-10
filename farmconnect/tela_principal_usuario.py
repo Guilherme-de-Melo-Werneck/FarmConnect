@@ -32,6 +32,7 @@ class TelaUsuarioDashboard:
         self.contador = {"valor": 0}
         self.carrinho = []
         self.botoes_paginacao = ft.Row(alignment=ft.MainAxisAlignment.CENTER, spacing=10)
+        self.page.theme_mode = ft.ThemeMode.LIGHT
 
         # Cria o drawer do carrinho
         self.carrinho_drawer = self.criar_carrinho_drawer()
@@ -179,6 +180,7 @@ class TelaUsuarioDashboard:
                     padding=16,
                     bgcolor="#F8FAFC",
                     border_radius=16,
+                    shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26),
                     col={"xs": 12, "sm": 6, "md": 4, "lg": 3},
                     content=ft.Column([
                         ft.Image(src=med["imagem"], width=100, height=100),
@@ -237,7 +239,7 @@ class TelaUsuarioDashboard:
         )
 
         def on_hover(e):
-            container.bgcolor = "#d1eefa" if e.data == "true" else "#FFFFFF"
+            container.bgcolor = "#EFF6FF" if e.data == "true" else "#FFFFFF"
             container.update()
 
         container.on_hover = on_hover
@@ -247,7 +249,7 @@ class TelaUsuarioDashboard:
     def build_tela(self):
         sidebar = ft.Container(
             width=280,
-            bgcolor="#F9FAFB",
+            bgcolor="#FFFFFF",
             border=ft.border.only(right=ft.BorderSide(1, "#E5E7EB")),
             padding=ft.padding.symmetric(vertical=20, horizontal=10),
             content=ft.Column([
@@ -284,11 +286,6 @@ class TelaUsuarioDashboard:
             controls=[
                 ft.Container(
                     expand=True,
-                    gradient=ft.LinearGradient(
-                        begin=ft.alignment.top_left,
-                        end=ft.alignment.bottom_right,
-                        colors=["#EFF6FF", "#DBEAFE"]
-                    ),
                     content=ft.Row([
                         sidebar,
                         self.carrinho_drawer,
@@ -300,7 +297,7 @@ class TelaUsuarioDashboard:
                                     bgcolor="#F8FAFC",
                                     border_radius=16,
                                     padding=ft.padding.symmetric(horizontal=20, vertical=18),
-                                    shadow=ft.BoxShadow(blur_radius=12, color=ft.colors.BLACK12, offset=ft.Offset(0, 3)),
+                                    shadow=ft.BoxShadow(blur_radius=12, color=ft.colors.BLACK26, offset=ft.Offset(0, 3)),
                                     content=ft.ResponsiveRow([
                                         ft.Image(src="logo.png", width=110, col={"xs": 12, "md": 2}),
                                         ft.TextField(
@@ -342,7 +339,11 @@ class TelaUsuarioDashboard:
                                     alignment=ft.alignment.top_center,
                                     padding=30,
                                     content=ft.Column([
-                                        ft.Text("MEDICAMENTOS DISPONÍVEIS", size=24, weight=ft.FontWeight.W_600),
+                                        ft.Container(
+                                            ft.Text("MEDICAMENTOS DISPONÍVEIS", size=24, weight="bold", color="#1E3A8A"),
+                                            expand=True,
+                                            alignment=ft.alignment.center
+                                        ),
                                         ft.Row([
                                             ft.OutlinedButton("Mais Buscados"),
                                             ft.OutlinedButton("Meus Agendamentos"),
