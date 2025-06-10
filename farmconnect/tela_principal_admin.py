@@ -450,7 +450,7 @@ class TelaAdminDashboard:
             expand=True
         )
         self.campo_descricao = ft.TextField(label="Descrição", value=medicamento.get("descricao") if medicamento else "")
-        self.campo_imagem = ft.TextField(label="Imagem", value=medicamento.get("imagem") if medicamento else "")
+        self.campo_imagem = ft.TextField(label="URL da Imagem", value=medicamento.get("imagem") if medicamento else "", border_radius=10)
         self.campo_estoque = ft.TextField(label="Estoque Atual", keyboard_type=ft.KeyboardType.NUMBER, value=str(medicamento.get("estoque")) if medicamento else "")
 
         detalhes_medicamento = ft.Container(
@@ -659,6 +659,7 @@ class TelaAdminDashboard:
         self.campo_nome = ft.TextField(label="Nome do Medicamento", border_radius=10, bgcolor="#F9FAFB")
         self.campo_codigo = ft.TextField(label="Código do Medicamento", border_radius=10, bgcolor="#F9FAFB")
         self.campo_estoque = ft.TextField(label="Quantidade em Estoque", keyboard_type=ft.KeyboardType.NUMBER, border_radius=10, bgcolor="#F9FAFB")
+        self.campo_imagem = ft.TextField(label="URL da Imagem", border_radius=10, bgcolor="#F9FAFB")
         self.campo_observacoes = ft.TextField(label="Observações", multiline=True, min_lines=3, max_lines=5, border_radius=10, bgcolor="#F9FAFB")
 
         self.current_view.controls.append(
@@ -698,6 +699,7 @@ class TelaAdminDashboard:
                                     ], spacing=10),
                         
                                     self.campo_estoque,
+                                    self.campo_imagem,
                                     self.campo_observacoes,
                                     ft.Container(height=20),
 
