@@ -667,32 +667,114 @@ class TelaUsuarioDashboard:
 
 
     def tela_agendamento(self):
-        # Refs e estados
-        self.data_picker = ft.DatePicker()
-        self.hora_picker = ft.TimePicker()
+        import calendar
+        import datetime
+        import flet as ft
 
-        self.data_selecionada = ft.Text("Nenhuma data selecionada", size=16, color=ft.colors.GREY_700)
-        self.hora_selecionada = ft.Text("Nenhum horário selecionado", size=16, color=ft.colors.GREY_700)
+        hoje = datetime.date.today()
+        self.mes_atual = hoje.month
+        self.ano_atual = hoje.year
+        self.data_escolhida = None
+        self.horario_escolhido = None
+
+        self.data_selecionada = ft.Text("📅 Nenhuma data selecionada", size=16, color=ft.colors.GREY_700)
+        self.hora_selecionada = ft.Text("⏰ Nenhum horário selecionado", size=16, color=ft.colors.GREY_700)
+
+        calendario_grid = ft.Ref[ft.Column]()
+        self.mes_label = ft.Ref[ft.Text]()
+
+        def atualizar_calendario():
+            if not self.mes_label.current or not calendario_grid.current:
+                return
+            dias = []
+            self.mes_label.current.value = f"{calendar.month_name[self.mes_atual]} {self.ano_atual}"
+            cal = calendar.Calendar(firstweekday=6)
+            for semana in cal.monthdatescalendar(self.ano_atual, self.mes_atual):
+                linha = ft.Row(
+                    spacing=4,
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    controls=[
+                        ft.ElevatedButton(
+                            text=str(dia.day),
+                            width=40,
+                            height=40,
+                            disabled=dia < datetime.date.today() or dia.month != self.mes_atual,
+                            style=ft.ButtonStyle(
+                                padding=0,
+                                shape=ft.RoundedRectangleBorder(radius=8),
+                                bgcolor="#E0F2FE" if dia == self.data_escolhida else ft.colors.WHITE,
+                                color=ft.colors.BLUE_900,
+                            ),
+                            on_click=lambda e, dia=dia: selecionar_data(dia)
+                        ) if dia.month == self.mes_atual else ft.Container(width=40, height=40)
+                        for dia in semana
+                    ]
+                )
+                dias.append(linha)
+            calendario_grid.current.controls = dias
+            self.page.update()
+
+        def selecionar_data(data):
+            self.data_escolhida = data
+            self.data_selecionada.value = f"📅 Data: {data.strftime('%d/%m/%Y')}"
+            atualizar_calendario()
+
+        def selecionar_hora_manual(hora):
+            self.horario_escolhido = hora
+            self.hora_selecionada.value = f"⏰ Horário: {hora}"
+            self.page.update()
+
+        def mudar_mes(direcao):
+            if direcao == "anterior":
+                if self.mes_atual == 1:
+                    self.mes_atual = 12
+                    self.ano_atual -= 1
+                else:
+                    self.mes_atual -= 1
+            elif direcao == "proximo":
+                if self.mes_atual == 12:
+                    self.mes_atual = 1
+                    self.ano_atual += 1
+                else:
+                    self.mes_atual += 1
+            atualizar_calendario()
 
         def confirmar_agendamento(e):
-            if "Nenhuma" in self.data_selecionada.value or "Nenhum" in self.hora_selecionada.value:
+            if not self.data_escolhida or not self.horario_escolhido:
                 self.page.snack_bar = ft.SnackBar(ft.Text("Por favor, selecione data e horário."), bgcolor=ft.colors.RED_400)
             else:
                 self.page.snack_bar = ft.SnackBar(ft.Text("✅ Agendamento realizado com sucesso!"), bgcolor=ft.colors.GREEN_500)
             self.page.snack_bar.open = True
             self.page.update()
 
-        def selecionar_data(e):
-            self.data_selecionada.value = f"📅 Data: {self.data_picker.value.strftime('%d/%m/%Y')}"
-            self.page.update()
+        def gerar_botoes_horarios():
+            horarios = []
+            hora = 8
+            minuto = 0
+            while hora < 18:
+                texto = f"{hora:02d}:{minuto:02d}"
+                btn = ft.ElevatedButton(
+                    text=texto,
+                    width=80,
+                    height=40,
+                    style=ft.ButtonStyle(
+                        shape=ft.RoundedRectangleBorder(radius=8),
+                        bgcolor=ft.colors.BLUE_100 if texto == self.horario_escolhido else ft.colors.WHITE,
+                        color=ft.colors.BLUE_900,
+                    ),
+                    on_click=lambda e, h=texto: selecionar_hora_manual(h)
+                )
+                horarios.append(btn)
+                minuto += 30
+                if minuto == 60:
+                    minuto = 0
+                    hora += 1
+            linhas = []
+            for i in range(0, len(horarios), 4):
+                linhas.append(ft.Row(horarios[i:i+4], spacing=10, alignment=ft.MainAxisAlignment.CENTER))
+            return linhas
 
-        def selecionar_hora(e):
-            self.hora_selecionada.value = f"⏰ Horário: {self.hora_picker.value.strftime('%H:%M')}"
-            self.page.update()
-
-        self.data_picker.on_change = selecionar_data
-        self.hora_picker.on_change = selecionar_hora
-        self.page.overlay.extend([self.data_picker, self.hora_picker])
+        atualizar_calendario()  # Garante que o calendário apareça assim que abrir a tela
 
         return ft.View(
             route="/agendamento",
@@ -706,50 +788,41 @@ class TelaUsuarioDashboard:
                         alignment=ft.MainAxisAlignment.CENTER,
                         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                         spacing=30,
+                        scroll=ft.ScrollMode.AUTO,
                         controls=[
                             ft.Text("🗓️ Agendamento de Retirada", size=32, weight=ft.FontWeight.BOLD, color=ft.colors.BLUE_900),
                             ft.Container(
-                                width=500,
+                                width=700,
                                 padding=30,
-                                border_radius=20,
-                                bgcolor=ft.colors.BLUE_50,
+                                border_radius=24,
+                                bgcolor="#F0F9FF",
                                 shadow=ft.BoxShadow(blur_radius=25, color=ft.colors.BLACK12, offset=ft.Offset(0, 10)),
                                 content=ft.Column(
                                     spacing=25,
                                     alignment=ft.MainAxisAlignment.CENTER,
                                     horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                                     controls=[
-                                        ft.Text("Escolha a data e o horário desejado:", size=18, color=ft.colors.GREY_800, text_align=ft.TextAlign.CENTER),
+                                        ft.Text("Escolha a data e o horário desejado:", size=18, color=ft.colors.BLUE_900, text_align=ft.TextAlign.CENTER),
 
-                                        ft.ElevatedButton(
-                                            "Selecionar Data",
-                                            icon=ft.icons.DATE_RANGE,
-                                            on_click=lambda e: self.data_picker.pick_date(),
-                                            style=ft.ButtonStyle(
-                                                bgcolor=ft.colors.BLUE_800,
-                                                color=ft.colors.WHITE,
-                                                padding=ft.padding.symmetric(vertical=12, horizontal=20),
-                                                shape=ft.RoundedRectangleBorder(radius=12)
-                                            )
-                                        ),
+                                        ft.Text("⏰ Selecione o Horário:", size=16, weight=ft.FontWeight.BOLD, color=ft.colors.BLUE_900),
+                                        ft.Column(gerar_botoes_horarios(), spacing=10),
+                                        self.hora_selecionada,
+
+                                        ft.Text("📅 Selecione a Data:", size=16, weight=ft.FontWeight.BOLD, color=ft.colors.BLUE_900),
+                                        ft.Column([
+                                            ft.Row([
+                                                ft.IconButton(ft.icons.ARROW_BACK, on_click=lambda e: mudar_mes("anterior")),
+                                                ft.Text("", ref=self.mes_label, size=16, weight="bold", color=ft.colors.BLUE_900),
+                                                ft.IconButton(ft.icons.ARROW_FORWARD, on_click=lambda e: mudar_mes("proximo")),
+                                            ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+                                            ft.Divider(),
+                                            ft.Column([], ref=calendario_grid)
+                                        ], spacing=10, alignment=ft.MainAxisAlignment.CENTER),
                                         self.data_selecionada,
 
                                         ft.ElevatedButton(
-                                            "Selecionar Horário",
-                                            icon=ft.icons.ACCESS_TIME,
-                                            on_click=lambda e: self.hora_picker.pick_time(),
-                                            style=ft.ButtonStyle(
-                                                bgcolor=ft.colors.BLUE_800,
-                                                color=ft.colors.WHITE,
-                                                padding=ft.padding.symmetric(vertical=12, horizontal=20),
-                                                shape=ft.RoundedRectangleBorder(radius=12)
-                                            )
-                                        ),
-                                        self.hora_selecionada,
-
-                                        ft.ElevatedButton(
                                             "Confirmar Agendamento",
-                                            icon=ft.icons.CHECK,
+                                            icon=ft.icons.CHECK_CIRCLE,
                                             on_click=confirmar_agendamento,
                                             style=ft.ButtonStyle(
                                                 bgcolor=ft.colors.GREEN_600,
@@ -777,6 +850,8 @@ class TelaUsuarioDashboard:
                 )
             ]
         )
+
+
 
 
 
@@ -810,9 +885,7 @@ class TelaUsuarioDashboard:
                 qtd = int(self.qtd_ref.current.value)
                 if qtd <= 0:
                     raise ValueError
-
                 carrinho = self.page.session.get("carrinho") or []
-
                 for item in carrinho:
                     if item["nome"] == medicamento["nome"]:
                         item["quantidade"] += qtd
@@ -824,10 +897,8 @@ class TelaUsuarioDashboard:
                         "descricao": medicamento["descricao"],
                         "quantidade": qtd
                     })
-
                 self.page.session.set("carrinho", carrinho)
                 atualizar_contador()
-
                 self.page.snack_bar = ft.SnackBar(
                     content=ft.Text(f"✅ {qtd} unidade(s) adicionadas ao carrinho."),
                     bgcolor=ft.colors.GREEN_400
@@ -848,23 +919,24 @@ class TelaUsuarioDashboard:
 
         return ft.View(
             route="/detalhes_medicamento",
+            scroll=ft.ScrollMode.AUTO,
             controls=[
                 ft.Container(
                     expand=True,
-                    bgcolor=ft.colors.WHITE,
-                    padding=40,
+                    bgcolor="#F9FAFB",
+                    padding=30,
                     content=ft.Column(
-                        scroll=ft.ScrollMode.AUTO,
                         spacing=30,
                         controls=[
+                            # Header com título e ícones
                             ft.Row([
                                 ft.IconButton(
                                     icon=ft.icons.ARROW_BACK,
                                     tooltip="Voltar",
-                                    icon_color=ft.colors.BLUE,
+                                    icon_color="#1E3A8A",
                                     on_click=lambda e: self.page.go("/usuario")
                                 ),
-                                ft.Text("🔎 Detalhes do Medicamento", size=28, weight=ft.FontWeight.BOLD, color="#1E3A8A"),
+                                ft.Text("Detalhes do Medicamento", size=28, weight=ft.FontWeight.BOLD, color="#1E3A8A"),
                                 ft.Container(expand=True),
                                 ft.Stack([
                                     ft.IconButton(
@@ -888,15 +960,14 @@ class TelaUsuarioDashboard:
                                 ]),
                                 ft.CircleAvatar(foreground_image_src="/images/profile.jpg", radius=20),
                                 ft.Text("JOÃO NASCIMENTO", size=13, weight=ft.FontWeight.BOLD)
-                            ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+                            ]),
 
-                            ft.Divider(height=30),
-
+                            # Imagem e info do medicamento
                             ft.ResponsiveRow([
                                 ft.Container(
                                     col={"sm": 12, "md": 6},
                                     padding=20,
-                                    bgcolor="#F9FAFB",
+                                    bgcolor="white",
                                     border_radius=20,
                                     shadow=ft.BoxShadow(blur_radius=15, color=ft.colors.BLACK12, offset=ft.Offset(0, 10)),
                                     content=ft.Column([
@@ -952,42 +1023,36 @@ class TelaUsuarioDashboard:
                                 )
                             ], run_spacing=30, spacing=30),
 
-                            ft.Divider(height=40),
-
+                            # Informações detalhadas
                             ft.ResponsiveRow([
                                 ft.Container(
                                     col={"sm": 12, "md": 8},
                                     padding=20,
-                                    bgcolor="#F9FAFB",
+                                    bgcolor="white",
                                     border_radius=16,
+                                    shadow=ft.BoxShadow(blur_radius=10, color=ft.colors.BLACK12, offset=ft.Offset(0, 8)),
                                     content=ft.Column([
-                                        ft.Text("Detalhes do produto", size=20, weight=ft.FontWeight.BOLD),
-                                        ft.Divider(height=10),
-                                        ft.Text("Descrição do Produto:", weight=ft.FontWeight.BOLD),
-                                        ft.Text("Este medicamento oferece alívio e cuidado conforme prescrição médica.", size=15),
-                                        ft.Divider(height=10),
-                                        ft.Text("Benefícios:", weight=ft.FontWeight.BOLD),
-                                        ft.Text("- Hidratante\n- Hipoalergênico\n- Aplicação fácil", size=15),
-                                        ft.Divider(height=10),
-                                        ft.Text("Como usar:", weight=ft.FontWeight.BOLD),
-                                        ft.Text("Aplicar conforme orientação médica, em área limpa e seca.", size=15),
-                                        ft.Divider(height=10),
-                                        ft.Text("Advertências:", weight=ft.FontWeight.BOLD),
-                                        ft.Text("- Uso externo\n- Evitar contato com olhos\n- Manter fora do alcance de crianças", size=15)
+                                        ft.Text("📘 Descrição", size=20, weight=ft.FontWeight.BOLD),
+                                        ft.Text(medicamento["descricao"], size=15),
+                                        ft.Divider(height=20),
+                                        ft.Text("📌 Instruções de Uso", size=18, weight=ft.FontWeight.BOLD),
+                                        ft.Text("Aplicar conforme orientação médica.", size=14),
+                                        ft.Divider(height=20),
+                                        ft.Text("⚠️ Advertências", size=18, weight=ft.FontWeight.BOLD),
+                                        ft.Text("- Uso externo\n- Evite contato com os olhos\n- Mantenha fora do alcance de crianças", size=14)
                                     ], spacing=10)
                                 ),
                                 ft.Container(
                                     col={"sm": 12, "md": 4},
                                     padding=20,
-                                    bgcolor="#F9FAFB",
+                                    bgcolor="white",
                                     border_radius=16,
+                                    shadow=ft.BoxShadow(blur_radius=10, color=ft.colors.BLACK12, offset=ft.Offset(0, 8)),
                                     content=ft.Column([
-                                        ft.Text("Características", size=20, weight=ft.FontWeight.BOLD),
+                                        ft.Text("📦 Características", size=20, weight=ft.FontWeight.BOLD),
                                         ft.Divider(),
                                         ft.Row([ft.Text("Código:", expand=True), ft.Text("1275221")]),
-                                        ft.Divider(),
-                                        ft.Row([ft.Text("Quantidade:", expand=True), ft.Text("1g")]),
-                                        ft.Divider(),
+                                        ft.Row([ft.Text("Peso:", expand=True), ft.Text("1g")]),
                                         ft.Row([ft.Text("Marca:", expand=True), ft.Text("Genérico")])
                                     ], spacing=8)
                                 )
@@ -997,6 +1062,7 @@ class TelaUsuarioDashboard:
                 )
             ]
         )
+
 
 
 
