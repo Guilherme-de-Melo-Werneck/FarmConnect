@@ -1,28 +1,8 @@
 import flet as ft
 from functools import partial
+from database import listar_medicamentos
 
 class TelaUsuarioDashboard:
-    medicamentos_mock = [
-        {"nome": "Interferon Alfa", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
-        {"nome": "Teriflunomida 14 mg", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
-        {"nome": "Betainterferona 1A 12.000.000 UI", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
-        {"nome": "Clozapina 100 mg", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
-        {"nome": "Donepezila 5 mg", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
-        {"nome": "Everolimo 0,75 mg", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
-        {"nome": "Gabapentina 300 mg", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
-        {"nome": "Leuprorrelina 45 mg", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
-        {"nome": "Memantina 10 mg", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
-        {"nome": "Miglustate 100 mg", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
-        {"nome": "Olanzapina 10 mg", "imagem": "/images/remedio.png", "descricao": "Tratamento de hepatite"},
-        {"nome": "Pramipexol 0,25 mg", "imagem": "/images/remedio2.png", "descricao": "Imunossupressor"},
-        {"nome": "Quetiapina 200 mg", "imagem": "/images/remedio2.png", "descricao": "Imunossupressor"},
-        {"nome": "Sapropterina 100 mg", "imagem": "/images/remedio3.png", "descricao": "Artrite reumatoide"},
-        {"nome": "Selegilina 5 mg", "imagem": "/images/remedio4.png", "descricao": "Inflamações crônicas"},
-        {"nome": "Ziprasidona 40 mg", "imagem": "/images/remedio5.png", "descricao": "Uso hospitalar"},
-    ]
-
-    medicamentos_por_pagina = 8
-
     def __init__(self, page: ft.Page):
         self.page = page
         self.cards_container = ft.ResponsiveRow(run_spacing=20, spacing=20)
@@ -33,12 +13,27 @@ class TelaUsuarioDashboard:
         self.carrinho = []
         self.botoes_paginacao = ft.Row(alignment=ft.MainAxisAlignment.CENTER, spacing=10)
         self.page.theme_mode = ft.ThemeMode.LIGHT
+        self.medicamentos = self.carregar_medicamentos()
 
         # Cria o drawer do carrinho
         self.carrinho_drawer = self.criar_carrinho_drawer()
 
+    def carregar_medicamentos(self):
+        dados = listar_medicamentos()
+        return [
+            {
+                "id": m[0],
+                "nome": m[1],
+                "codigo": m[2],
+                "descricao": m[3],
+                "imagem": m[4],
+                "estoque": m[5],
+                "categoria": m[6],
+                "fabricante": m[7],
+            } for m in dados
+        ]
 
-    
+    medicamentos_por_pagina = 8    
     def criar_carrinho_drawer(self):
         return ft.Container(
             width=360,
@@ -153,7 +148,7 @@ class TelaUsuarioDashboard:
         self.cards_container.controls.clear()
 
         medicamentos_filtrados = [
-            med for med in self.medicamentos_mock
+            med for med in self.medicamentos
             if busca in med["nome"].lower() or busca in med["descricao"].lower()
         ]
 
