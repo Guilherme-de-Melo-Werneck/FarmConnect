@@ -239,7 +239,7 @@ class TelaUsuarioDashboard:
         )
 
         def on_hover(e):
-            container.bgcolor = "#EFF6FF" if e.data == "true" else "#FFFFFF"
+            container.bgcolor = "#D1EEFA" if e.data == "true" else "#FFFFFF"
             container.update()
 
         container.on_hover = on_hover
@@ -249,7 +249,7 @@ class TelaUsuarioDashboard:
     def build_tela(self):
         sidebar = ft.Container(
             width=280,
-            bgcolor="#FFFFFF",
+            bgcolor="#F8FAFC",
             border=ft.border.only(right=ft.BorderSide(1, "#E5E7EB")),
             padding=ft.padding.symmetric(vertical=20, horizontal=10),
             content=ft.Column([
@@ -391,7 +391,7 @@ class TelaUsuarioDashboard:
                             padding=30,
                             bgcolor=ft.colors.WHITE,
                             border_radius=20,
-                            shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK12, offset=ft.Offset(0, 10)),
+                            shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK26, offset=ft.Offset(0, 10)),
                             content=ft.Column([
                                 ft.Text(
                                     "Para retirar medicamentos é necessário apresentar:",
@@ -420,7 +420,7 @@ class TelaUsuarioDashboard:
                                 icon=ft.icons.FILE_DOWNLOAD,
                                 bgcolor=ft.Colors.BLUE_900,
                                 color=ft.colors.WHITE,
-                                width=250,
+                                width=260,
                                 style=ft.ButtonStyle(
                                     shape=ft.RoundedRectangleBorder(radius=12),
                                     padding=ft.padding.symmetric(vertical=12)
@@ -430,8 +430,6 @@ class TelaUsuarioDashboard:
                             ft.ElevatedButton(
                                 "Voltar",
                                 icon=ft.icons.ARROW_BACK_IOS_NEW,
-                                bgcolor=ft.Colors.GREY_500,
-                                color=ft.colors.WHITE,
                                 width=150,
                                 style=ft.ButtonStyle(
                                     shape=ft.RoundedRectangleBorder(radius=12),
@@ -541,7 +539,7 @@ class TelaUsuarioDashboard:
                                 padding=25,
                                 bgcolor=ft.colors.WHITE,
                                 border_radius=20,
-                                shadow=ft.BoxShadow(blur_radius=24, color=ft.colors.BLACK12, offset=ft.Offset(0, 12)),
+                                shadow=ft.BoxShadow(blur_radius=24, color=ft.Colors.BLACK26, offset=ft.Offset(0, 12)),
                                 content=ft.Column(
                                     horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                                     spacing=30,
@@ -555,7 +553,7 @@ class TelaUsuarioDashboard:
                                                 ft.Text("Paciente FarmConnect", size=16, color=ft.Colors.GREY_600)
                                             ]
                                         ),
-                                        campo_editavel("Nome", "nome", self.editando_nome, self.nome_field),
+                                        campo_editavel("Nome", "nome", self.editando_nome, self.nome_field,),
                                         campo_editavel("CPF", "cpf", self.editando_cpf, self.cpf_field),
                                         campo_editavel("Data de Nascimento", "nasc", self.editando_nasc, self.nasc_field),
                                         campo_editavel("Email", "email", self.editando_email, self.email_field),
@@ -566,8 +564,6 @@ class TelaUsuarioDashboard:
                             ft.ElevatedButton(
                                 "Voltar",
                                 icon=ft.icons.ARROW_BACK,
-                                bgcolor=ft.Colors.GREY_500,
-                                color=ft.colors.WHITE,
                                 width=160,
                                 style=ft.ButtonStyle(
                                     shape=ft.RoundedRectangleBorder(radius=16),
@@ -616,12 +612,12 @@ class TelaUsuarioDashboard:
                         ft.Divider(height=20, color=ft.colors.TRANSPARENT),
                         ft.Container(
                             padding=30,
-                            bgcolor="#FFFFFF",
+                            bgcolor="#F8FAFC",
                             border_radius=20,
-                            shadow=ft.BoxShadow(blur_radius=30, color=ft.colors.BLACK12, offset=ft.Offset(0, 15)),
+                            shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK26, offset=ft.Offset(0, 15)),
                             content=ft.Column([
                                 ft.Row([
-                                    ft.TextField(label="🔍 Buscar Medicamento", expand=True, on_change=lambda e: print(e.control.value)),
+                                    ft.TextField(label="🔍 Buscar Medicamento", expand=True, border_radius=30, on_change=lambda e: print(e.control.value)),
                                     ft.IconButton(icon=ft.icons.SEARCH, icon_color=ft.Colors.BLUE_900, on_click=lambda e: print("Buscar"))
                                 ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
                                 ft.Divider(height=20, color=ft.colors.TRANSPARENT),
@@ -662,8 +658,6 @@ class TelaUsuarioDashboard:
                         ft.ElevatedButton(
                             "Voltar",
                             icon=ft.Icons.ARROW_BACK_IOS_NEW,
-                            bgcolor=ft.Colors.GREY_500,
-                            color=ft.Colors.WHITE,
                             width=150,
                             style=ft.ButtonStyle(
                                 shape=ft.RoundedRectangleBorder(radius=12),
