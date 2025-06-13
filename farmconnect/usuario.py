@@ -101,9 +101,10 @@ class TelaLoginUsuario:
         def login_click(e):
             if self.login_email.value.strip() and self.login_senha.value.strip():
                 valido = verificar_login(self.login_email.value.strip(), self.login_senha.value.strip())
-                nome_usuario = buscar_nome_usuario(self.login_email.value.strip())
-                self.page.session.set("usuario_nome", nome_usuario)
                 if valido:
+                    nome_usuario = buscar_nome_usuario(self.login_email.value.strip())
+                    self.page.session.set("usuario_email", self.login_email.value.strip())
+                    self.page.session.set("usuario_nome", nome_usuario)
                     self.page.go("/usuario")
                 else:
                     self.page.snack_bar.content.value = "Email ou senha incorretos."
