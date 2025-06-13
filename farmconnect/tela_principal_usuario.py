@@ -1,6 +1,6 @@
 import flet as ft
 from functools import partial
-from database import listar_medicamentos
+from database import listar_medicamentos, carregar_carrinho_usuario, adicionar_ao_carrinho_db, remover_do_carrinho_db, buscar_nome_usuario, diminuir_quantidade_db, aumentar_quantidade_db
 
 class TelaUsuarioDashboard:
     def __init__(self, page: ft.Page):
@@ -20,9 +20,25 @@ class TelaUsuarioDashboard:
             duration=3000
         )
         self.nome_usuario = self.page.session.get("usuario_nome") or "Paciente"
+        self.email_usuario = self.page.session.get("usuario_email")
+        self.usuario_id = self.get_usuario_id_por_email(self.email_usuario)
+        self.nome_usuario = self.page.session.get("usuario_nome") or "Paciente"
+
+        self.carrinho = carregar_carrinho_usuario(self.usuario_id)
+        self.contador = {"valor": sum(item["quantidade"] for item in self.carrinho)}
 
         # Cria o drawer do carrinho
         self.carrinho_drawer = self.criar_carrinho_drawer()
+
+    def get_usuario_id_por_email(self, email):
+        import sqlite3
+        conn = sqlite3.connect("farmconnect.db")
+        cursor = conn.cursor()
+        cursor.execute("SELECT id FROM usuarios WHERE email = ?", (email,))
+        resultado = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        return resultado[0] if resultado else None
 
     def atualizar_contador(self):
         total = sum(item["quantidade"] for item in self.carrinho)
@@ -30,27 +46,27 @@ class TelaUsuarioDashboard:
         self.carrinho_count.current.value = str(total)
         self.carrinho_count.current.update()
 
-
     def aumentar_quantidade(self, item):
         if item["quantidade"] < item["estoque"]:
             item["quantidade"] += 1
-            self.contador["valor"] += 1
+            aumentar_quantidade_db(self.usuario_id, item["id"])
         else:
-            self.page.snack_bar.content.value = "❗ Estoque insuficiente: todas as unidades já foram adicionadas."
+            self.page.snack_bar.content.value = "Você já adicionou todas as unidades disponíveis."
             self.page.snack_bar.bgcolor = ft.colors.RED_400
             self.page.snack_bar.open = True
-        self.page.update()
-        self.abrir_carrinho()
+
         self.atualizar_contador()
+        self.abrir_carrinho()
 
     def diminuir_quantidade(self, item):
         item["quantidade"] -= 1
-        self.contador["valor"] -= 1
+        diminuir_quantidade_db(self.usuario_id, item["id"])
+
         if item["quantidade"] <= 0:
             self.carrinho.remove(item)
-        self.page.update()
-        self.abrir_carrinho()
+
         self.atualizar_contador()
+        self.abrir_carrinho()
 
     def carregar_medicamentos(self):
         dados = listar_medicamentos()
@@ -114,38 +130,40 @@ class TelaUsuarioDashboard:
 
     def remover_do_carrinho(self, e=None, item=None):
         if item in self.carrinho:
-            self.contador["valor"] -= item["quantidade"]
             self.carrinho.remove(item)
-            self.page.session.set("carrinho", self.carrinho)
-            self.abrir_carrinho()
+            remover_do_carrinho_db(self.usuario_id, item["id"])
             self.atualizar_contador()
+            self.abrir_carrinho()
 
 
 
     def adicionar_ao_carrinho(self, medicamento):
-         # Verifica se já está no carrinho
+        # Verifica se já está no carrinho
         existente = next((item for item in self.carrinho if item["id"] == medicamento["id"]), None)
 
         if existente:
             if existente["quantidade"] < medicamento["estoque"]:
                 existente["quantidade"] += 1
-                self.contador["valor"] += 1
+                adicionar_ao_carrinho_db(self.usuario_id, medicamento["id"])
             else:
-                self.page.snack_bar.content.value = "❗ Estoque insuficiente: todas as unidades já foram adicionadas."
+                self.page.snack_bar.content.value = "Você já adicionou todas as unidades disponíveis."
                 self.page.snack_bar.bgcolor = ft.colors.RED_400
                 self.page.snack_bar.open = True
+                self.page.update()
+                return
         else:
             if medicamento["estoque"] > 0:
-                self.carrinho.append({**medicamento, "quantidade": 1})
-                self.contador["valor"] += 1
+                novo = {**medicamento, "quantidade": 1}
+                self.carrinho.append(novo)
+                adicionar_ao_carrinho_db(self.usuario_id, medicamento["id"])
             else:
                 self.page.snack_bar.content.value = "❗ Medicamento fora de estoque."
                 self.page.snack_bar.bgcolor = ft.colors.RED_400
                 self.page.snack_bar.open = True
+                self.page.update()
+                return
 
-        self.carrinho_count.current.value = str(self.contador["valor"])
-        self.carrinho_count.current.update()
-        self.page.update()
+        self.atualizar_contador()
         self.abrir_carrinho()
 
     def abrir_detalhes_medicamento(self, e, med):
