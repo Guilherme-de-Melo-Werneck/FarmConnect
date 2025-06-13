@@ -14,6 +14,11 @@ class TelaUsuarioDashboard:
         self.botoes_paginacao = ft.Row(alignment=ft.MainAxisAlignment.CENTER, spacing=10)
         self.page.theme_mode = ft.ThemeMode.LIGHT
         self.medicamentos = self.carregar_medicamentos()
+        self.page.snack_bar = ft.SnackBar(
+            content=ft.Text(""),
+            bgcolor=ft.colors.RED_400,
+            duration=3000
+        )
 
         # Cria o drawer do carrinho
         self.carrinho_drawer = self.criar_carrinho_drawer()
@@ -30,7 +35,7 @@ class TelaUsuarioDashboard:
             item["quantidade"] += 1
             self.contador["valor"] += 1
         else:
-            self.page.snack_bar.content.value = "❗ Estoque máximo atingido."
+            self.page.snack_bar.content.value = "❗ Estoque insuficiente: todas as unidades já foram adicionadas."
             self.page.snack_bar.bgcolor = ft.colors.RED_400
             self.page.snack_bar.open = True
         self.page.update()
@@ -125,7 +130,7 @@ class TelaUsuarioDashboard:
                 existente["quantidade"] += 1
                 self.contador["valor"] += 1
             else:
-                self.page.snack_bar.content.value = "❗ Estoque insuficiente para adicionar mais unidades."
+                self.page.snack_bar.content.value = "❗ Estoque insuficiente: todas as unidades já foram adicionadas."
                 self.page.snack_bar.bgcolor = ft.colors.RED_400
                 self.page.snack_bar.open = True
         else:
@@ -338,6 +343,7 @@ class TelaUsuarioDashboard:
         return ft.View(
             route="/usuario",
             controls=[
+                self.page.snack_bar,
                 ft.Container(
                     expand=True,
                     content=ft.Row([
