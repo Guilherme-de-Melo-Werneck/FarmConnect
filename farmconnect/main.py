@@ -30,7 +30,7 @@ def main(page: ft.Page):
         # elif page.route == "/cadastro":
         #     page.views.append(TelaCadastro(page).tela_cadastro())
         elif page.route == "/usuario":
-            page.views.append(TelaUsuarioDashboard(page).tela_usuario())
+            page.views.append(TelaUsuarioDashboard(page).build_tela())
         elif page.route == "/login_admin":
             page.views.append(TelaLoginAdmin(page).build_tela())
         elif page.route == "/admin_dashboard":
