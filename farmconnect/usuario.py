@@ -1,6 +1,6 @@
 import flet as ft
 import asyncio
-from database import registrar_usuario, verificar_login
+from database import registrar_usuario, verificar_login, buscar_nome_usuario
 
 class TelaLoginUsuario:
     def __init__(self, page: ft.Page):
@@ -101,6 +101,8 @@ class TelaLoginUsuario:
         def login_click(e):
             if self.login_email.value.strip() and self.login_senha.value.strip():
                 valido = verificar_login(self.login_email.value.strip(), self.login_senha.value.strip())
+                nome_usuario = buscar_nome_usuario(self.login_email.value.strip())
+                self.page.session.set("usuario_nome", nome_usuario)
                 if valido:
                     self.page.go("/usuario")
                 else:
