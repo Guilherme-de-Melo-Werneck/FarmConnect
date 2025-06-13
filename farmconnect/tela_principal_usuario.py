@@ -18,6 +18,34 @@ class TelaUsuarioDashboard:
         # Cria o drawer do carrinho
         self.carrinho_drawer = self.criar_carrinho_drawer()
 
+    def atualizar_contador(self):
+        total = sum(item["quantidade"] for item in self.carrinho)
+        self.contador["valor"] = total
+        self.carrinho_count.current.value = str(total)
+        self.carrinho_count.current.update()
+
+
+    def aumentar_quantidade(self, item):
+        if item["quantidade"] < item["estoque"]:
+            item["quantidade"] += 1
+            self.contador["valor"] += 1
+        else:
+            self.page.snack_bar.content.value = "❗ Estoque máximo atingido."
+            self.page.snack_bar.bgcolor = ft.colors.RED_400
+            self.page.snack_bar.open = True
+        self.page.update()
+        self.abrir_carrinho()
+        self.atualizar_contador()
+
+    def diminuir_quantidade(self, item):
+        item["quantidade"] -= 1
+        self.contador["valor"] -= 1
+        if item["quantidade"] <= 0:
+            self.carrinho.remove(item)
+        self.page.update()
+        self.abrir_carrinho()
+        self.atualizar_contador()
+
     def carregar_medicamentos(self):
         dados = listar_medicamentos()
         return [
@@ -80,11 +108,11 @@ class TelaUsuarioDashboard:
 
     def remover_do_carrinho(self, e=None, item=None):
         if item in self.carrinho:
+            self.contador["valor"] -= item["quantidade"]
             self.carrinho.remove(item)
-            self.contador["valor"] -= 1
-            self.carrinho_count.current.value = str(self.contador["valor"])
-            self.carrinho_count.current.update()
+            self.page.session.set("carrinho", self.carrinho)
             self.abrir_carrinho()
+            self.atualizar_contador()
 
 
 
@@ -95,29 +123,23 @@ class TelaUsuarioDashboard:
         if existente:
             if existente["quantidade"] < medicamento["estoque"]:
                 existente["quantidade"] += 1
+                self.contador["valor"] += 1
             else:
-                self.page.snack_bar = ft.SnackBar(
-                    content=ft.Text("❗ Estoque insuficiente para adicionar mais unidades."),
-                    bgcolor=ft.colors.RED_400
-                )
+                self.page.snack_bar.content.value = "❗ Estoque insuficiente para adicionar mais unidades."
+                self.page.snack_bar.bgcolor = ft.colors.RED_400
                 self.page.snack_bar.open = True
-                self.page.update()
-                return
         else:
             if medicamento["estoque"] > 0:
                 self.carrinho.append({**medicamento, "quantidade": 1})
+                self.contador["valor"] += 1
             else:
-                self.page.snack_bar = ft.SnackBar(
-                    content=ft.Text("❗ Medicamento fora de estoque."),
-                    bgcolor=ft.colors.RED_400
-                )
+                self.page.snack_bar.content.value = "❗ Medicamento fora de estoque."
+                self.page.snack_bar.bgcolor = ft.colors.RED_400
                 self.page.snack_bar.open = True
-                self.page.update()
-                return
 
-        self.contador["valor"] += 1
         self.carrinho_count.current.value = str(self.contador["valor"])
         self.carrinho_count.current.update()
+        self.page.update()
         self.abrir_carrinho()
 
     def abrir_detalhes_medicamento(self, e, med):
@@ -129,7 +151,6 @@ class TelaUsuarioDashboard:
         itens_coluna = self.carrinho_drawer.content.controls[2]
         itens_coluna.controls.clear()
 
-        # Adiciona itens ou texto de vazio
         if not self.carrinho:
             itens_coluna.controls.append(
                 ft.Text("Carrinho vazio", size=14, color=ft.colors.GREY_600)
@@ -137,23 +158,39 @@ class TelaUsuarioDashboard:
         else:
             for item in self.carrinho:
                 itens_coluna.controls.append(
-                    ft.Container(
-                        padding=10,
-                        bgcolor="#FFFFFF",
-                        border_radius=8,
-                        content=ft.Row([
-                            ft.Text(item["nome"], size=12, expand=True),
-                            ft.IconButton(
-                                icon=ft.icons.DELETE_OUTLINE,
-                                icon_color=ft.colors.RED,
-                                tooltip="Remover",
-                                on_click=lambda e, med=item: self.remover_do_carrinho(e, med)
-                            )
-                        ])
-                    )
+        ft.Container(
+            padding=10,
+            bgcolor="#FFFFFF",
+            border_radius=8,
+            content=ft.Row([
+                ft.Column([
+                    ft.Text(item["nome"], size=13, weight=ft.FontWeight.BOLD),
+                    ft.Row([
+                        ft.IconButton(
+                            icon=ft.icons.REMOVE,
+                            icon_color=ft.colors.BLUE_600,
+                            tooltip="Diminuir",
+                            on_click=lambda e, med=item: self.diminuir_quantidade(med)
+                        ),
+                        ft.Text(f"{item["quantidade"]} un.", size=14, weight=ft.FontWeight.BOLD),
+                        ft.IconButton(
+                            icon=ft.icons.ADD,
+                            icon_color=ft.colors.BLUE_600,
+                            tooltip="Aumentar",
+                            on_click=lambda e, med=item: self.aumentar_quantidade(med)
+                        )
+                    ], spacing=5)
+                ], expand=True),
+                ft.IconButton(
+                    icon=ft.icons.DELETE_OUTLINE,
+                    icon_color=ft.colors.RED,
+                    tooltip="Remover",
+                    on_click=partial(self.remover_do_carrinho, item=item)
                 )
+            ])
+        )
+    )
 
-        # FORÇA O DRAWER A APARECER
         self.carrinho_drawer.visible = True
         self.page.update()
 
@@ -896,12 +933,7 @@ class TelaUsuarioDashboard:
         self.imagem_principal = ft.Ref[ft.Image]()
         self.carrinho_count = ft.Ref[ft.Text]()
 
-        def atualizar_contador():
-            carrinho = self.page.session.get("carrinho") or []
-            total = sum(item["quantidade"] for item in carrinho)
-            self.carrinho_count.current.value = str(total)
-            self.carrinho_count.current.update()
-
+        
         def adicionar_ao_carrinho(e):
             try:
                 qtd = int(self.qtd_ref.current.value)
@@ -920,7 +952,7 @@ class TelaUsuarioDashboard:
                         "quantidade": qtd
                     })
                 self.page.session.set("carrinho", carrinho)
-                atualizar_contador()
+                self.atualizar_contador()
                 self.page.snack_bar = ft.SnackBar(
                     content=ft.Text(f"✅ {qtd} unidade(s) adicionadas ao carrinho."),
                     bgcolor=ft.colors.GREEN_400
@@ -931,6 +963,7 @@ class TelaUsuarioDashboard:
                     bgcolor=ft.colors.RED_400
                 )
             self.page.snack_bar.open = True
+            self.atualizar_contador()
             self.page.update()
 
         def trocar_imagem(nova_src):
