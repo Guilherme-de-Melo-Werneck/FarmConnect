@@ -19,6 +19,7 @@ class TelaUsuarioDashboard:
             bgcolor=ft.colors.RED_400,
             duration=3000
         )
+        self.nome_usuario = self.page.session.get("usuario_nome") or "Paciente"
 
         # Cria o drawer do carrinho
         self.carrinho_drawer = self.criar_carrinho_drawer()
@@ -391,7 +392,7 @@ class TelaUsuarioDashboard:
                                                 )
                                             ]),
                                             ft.CircleAvatar(foreground_image_src="/images/profile.jpg", radius=20),
-                                            ft.Text("JOÃO NASCIMENTO", size=13, weight=ft.FontWeight.BOLD),
+                                            ft.Text(self.nome_usuario.upper(), size=13, weight=ft.FontWeight.BOLD)
                                         ], spacing=10, alignment=ft.MainAxisAlignment.END, col={"xs": 12, "md": 4})
                                     ])
                                 ),
