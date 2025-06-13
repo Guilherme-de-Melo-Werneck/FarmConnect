@@ -89,13 +89,35 @@ class TelaUsuarioDashboard:
 
 
     def adicionar_ao_carrinho(self, medicamento):
+         # Verifica se já está no carrinho
+        existente = next((item for item in self.carrinho if item["id"] == medicamento["id"]), None)
+
+        if existente:
+            if existente["quantidade"] < medicamento["estoque"]:
+                existente["quantidade"] += 1
+            else:
+                self.page.snack_bar = ft.SnackBar(
+                    content=ft.Text("❗ Estoque insuficiente para adicionar mais unidades."),
+                    bgcolor=ft.colors.RED_400
+                )
+                self.page.snack_bar.open = True
+                self.page.update()
+                return
+        else:
+            if medicamento["estoque"] > 0:
+                self.carrinho.append({**medicamento, "quantidade": 1})
+            else:
+                self.page.snack_bar = ft.SnackBar(
+                    content=ft.Text("❗ Medicamento fora de estoque."),
+                    bgcolor=ft.colors.RED_400
+                )
+                self.page.snack_bar.open = True
+                self.page.update()
+                return
+
         self.contador["valor"] += 1
         self.carrinho_count.current.value = str(self.contador["valor"])
         self.carrinho_count.current.update()
-        self.carrinho.append(medicamento)
-        self.page.update()
-
-        
         self.abrir_carrinho()
 
     def abrir_detalhes_medicamento(self, e, med):
