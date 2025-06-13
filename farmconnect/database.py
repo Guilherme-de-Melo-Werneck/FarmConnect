@@ -170,6 +170,19 @@ def criar_tabelas():
             )
         """)
 
+        # Carrinho
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS carrinho (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                usuario_id INTEGER NOT NULL,
+                medicamento_id INTEGER NOT NULL,
+                quantidade INTEGER NOT NULL DEFAULT 1,
+                data_adicao TEXT DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY(usuario_id) REFERENCES usuarios(id),
+                FOREIGN KEY(medicamento_id) REFERENCES medicamentos(id)
+            )
+            """)
+
         conn.commit()
 
 def aprovar_usuario(usuario_id):
@@ -648,6 +661,129 @@ def adicionar_agendamento(usuario_id, medicamento_id, farmacia_id, codigo, data,
         cursor.close()
         conn.close()
 
+def adicionar_ao_carrinho_db(usuario_id, medicamento_id):
+    conn = conectar()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            SELECT quantidade FROM carrinho
+            WHERE usuario_id = ? AND medicamento_id = ?
+        """, (usuario_id, medicamento_id))
+        
+        existente = cursor.fetchone()
+
+        if existente:
+            cursor.execute("""
+                UPDATE carrinho
+                SET quantidade = quantidade + 1
+                WHERE usuario_id = ? AND medicamento_id = ?
+            """, (usuario_id, medicamento_id))
+        else:
+            cursor.execute("""
+                INSERT INTO carrinho (usuario_id, medicamento_id, quantidade)
+                VALUES (?, ?, ?)
+            """, (usuario_id, medicamento_id, 1))
+
+        conn.commit()
+    except Exception as e:
+        print("Erro ao adicionar ao carrinho:", e)
+    finally:
+        cursor.close()
+        conn.close()
+
+
+def remover_do_carrinho_db(usuario_id, medicamento_id):
+    conn = conectar()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            DELETE FROM carrinho
+            WHERE usuario_id = ? AND medicamento_id = ?
+        """, (usuario_id, medicamento_id))
+        conn.commit()
+    except Exception as e:
+        print("Erro ao remover do carrinho:", e)
+    finally:
+        cursor.close()
+        conn.close()
+
+def aumentar_quantidade_db(usuario_id, medicamento_id):
+    conn = conectar()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            UPDATE carrinho
+            SET quantidade = quantidade + 1
+            WHERE usuario_id = ? AND medicamento_id = ?
+        """, (usuario_id, medicamento_id))
+        conn.commit()
+    except Exception as e:
+        print("Erro ao aumentar quantidade:", e)
+    finally:
+        cursor.close()
+        conn.close()
+
+def diminuir_quantidade_db(usuario_id, medicamento_id):
+    conn = conectar()
+    cursor = conn.cursor()
+    try:
+        # Verifica a quantidade atual
+        cursor.execute("""
+            SELECT quantidade FROM carrinho
+            WHERE usuario_id = ? AND medicamento_id = ?
+        """, (usuario_id, medicamento_id))
+        resultado = cursor.fetchone()
+
+        if resultado:
+            quantidade = resultado[0]
+            if quantidade > 1:
+                cursor.execute("""
+                    UPDATE carrinho
+                    SET quantidade = quantidade - 1
+                    WHERE usuario_id = ? AND medicamento_id = ?
+                """, (usuario_id, medicamento_id))
+            else:
+                # Quantidade 1 → remover
+                cursor.execute("""
+                    DELETE FROM carrinho
+                    WHERE usuario_id = ? AND medicamento_id = ?
+                """, (usuario_id, medicamento_id))
+
+        conn.commit()
+    except Exception as e:
+        print("Erro ao diminuir quantidade:", e)
+    finally:
+        cursor.close()
+        conn.close()
+
+def carregar_carrinho_usuario(usuario_id):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT c.medicamento_id, c.quantidade, m.nome, m.codigo, m.descricao, m.imagem, m.estoque
+        FROM carrinho c
+        JOIN medicamentos m ON c.medicamento_id = m.id
+        WHERE c.usuario_id = ?
+    """, (usuario_id,))
+    
+    resultado = cursor.fetchall()
+    cursor.close()
+    conn.close()
+
+    carrinho = []
+    for linha in resultado:
+        carrinho.append({
+            "id": linha[0],
+            "quantidade": linha[1],
+            "nome": linha[2],
+            "codigo": linha[3],
+            "descricao": linha[4],
+            "imagem": linha[5],
+            "estoque": linha[6]
+        })
+
+    return carrinho
 
 
 
