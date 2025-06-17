@@ -196,7 +196,7 @@ class TelaUsuarioDashboard:
                             tooltip="Diminuir",
                             on_click=lambda e, med=item: self.diminuir_quantidade(med)
                         ),
-                        ft.Text(f"{item["quantidade"]} un.", size=14, weight=ft.FontWeight.BOLD),
+                        ft.Text(f"{item['quantidade']} un.", size=14, weight=ft.FontWeight.BOLD),
                         ft.IconButton(
                             icon=ft.icons.ADD,
                             icon_color=ft.colors.BLUE_600,
@@ -780,10 +780,11 @@ class TelaUsuarioDashboard:
                     controls=[
                         ft.ElevatedButton(
                             text=str(dia.day),
-                            width=40,
-                            height=40,
+                            width=32,
+                            height=32,
                             disabled=dia < datetime.date.today() or dia.month != self.mes_atual,
                             style=ft.ButtonStyle(
+                                text_style=ft.TextStyle(size=12),
                                 padding=0,
                                 shape=ft.RoundedRectangleBorder(radius=8),
                                 bgcolor="#E0F2FE" if dia == self.data_escolhida else ft.colors.WHITE,
@@ -839,9 +840,10 @@ class TelaUsuarioDashboard:
                 texto = f"{hora:02d}:{minuto:02d}"
                 btn = ft.ElevatedButton(
                     text=texto,
-                    width=80,
-                    height=40,
+                    width=60,
+                    height=32,
                     style=ft.ButtonStyle(
+                        text_style=ft.TextStyle(size=12),
                         shape=ft.RoundedRectangleBorder(radius=8),
                         bgcolor=ft.colors.BLUE_100 if texto == self.horario_escolhido else ft.colors.WHITE,
                         color=ft.colors.BLUE_900,
@@ -934,10 +936,6 @@ class TelaUsuarioDashboard:
                 )
             ]
         )
-
-
-
-
 
     def tela_detalhes_medicamento(self):
         medicamento = self.page.client_storage.get("medicamento_detalhe")
@@ -1142,10 +1140,6 @@ class TelaUsuarioDashboard:
                 )
             ]
         )
-
-
-
-
 
 
 import flet as ft
