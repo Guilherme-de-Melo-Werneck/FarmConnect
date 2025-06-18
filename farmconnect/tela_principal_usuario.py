@@ -827,10 +827,13 @@ class TelaUsuarioDashboard:
         def confirmar_agendamento(e):
             if not self.data_escolhida or not self.horario_escolhido:
                 self.page.snack_bar = ft.SnackBar(ft.Text("Por favor, selecione data e horário."), bgcolor=ft.colors.RED_400)
-            else:
-                self.page.snack_bar = ft.SnackBar(ft.Text("✅ Agendamento realizado com sucesso!"), bgcolor=ft.colors.GREEN_500)
-            self.page.snack_bar.open = True
-            self.page.update()
+                self.page.snack_bar.open = True
+                self.page.update()
+                return
+
+            # Aqui você pode salvar no banco se quiser...
+
+            self.page.go("/agendamento_confirmado")
 
         def gerar_botoes_horarios():
             horarios = []
@@ -1302,6 +1305,55 @@ class TelaUsuarioDashboard:
                 ])
             ]
         )
+    
+    def tela_agendamento_confirmado(self):
+        return ft.View(
+            route="/agendamento_confirmado",
+            scroll=ft.ScrollMode.AUTO,
+            controls=[
+                ft.Container(
+                    expand=True,
+                    alignment=ft.alignment.center,
+                    padding=40,
+                    bgcolor="#F0F9FF",
+                    content=ft.Column(
+                        alignment=ft.MainAxisAlignment.CENTER,
+                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                        spacing=30,
+                        controls=[
+                            ft.Icon(ft.icons.CHECK_CIRCLE, size=80, color=ft.colors.GREEN_600),
+                            ft.Text("Agendamento Confirmado!", size=30, weight=ft.FontWeight.BOLD, color="#1E3A8A"),
+                            ft.Text(
+                                "Você tem até 10 dias para retirar seu medicamento na farmácia selecionada.",
+                                size=18,
+                                color=ft.colors.GREY_800,
+                                text_align=ft.TextAlign.CENTER
+                            ),
+                            ft.ElevatedButton(
+                                "Ver Meus Agendamentos",
+                                icon=ft.icons.CALENDAR_MONTH,
+                                on_click=lambda e: self.page.go("/agendamentos"),
+                                style=ft.ButtonStyle(
+                                    bgcolor=ft.colors.BLUE_700,
+                                    color=ft.colors.WHITE,
+                                    padding=ft.padding.symmetric(horizontal=24, vertical=14),
+                                    shape=ft.RoundedRectangleBorder(radius=12)
+                                )
+                            ),
+                            ft.TextButton(
+                                "Voltar para a Página Inicial",
+                                on_click=lambda e: self.page.go("/usuario"),
+                                style=ft.ButtonStyle(
+                                    color=ft.colors.BLUE_700,
+                                    padding=ft.padding.symmetric(horizontal=24, vertical=10)
+                                )
+                            )
+                        ]
+                    )
+                )
+            ]
+        )
+
 
 
 from tela_principal_usuario import TelaUsuarioDashboard  # certifique-se que o nome do arquivo esteja correto
@@ -1330,6 +1382,9 @@ def main(page: ft.Page):
             page.views.append(dashboard.tela_detalhes_medicamento())
         elif page.route == "/agendamentos":
             page.views.append(dashboard.tela_meus_agendamentos())
+        elif page.route == "/agendamento_confirmado":
+            page.views.append(dashboard.tela_agendamento_confirmado())
+
 
         if page.session.get("carrinho") is None:
             page.session.set("carrinho", [])
