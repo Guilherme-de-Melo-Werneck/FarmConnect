@@ -10,6 +10,9 @@ class TelaAdminDashboard:
         self.current_view = ft.Column(expand=True)
         self.load_dashboard()  
         self.tabela_agendamentos_ref = ft.Ref[ft.DataTable]()
+        self.tabela_pacientes_ref = ft.Ref[ft.DataTable]()
+        self.tabela_medicamentos_ref = ft.Ref[ft.DataTable]()
+        self.tabela_farmacias_ref = ft.Ref[ft.DataTable]()
 
     def page_settings(self):
         self.page.title = "FarmConnect - Painel Admin"
@@ -1425,7 +1428,7 @@ class TelaAdminDashboard:
             border_radius=30,
             bgcolor="#F9FAFB",
             height=50,
-            on_blur=self.filtrar_pacientes
+            on_change=self.filtrar_pacientes
         )
 
         self.campo_nome_paciente = ft.TextField(label="Nome do Paciente", border_radius=10, bgcolor="#F9FAFB")
@@ -1477,7 +1480,7 @@ class TelaAdminDashboard:
         # Renderiza a tabela com farmácias do banco
         self.renderizar_tabela_pacientes(pacientes_db)
 
-    def renderizar_tabela_pacientes(self, lista):
+    def gerar_rows_pacientes(self, lista):
         status_cores = {
             "Pendente": ("#D97706", "#FEF3C7"),
             "Aprovado": ("#15803D", "#D1FAE5"),
@@ -1495,7 +1498,51 @@ class TelaAdminDashboard:
                 alignment=ft.MainAxisAlignment.CENTER
             )
 
-        tabela = ft.DataTable(
+        rows = []
+        for p in lista:
+            rows.append(
+                ft.DataRow(
+                    cells=[
+                        ft.DataCell(ft.Text(str(p[0]))),
+                        ft.DataCell(ft.Text(p[1])),
+                        ft.DataCell(ft.Text(p[3])),
+                        ft.DataCell(ft.Text(p[4])),
+                        ft.DataCell(ft.Text(p[5])),
+                        ft.DataCell(
+                            ft.Container(
+                                content=status_badge(p[6]),
+                                padding=ft.padding.symmetric(horizontal=4, vertical=4),
+                                bgcolor=status_cores.get(p[6], "#E5E7EB")[1],
+                                border_radius=20,
+                            )
+                        ),
+                        ft.DataCell(
+                            ft.Row(
+                                [
+                                    ft.IconButton(
+                                        icon=ft.Icons.CHECK_CIRCLE_OUTLINE,
+                                        icon_color="#059669",
+                                        tooltip="Aprovar paciente",
+                                        on_click=lambda e, pid=p[0]: self.aprovar_usuario(pid)
+                                    ),
+                                    ft.IconButton(
+                                        icon=ft.Icons.CANCEL_OUTLINED,
+                                        icon_color="#DC2626",
+                                        tooltip="Recusar paciente",
+                                        on_click=lambda e, pid=p[0]: self.recusar_usuario(pid)
+                                    ),
+                                ],
+                                spacing=8
+                            )
+                        )
+                    ]
+                )
+            )
+        return rows
+
+    def renderizar_tabela_pacientes(self, lista):
+        self.tabela_pacientes = ft.DataTable(
+            ref=self.tabela_pacientes_ref,
             heading_row_color="#F9FAFB",
             border=ft.border.all(1, "#E5E7EB"),
             border_radius=12,
@@ -1508,46 +1555,8 @@ class TelaAdminDashboard:
                 ft.DataColumn(ft.Text("Status")),
                 ft.DataColumn(ft.Text("Ações")),
             ],
-            rows=[
-                ft.DataRow(
-                    cells=[
-                        ft.DataCell(ft.Text(str(p[0]))),
-                        ft.DataCell(ft.Text(p[1])),
-                        ft.DataCell(ft.Text(p[3])),
-                        ft.DataCell(ft.Text(p[4])),
-                        ft.DataCell(ft.Text(p[5])),
-                         ft.DataCell(
-                                ft.Container(
-                                    content=status_badge(p[6]),
-                                    padding=ft.padding.symmetric(horizontal=4, vertical=4),
-                                    bgcolor=status_cores.get(p[6], "#E5E7EB"),
-                                    border_radius=20,
-                                )
-                            ),
-                            ft.DataCell(
-                                ft.Row(
-                                    [
-                                        ft.IconButton(
-                                            icon=ft.Icons.CHECK_CIRCLE_OUTLINE,
-                                            icon_color="#059669",
-                                            tooltip="Aprovar paciente",
-                                            on_click=lambda e, pid=p[0]: self.aprovar_usuario(pid)
-                                            
-                                        ),
-                                        ft.IconButton(
-                                            icon=ft.Icons.CANCEL_OUTLINED,
-                                            icon_color="#DC2626",
-                                            tooltip="Recusar paciente",
-                                            on_click=lambda e, pid=p[0]: self.recusar_usuario(pid)
-                                        ),
-                                    ],
-                                    spacing=8
-                                )
-                            )
-                        ]
-                    ) for p in lista
-                ]
-            )
+            rows= self.gerar_rows_pacientes(lista)
+        )
         #Teste
         self.current_view.controls.clear()
         self.current_view.controls.append(
@@ -1602,7 +1611,7 @@ class TelaAdminDashboard:
                                     controls=[
                                         ft.Container(
                                             expand=True,
-                                            content=tabela,
+                                            content=self.tabela_pacientes,
                                             width=1200,
                                         ),
                                         ft.AnimatedSwitcher(
@@ -1625,8 +1634,8 @@ class TelaAdminDashboard:
         pacientes = listar_usuarios()
         resultado = [p for p in pacientes if termo in p[1].lower() or termo in p[3].lower()]
 
-        self.renderizar_tabela_pacientes(resultado)
-        self.page.update()
+        self.tabela_pacientes_ref.current.rows = self.gerar_rows_pacientes(resultado)
+        self.tabela_pacientes_ref.current.update()
 
     # Funções para Aprovar e Recusar Pacientes
     def aprovar_usuario(self, paciente_id):
