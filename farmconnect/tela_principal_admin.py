@@ -372,6 +372,37 @@ class TelaAdminDashboard:
         ]
         self.page.update()
 
+    def gerar_rows_medicamentos(self, lista):
+        rows = []
+        for med in lista:
+            inativo = med[8] == 0  # Supondo que a posição 8 indica ativo/inativo
+            cor = "red" if inativo else None
+
+            rows.append(
+                ft.DataRow(
+                    cells=[
+                        ft.DataCell(ft.Text(str(med[0]), color=cor)),
+                        ft.DataCell(ft.Text(med[1], color=cor)),
+                        ft.DataCell(ft.Text(med[2] or "-", color=cor)),
+                        ft.DataCell(ft.Text(med[6] or "-", color=cor)),
+                        ft.DataCell(ft.Text(med[7] or "-", color=cor)),
+                        ft.DataCell(ft.Text(str(med[5]), color=cor)),
+                        ft.DataCell(
+                            ft.IconButton(
+                                icon=ft.Icons.LOCK_OPEN if inativo else ft.Icons.CANCEL_OUTLINED,
+                                icon_color=ft.Colors.GREEN_400 if inativo else ft.Colors.RED,
+                                tooltip="Reativar" if inativo else "Desativar",
+                                icon_size=22,
+                                style=ft.ButtonStyle(padding=0),
+                                on_click=lambda e, id=med[0]: (
+                                    self.reativar_medicamento(id) if inativo else self.desativar_medicamento(id)
+                                )
+                            )
+                        )
+                    ]
+                )
+            )
+        return rows
 
     def load_medicamentos(self, e=None, medicamento=None):
 
@@ -389,7 +420,17 @@ class TelaAdminDashboard:
 
         medicamentos = listar_medicamentos()
 
-        tabela_medicamentos = ft.DataTable(
+        self.campo_busca_medicamento = ft.TextField(
+                                        hint_text="Buscar medicamento...",
+                                        prefix_icon=ft.Icons.SEARCH,
+                                        border_radius=30,
+                                        bgcolor="#F9FAFB",
+                                        height=50,
+                                        on_change=self.filtrar_medicamentos,
+                                    )
+
+        self.tabela_medicamentos = ft.DataTable(
+            ref=self.tabela_medicamentos_ref,
             heading_row_color="#F9FAFB",
             border=ft.border.all(1, "#E5E7EB"),
             border_radius=12,
@@ -402,36 +443,7 @@ class TelaAdminDashboard:
                 ft.DataColumn(ft.Text("Estoque")),
                 ft.DataColumn(ft.Text("Ações")),
             ],
-            rows=[
-                ft.DataRow(
-                    cells=[
-                        ft.DataCell(ft.Text(str(med[0]), color="red" if med[8] == 0 else None)),
-                        ft.DataCell(ft.Text(med[1], color="red" if med[8] == 0 else None)),
-                        ft.DataCell(ft.Text(med[2] or "-", color="red" if med[8] == 0 else None)),
-                        ft.DataCell(ft.Text(med[6] or "-", color="red" if med[8] == 0 else None)),
-                        ft.DataCell(ft.Text(med[7] or "-", color="red" if med[8] == 0 else None)),
-                        ft.DataCell(ft.Text(str(med[5]), color="red" if med[8] == 0 else None)),
-                        ft.DataCell(
-                            ft.IconButton(
-                                icon=ft.Icons.LOCK_OPEN,
-                                icon_color=ft.Colors.GREEN_400,
-                                tooltip="Reativar",
-                                icon_size=22,
-                                style=ft.ButtonStyle(padding=0),
-                                on_click=lambda e, id=med[0]: self.reativar_medicamento(id)
-                            ) if med[8] == 0 else ft.IconButton(
-                                icon=ft.Icons.CANCEL_OUTLINED,
-                                icon_color=ft.Colors.RED,
-                                tooltip="Desativar",
-                                icon_size=22,
-                                style=ft.ButtonStyle(padding=0),
-                                on_click=lambda e, id=med[0]: self.desativar_medicamento(id)
-                            )
-                        )
-                    ]
-                )
-                for med in medicamentos
-            ]
+            rows=self.gerar_rows_medicamentos(medicamentos)
         )
 
         # Painel lateral opcional (se estiver editando)
@@ -536,18 +548,11 @@ class TelaAdminDashboard:
                                 ),
                             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
                             ft.Divider(),
-
                             ft.Row([
                                 ft.Container(
                                     expand=True,
-                                    content=ft.TextField(
-                                        hint_text="Buscar medicamento...",
-                                        prefix_icon=ft.Icons.SEARCH,
-                                        border_radius=30,
-                                        bgcolor="#F9FAFB",
-                                        height=50
+                                    content=self.campo_busca_medicamento
                                     )
-                                )
                             ]),
                             ft.Container(height=20),
 
@@ -564,7 +569,7 @@ class TelaAdminDashboard:
                                             scroll=ft.ScrollMode.ALWAYS,
                                             controls = [
                                                 ft.Container(
-                                                    content=tabela_medicamentos,
+                                                    content=self.tabela_medicamentos,
                                                     width=1000
                                                 )
                                             ],
@@ -583,6 +588,17 @@ class TelaAdminDashboard:
         )
 
         self.page.update()
+
+    def filtrar_medicamentos(self, e):
+        termo = self.campo_busca_medicamento.value.strip().lower()
+        medicamentos = listar_medicamentos()
+        resultado = [
+            m for m in medicamentos
+            if termo in (m[1] or "").lower() or termo in (m[2] or "").lower()
+        ]
+
+        self.tabela_medicamentos_ref.current.rows = self.gerar_rows_medicamentos(resultado)
+        self.tabela_medicamentos_ref.current.update()
 
     def salvar_medicamento(self, e=None):
         nome = self.campo_nome.value.strip()
