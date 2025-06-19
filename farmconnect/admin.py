@@ -104,10 +104,16 @@ class TelaLoginAdmin:
                 ft.Text("Login", size=24, weight="bold", color=ft.Colors.BLUE_900),
                 self.login_email,
                 self.login_senha,
-                ft.ElevatedButton("Entrar", bgcolor=ft.Colors.BLUE_900, color="white",
+                ft.Row([
+                    ft.ElevatedButton("Entrar", bgcolor=ft.Colors.BLUE_900, color="white",
                     style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10), overlay_color=ft.Colors.BLUE_500),
                     on_click=login_click
                 ),
+                ft.ElevatedButton("Voltar", bgcolor=ft.Colors.GREY_50, color=ft.Colors.BLUE_900,
+                    style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10), overlay_color=ft.Colors.BLUE_500),
+                    on_click=lambda e: self.page.go("/escolha_usuario")
+                )
+                ]),
                 ft.TextButton(
                     "Esqueceu a senha?",
                     on_click=lambda _: print("Redirecionar para recuperação de senha"),
@@ -127,10 +133,16 @@ class TelaLoginAdmin:
                 self.cadastro_email,
                 self.cadastro_senha,
                 self.cadastro_confirmar_senha,
-                ft.ElevatedButton("Registrar", bgcolor=ft.Colors.BLUE_900, color="white",
+                ft.Row([
+                    ft.ElevatedButton("Entrar", bgcolor=ft.Colors.BLUE_900, color="white",
                     style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10), overlay_color=ft.Colors.BLUE_500),
-                    on_click=registrar_click
+                    on_click=login_click
+                ),
+                ft.ElevatedButton("Voltar", bgcolor=ft.Colors.GREY_50, color=ft.Colors.BLUE_900,
+                    style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10), overlay_color=ft.Colors.BLUE_500),
+                    on_click=lambda e: self.page.go("/escolha_usuario")
                 )
+                ]),
             ], spacing=20, scroll=ft.ScrollMode.ADAPTIVE)
         )
 
