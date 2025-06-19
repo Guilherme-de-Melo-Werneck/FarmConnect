@@ -9,6 +9,7 @@ class TelaAdminDashboard:
         self.sidebar_open = True
         self.current_view = ft.Column(expand=True)
         self.load_dashboard()  
+        self.tabela_agendamentos_ref = ft.Ref[ft.DataTable]()
 
     def page_settings(self):
         self.page.title = "FarmConnect - Painel Admin"
@@ -824,7 +825,7 @@ class TelaAdminDashboard:
             border_radius=30,
             bgcolor="#F9FAFB",
             height=50,
-            on_blur=self.filtrar_agendamentos
+            on_change=self.filtrar_agendamentos
         )
         
         self.current_view.controls.clear()
@@ -879,7 +880,7 @@ class TelaAdminDashboard:
         # Renderiza a tabela com farmácias do banco
         self.renderizar_tabela_agendamentos(agendamentos_db)
 
-    def renderizar_tabela_agendamentos(self, lista):
+    def gerar_rows_agendamentos(self, lista):
         status_cores = {
             "Pendente": ("#D97706", "#FEF3C7"),
             "Confirmado": ("#15803D", "#D1FAE5"),
@@ -893,46 +894,33 @@ class TelaAdminDashboard:
                 ft.Container(width=8, height=8, bgcolor=cor_texto, border_radius=20),
                 ft.Text(status, color=cor_texto, weight="bold")
             ], spacing=6, alignment=ft.MainAxisAlignment.CENTER)
-
-        tabela = ft.DataTable(
-            heading_row_color="#F9FAFB",
-            border=ft.border.all(1, "#E5E7EB"),
-            border_radius=12,
-            columns=[
-                ft.DataColumn(ft.Text("ID")),
-                ft.DataColumn(ft.Text("Paciente")),
-                ft.DataColumn(ft.Text("Medicamento")),
-                ft.DataColumn(ft.Text("Farmácia")),
-                ft.DataColumn(ft.Text("Código")),
-                ft.DataColumn(ft.Text("Data")),
-                ft.DataColumn(ft.Text("Horário")),
-                ft.DataColumn(ft.Text("Status")),
-                ft.DataColumn(ft.Text("Ações")),
-            ],
-            rows=[
+        
+        rows = []
+        for a in lista:
+            rows.append(
                 ft.DataRow(
                     cells=[
                         ft.DataCell(ft.Text(str(a[0]))),
                         ft.DataCell(ft.Text(a[1])),
                         ft.DataCell(ft.Text(a[2])),
-                        ft.DataCell(ft.Text(a[3])),
+                        ft.DataCell(ft.Text(a[3])),  
                         ft.DataCell(ft.Text(a[4])),
                         ft.DataCell(ft.Text(a[5])),
                         ft.DataCell(ft.Text(a[6])),
                         ft.DataCell(
-                                ft.Container( 
+                            ft.Container(
                                 content=status_badge(a[7]),
                                 padding=ft.padding.symmetric(horizontal=8, vertical=4),
-                                bgcolor=status_cores.get(a[7], ("#E5E7EB")),
+                                bgcolor=status_cores.get(a[7], "#E5E7EB"),
                                 border_radius=20,
-                                )
-                            ),
-                            ft.DataCell(
-                                ft.Container(
+                            )
+                        ),
+                        ft.DataCell(
+                            ft.Container(
                                 width=100,
                                 alignment=ft.alignment.center,
                                 content=ft.Row(
-                                    [
+                                    controls=[
                                         ft.IconButton(
                                             icon=ft.Icons.CHECK_CIRCLE_OUTLINE,
                                             icon_color="#059669",
@@ -955,13 +943,35 @@ class TelaAdminDashboard:
                                         )
                                     ],
                                     spacing=8,
-                                    alignment=ft.MainAxisAlignment.CENTER,
+                                    alignment=ft.MainAxisAlignment.CENTER
                                 )
                             )
                         )
                     ]
-                ) for a in lista
-            ]
+                )
+            )
+
+        return rows
+
+
+    def renderizar_tabela_agendamentos(self, lista):
+        self.tabela_agendamentos = ft.DataTable(
+            ref=self.tabela_agendamentos_ref,
+            heading_row_color="#F9FAFB",
+            border=ft.border.all(1, "#E5E7EB"),
+            border_radius=12,
+            columns=[
+                ft.DataColumn(ft.Text("ID")),
+                ft.DataColumn(ft.Text("Paciente")),
+                ft.DataColumn(ft.Text("Medicamento")),
+                ft.DataColumn(ft.Text("Farmácia")),
+                ft.DataColumn(ft.Text("Código")),
+                ft.DataColumn(ft.Text("Data")),
+                ft.DataColumn(ft.Text("Horário")),
+                ft.DataColumn(ft.Text("Status")),
+                ft.DataColumn(ft.Text("Ações")),
+            ],
+            rows=self.gerar_rows_agendamentos(lista)
         )
 
         self.current_view.controls.clear()
@@ -1008,7 +1018,7 @@ class TelaAdminDashboard:
                             ]),
                             ft.Container(height=20),
                             ft.Container(
-                                content=tabela,
+                                content=self.tabela_agendamentos,
                                 expand=True,
                                 width=1200
                             )
@@ -1893,10 +1903,14 @@ class TelaAdminDashboard:
     def filtrar_agendamentos(self, e):
         termo = self.campo_busca_agendamentos.value.strip().lower()
         agendamentos = listar_agendamentos()
-        resultado = [a for a in agendamentos if termo in a[1].lower() or termo in a[2].lower() or termo in a[3].lower()]
 
-        self.renderizar_tabela_agendamentos(resultado)
-        self.page.update()
+        resultado = [
+            a for a in agendamentos
+            if termo in a[1].lower() or termo in a[2].lower() or termo in a[3].lower()
+        ]
+
+        self.tabela_agendamentos_ref.current.rows = self.gerar_rows_agendamentos(resultado)
+        self.tabela_agendamentos_ref.current.update()
 
     def salvar_agendamento(self, e=None):
         paciente_id = self.dropdown_paciente.value
