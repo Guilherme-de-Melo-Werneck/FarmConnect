@@ -1394,7 +1394,5 @@ def main(page: ft.Page):
     page.on_route_change = route_change
     page.go("/usuario")
 
-ft.app(target=main)
-
 
 
