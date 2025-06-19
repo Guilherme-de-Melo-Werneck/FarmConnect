@@ -441,8 +441,6 @@ class TelaUsuarioDashboard:
             ]
         )
 
-
-
     def tela_documentos(self):
         return ft.View(
             route="/documentos",
@@ -1358,41 +1356,44 @@ class TelaUsuarioDashboard:
 
 from tela_principal_usuario import TelaUsuarioDashboard  # certifique-se que o nome do arquivo esteja correto
 
-def main(page: ft.Page):
-    page.session.set("carrinho", [])
-    page.title = "FarmConnect"
-    page.bgcolor = "#EFF6FF"
-    page.scroll = ft.ScrollMode.ADAPTIVE
+if __name__ == "__main__":
+    def main(page: ft.Page):
+        page.session.set("carrinho", [])
+        page.title = "FarmConnect"
+        page.bgcolor = "#EFF6FF"
+        page.scroll = ft.ScrollMode.ADAPTIVE
 
-    dashboard = TelaUsuarioDashboard(page)
+        dashboard = TelaUsuarioDashboard(page)
 
-    def route_change(route):
-        page.views.clear()
-        if page.route == "/usuario":
-            page.views.append(dashboard.build_tela())
-        elif page.route == "/documentos":
-            page.views.append(dashboard.tela_documentos())
-        elif page.route == "/perfil":
-            page.views.append(dashboard.tela_perfil_paciente())
-        elif page.route == "/medicamentos_retirados":
-            page.views.append(dashboard.tela_medicamentos_retirados())
-        elif page.route == "/agendamento":
-            page.views.append(dashboard.tela_agendamento())
-        elif page.route == "/detalhes_medicamento":
-            page.views.append(dashboard.tela_detalhes_medicamento())
-        elif page.route == "/agendamentos":
-            page.views.append(dashboard.tela_meus_agendamentos())
-        elif page.route == "/agendamento_confirmado":
-            page.views.append(dashboard.tela_agendamento_confirmado())
+        def route_change(route):
+            page.views.clear()
+            if page.route == "/usuario":
+                page.views.append(dashboard.build_tela())
+            elif page.route == "/documentos":
+                page.views.append(dashboard.tela_documentos())
+            elif page.route == "/perfil":
+                page.views.append(dashboard.tela_perfil_paciente())
+            elif page.route == "/medicamentos_retirados":
+                page.views.append(dashboard.tela_medicamentos_retirados())
+            elif page.route == "/agendamento":
+                page.views.append(dashboard.tela_agendamento())
+            elif page.route == "/detalhes_medicamento":
+                page.views.append(dashboard.tela_detalhes_medicamento())
+            elif page.route == "/agendamentos":
+                page.views.append(dashboard.tela_meus_agendamentos())
+            elif page.route == "/agendamento_confirmado":
+                page.views.append(dashboard.tela_agendamento_confirmado())
 
 
-        if page.session.get("carrinho") is None:
-            page.session.set("carrinho", [])
+            if page.session.get("carrinho") is None:
+                page.session.set("carrinho", [])
 
-        page.update()
+            page.update()
 
-    page.on_route_change = route_change
-    page.go("/usuario")
+        page.on_route_change = route_change
+        page.go("/usuario")
+
+    ft.app(target=main)
 
 
 

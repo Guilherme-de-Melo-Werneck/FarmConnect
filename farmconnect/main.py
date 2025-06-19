@@ -37,9 +37,23 @@ def main(page: ft.Page):
             page.views.append(TelaAdminDashboard(page).build_tela())
         elif page.route == "/login_usuario":
             page.views.append(TelaLoginUsuario(page).build_tela())
+        elif page.route == "/documentos":
+            page.views.append(TelaUsuarioDashboard(page).tela_documentos())
+        elif page.route == "/perfil":
+            page.views.append(TelaUsuarioDashboard(page).tela_perfil_paciente())
+        elif page.route == "/medicamentos_retirados":
+            page.views.append(TelaUsuarioDashboard(page).tela_medicamentos_retirados())
+        elif page.route == "/agendamento":
+            page.views.append(TelaUsuarioDashboard(page).tela_agendamento())
+        elif page.route == "/detalhes_medicamento":
+            page.views.append(TelaUsuarioDashboard(page).tela_detalhes_medicamento())
+        elif page.route == "/agendamentos":
+            page.views.append(TelaUsuarioDashboard(page).tela_meus_agendamentos())
+        elif page.route == "/agendamento_confirmado":
+            page.views.append(TelaUsuarioDashboard(page).tela_agendamento_confirmado())
         page.update()
 
     page.on_route_change = route_change
-    page.go(page.route)
+    page.go("/")
 
 ft.app(target=main)
