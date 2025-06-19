@@ -1139,7 +1139,7 @@ class TelaAdminDashboard:
             border_radius=30,
             bgcolor="#F9FAFB",
             height=50,
-            on_blur=self.filtrar_farmacias
+            on_change=self.filtrar_farmacias
         )
 
         self.campo_nome_f = ft.TextField(label="Nome da Farmácia", value=farmacia["nome"] if farmacia else "")
@@ -1225,22 +1225,10 @@ class TelaAdminDashboard:
         # Renderiza a tabela com farmácias do banco
         self.renderizar_tabela_farmacias(farmacias_db)
 
-    def renderizar_tabela_farmacias(self, lista):
-        tabela = ft.DataTable(
-            heading_row_color="#F9FAFB",
-            border=ft.border.all(1, "#E5E7EB"),
-            border_radius=12,
-            columns=[
-                ft.DataColumn(ft.Text("ID")),
-                ft.DataColumn(ft.Text("Nome")),
-                ft.DataColumn(ft.Text("Endereço")),
-                ft.DataColumn(ft.Text("CNPJ")),
-                ft.DataColumn(ft.Text("Cidade")),
-                ft.DataColumn(ft.Text("Estado")),
-                ft.DataColumn(ft.Text("Telefone")),
-                ft.DataColumn(ft.Text("Ações"))
-            ],
-            rows=[
+    def gerar_rows_farmacias(self, lista):
+        rows = []
+        for f in lista:
+            rows.append(
                 ft.DataRow(
                     cells=[
                         ft.DataCell(ft.Text(str(f[0]))),
@@ -1269,14 +1257,37 @@ class TelaAdminDashboard:
                                         self.load_farmacias(farmacia=self.farmacia_atual)
                                     )
                                 ),
-                                ft.IconButton(icon=ft.Icons.DELETE, icon_color="#DC2626", tooltip="Excluir")
+                                ft.IconButton(
+                                    icon=ft.Icons.DELETE,
+                                    icon_color="#DC2626",
+                                    tooltip="Excluir",
+                                    on_click=lambda e: print(f"Excluir {f[1]}")
+                                )
                             ], spacing=6)
                         )
                     ]
-                ) for f in lista
-            ]
-        )
+                )
+            )
+        return rows
 
+    def renderizar_tabela_farmacias(self, lista):
+        self.tabela_farmacias = ft.DataTable(
+            ref=self.tabela_farmacias_ref,
+            heading_row_color="#F9FAFB",
+            border=ft.border.all(1, "#E5E7EB"),
+            border_radius=12,
+            columns=[
+                ft.DataColumn(ft.Text("ID")),
+                ft.DataColumn(ft.Text("Nome")),
+                ft.DataColumn(ft.Text("Endereço")),
+                ft.DataColumn(ft.Text("CNPJ")),
+                ft.DataColumn(ft.Text("Cidade")),
+                ft.DataColumn(ft.Text("Estado")),
+                ft.DataColumn(ft.Text("Telefone")),
+                ft.DataColumn(ft.Text("Ações"))
+            ],
+            rows=self.gerar_rows_farmacias(lista)
+        )
 
         self.current_view.controls.clear()
         self.current_view.controls.append(
@@ -1331,7 +1342,7 @@ class TelaAdminDashboard:
                                     controls=[
                                         ft.Container(
                                             expand=True,
-                                            content=tabela,
+                                            content=self.tabela_farmacias,
                                             width=1200,
                                         ),
                                         ft.AnimatedSwitcher(
@@ -1352,10 +1363,10 @@ class TelaAdminDashboard:
     def filtrar_farmacias(self, e):
         termo = self.campo_busca_farmacia.value.strip().lower()
         farmacias = listar_farmacias()
-        resultado = [f for f in farmacias if termo in f[1].lower() or termo in f[4].lower() or termo in f[5].lower()]
+        resultado = [f for f in farmacias if termo in f[1].lower() or termo in f[3].lower() or termo in f[4].lower() or termo in f[5].lower()]
 
-        self.renderizar_tabela_farmacias(resultado)
-        self.page.update()
+        self.tabela_farmacias_ref.current.rows = self.gerar_rows_farmacias(resultado)
+        self.tabela_farmacias_ref.current.update()
 
     from database import listar_usuarios, aprovar_usuario, recusar_usuario
 
