@@ -1,6 +1,8 @@
 import flet as ft
 from database import listar_medicamentos, editar_medicamento, adicionar_medicamento, listar_categorias, listar_fabricantes, desativar_medicamento, adicionar_farmacia, listar_farmacias, deletar_farmacia, editar_farmacia, listar_usuarios, registrar_usuario, aprovar_usuario, recusar_usuario, listar_agendamentos, adicionar_agendamento, reativar_medicamento
 from datetime import datetime
+from collections import Counter
+import calendar
 
 class TelaAdminDashboard:
     def __init__(self, page: ft.Page):
@@ -244,6 +246,7 @@ class TelaAdminDashboard:
             columns=12,
             spacing=20,
             controls=[
+                
                 ft.Container(
                     col={"sm": 12, "md": 4},
                     bgcolor="#FFFFFF",
@@ -252,15 +255,10 @@ class TelaAdminDashboard:
                     padding=20,
                     content=ft.Column([
                         ft.Text("Evolução dos Agendamentos", size=16, weight="bold", color="#111827"),
-                        ft.Container(
-                            height=120,
-                            bgcolor="#d1eefa",
-                            border_radius=10,
-                            alignment=ft.alignment.center,
-                            content=ft.Text("Gráfico aqui", size=14, color=ft.Colors.BLUE_600)
-                        )
+                        self.gerar_grafico_agendamentos_semanais()
                     ], spacing=10)
                 ),
+
                 self.card_estoque_medicamentos(),
                 ft.Container(
                     col={"sm": 12, "md": 4},
@@ -1974,6 +1972,109 @@ class TelaAdminDashboard:
 
         # Voltar para a lista de agendamentos
         self.load_agendamentos()
+       
+
+    def gerar_grafico_agendamentos_semanais(self):
+        from collections import Counter
+        from datetime import datetime
+
+        agendamentos = listar_agendamentos()
+
+        dias_pt = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"]
+        dias_semana = [datetime.strptime(a[5], "%Y-%m-%d").weekday() for a in agendamentos]
+
+        # Simulação (remova essa linha para usar dados reais)
+        contagem = Counter({
+            0: 3,
+            1: 7,
+            2: 2,
+            3: 9,
+            4: 5,
+            5: 1,
+            6: 4
+        })
+
+        # contagem = Counter(dias_semana)  # Use isso no final
+
+        maior_valor_real = max(contagem.values(), default=0)
+        maior_valor_visual = max(maior_valor_real, 5) + 1
+
+        cores_dias = [
+            ft.colors.BLUE_600,
+            ft.colors.INDIGO_600,
+            ft.colors.CYAN_600,
+            ft.colors.GREEN_600,
+            ft.colors.AMBER_600,
+            ft.colors.ORANGE_600,
+            ft.colors.RED_600
+        ]
+
+        grupos = []
+
+        for i in range(7):
+            valor_real = contagem.get(i, 0)
+            altura_barra = max(valor_real, 1)
+            cor = cores_dias[i]
+
+            if valor_real == maior_valor_real and valor_real > 0:
+                cor = ft.colors.BLUE_ACCENT_700
+
+            grupo = ft.Column([
+                ft.Text(str(valor_real), size=11, color=ft.colors.BLACK, weight=ft.FontWeight.BOLD),
+                ft.Container(
+                    height=120,  # 🔽 diminuído
+                    width=30,
+                    alignment=ft.alignment.bottom_center,
+                    content=ft.BarChart(
+                        bar_groups=[
+                            ft.BarChartGroup(
+                                x=0,
+                                bar_rods=[
+                                    ft.BarChartRod(
+                                        to_y=altura_barra,
+                                        width=24,
+                                        color=cor,
+                                        border_radius=6
+                                    )
+                                ]
+                            )
+                        ],
+                        max_y=maior_valor_visual,
+                        left_axis=None,
+                        bottom_axis=None,
+                        horizontal_grid_lines=None,
+                        border=None,
+                        expand=True
+                    )
+                )
+            ], horizontal_alignment=ft.CrossAxisAlignment.CENTER)
+            grupos.append(grupo)
+
+        return ft.Container(
+            bgcolor="#FFFFFF",
+            border_radius=12,
+            shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK12),
+            padding=16,
+            content=ft.Column([
+                ft.Text("📊 Agendamentos por Dia da Semana", size=15, weight="bold", color="#1E3A8A"),
+                ft.Row(
+                    alignment=ft.MainAxisAlignment.SPACE_AROUND,
+                    vertical_alignment=ft.CrossAxisAlignment.END,
+                    controls=grupos
+                ),
+                ft.Row(
+                    alignment=ft.MainAxisAlignment.SPACE_AROUND,
+                    controls=[
+                        ft.Text(dias_pt[i][:3], size=11)
+                        for i in range(7)
+                    ]
+                )
+            ], spacing=8)
+        )
+
+
+
+
 
     def build_tela(self):
         return ft.View(
