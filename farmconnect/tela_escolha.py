@@ -85,7 +85,7 @@ class TelaEscolhaUsuario:
                 alignment=ft.MainAxisAlignment.START
             ),
             style=ft.ButtonStyle(
-                color=ft.Colors.WHITE,
+                color=ft.Colors.GREY_50,
             ),
             on_click=self.voltar,
         )

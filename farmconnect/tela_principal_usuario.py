@@ -16,7 +16,7 @@ class TelaUsuarioDashboard:
         self.medicamentos = self.carregar_medicamentos()
         self.page.snack_bar = ft.SnackBar(
             content=ft.Text(""),
-            bgcolor=ft.colors.RED_400,
+            bgcolor=ft.Colors.RED_400,
             duration=3000
         )
         self.nome_usuario = self.page.session.get("usuario_nome") or "Paciente"
@@ -52,7 +52,7 @@ class TelaUsuarioDashboard:
             aumentar_quantidade_db(self.usuario_id, item["id"])
         else:
             self.page.snack_bar.content.value = "Você já adicionou todas as unidades disponíveis."
-            self.page.snack_bar.bgcolor = ft.colors.RED_400
+            self.page.snack_bar.bgcolor = ft.Colors.RED_400
             self.page.snack_bar.open = True
 
         self.atualizar_contador()
@@ -92,7 +92,7 @@ class TelaUsuarioDashboard:
             visible=False,
             animate=ft.Animation(300, "easeInOut"),
             border_radius=24,
-            shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK26, offset=ft.Offset(0, 6)),
+            shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26, offset=ft.Offset(0, 6)),
             border=ft.border.all(1, color="#E2E8F0"),
             content=ft.Column([
                 ft.Container(
@@ -104,7 +104,7 @@ class TelaUsuarioDashboard:
                         ft.Text("Meu Carrinho", size=22, weight=ft.FontWeight.BOLD, color="#1D4ED8"),
                         ft.IconButton(
                             icon=ft.icons.CLOSE,
-                            icon_color=ft.colors.RED,
+                            icon_color=ft.Colors.RED,
                             tooltip="Fechar",
                             icon_size=22,
                             on_click=lambda e: self.fechar_carrinho()
@@ -118,7 +118,7 @@ class TelaUsuarioDashboard:
                     "Confirmar",
                     icon=ft.icons.CHECK,
                     bgcolor="#16A34A",
-                    color=ft.colors.WHITE,
+                    color=ft.Colors.WHITE,
                     style=ft.ButtonStyle(
                         shape=ft.RoundedRectangleBorder(radius=12),
                         padding=ft.padding.symmetric(horizontal=20, vertical=14)
@@ -147,7 +147,7 @@ class TelaUsuarioDashboard:
                 adicionar_ao_carrinho_db(self.usuario_id, medicamento["id"])
             else:
                 self.page.snack_bar.content.value = "Você já adicionou todas as unidades disponíveis."
-                self.page.snack_bar.bgcolor = ft.colors.RED_400
+                self.page.snack_bar.bgcolor = ft.Colors.RED_400
                 self.page.snack_bar.open = True
                 self.page.update()
                 return
@@ -158,7 +158,7 @@ class TelaUsuarioDashboard:
                 adicionar_ao_carrinho_db(self.usuario_id, medicamento["id"])
             else:
                 self.page.snack_bar.content.value = "❗ Medicamento fora de estoque."
-                self.page.snack_bar.bgcolor = ft.colors.RED_400
+                self.page.snack_bar.bgcolor = ft.Colors.RED_400
                 self.page.snack_bar.open = True
                 self.page.update()
                 return
@@ -177,7 +177,7 @@ class TelaUsuarioDashboard:
 
         if not self.carrinho:
             itens_coluna.controls.append(
-                ft.Text("Carrinho vazio", size=14, color=ft.colors.GREY_600)
+                ft.Text("Carrinho vazio", size=14, color=ft.Colors.GREY_600)
             )
         else:
             for item in self.carrinho:
@@ -192,14 +192,14 @@ class TelaUsuarioDashboard:
                     ft.Row([
                         ft.IconButton(
                             icon=ft.icons.REMOVE,
-                            icon_color=ft.colors.BLUE_600,
+                            icon_color=ft.Colors.BLUE_600,
                             tooltip="Diminuir",
                             on_click=lambda e, med=item: self.diminuir_quantidade(med)
                         ),
                         ft.Text(f"{item['quantidade']} un.", size=14, weight=ft.FontWeight.BOLD),
                         ft.IconButton(
                             icon=ft.icons.ADD,
-                            icon_color=ft.colors.BLUE_600,
+                            icon_color=ft.Colors.BLUE_600,
                             tooltip="Aumentar",
                             on_click=lambda e, med=item: self.aumentar_quantidade(med)
                         )
@@ -207,7 +207,7 @@ class TelaUsuarioDashboard:
                 ], expand=True),
                 ft.IconButton(
                     icon=ft.icons.DELETE_OUTLINE,
-                    icon_color=ft.colors.RED,
+                    icon_color=ft.Colors.RED,
                     tooltip="Remover",
                     on_click=partial(self.remover_do_carrinho, item=item)
                 )
@@ -288,7 +288,7 @@ class TelaUsuarioDashboard:
                 on_click=self.abrir_carrinho
             ),
             ft.Container(
-                content=ft.Text("0", size=10, color=ft.colors.WHITE, ref=self.carrinho_count),
+                content=ft.Text("0", size=10, color=ft.Colors.WHITE, ref=self.carrinho_count),
                 width=16,
                 height=16,
                 alignment=ft.alignment.center,
@@ -376,7 +376,7 @@ class TelaUsuarioDashboard:
                                     bgcolor="#F8FAFC",
                                     border_radius=16,
                                     padding=ft.padding.symmetric(horizontal=20, vertical=18),
-                                    shadow=ft.BoxShadow(blur_radius=12, color=ft.colors.BLACK26, offset=ft.Offset(0, 3)),
+                                    shadow=ft.BoxShadow(blur_radius=12, color=ft.Colors.BLACK26, offset=ft.Offset(0, 3)),
                                     content=ft.ResponsiveRow([
                                         ft.Image(src="logo.png", width=110, col={"xs": 12, "md": 2}),
                                         ft.TextField(
@@ -384,7 +384,7 @@ class TelaUsuarioDashboard:
                                             hint_text="Buscar medicamentos...",
                                             prefix_icon=ft.icons.SEARCH,
                                             border_radius=12,
-                                            bgcolor=ft.colors.WHITE,
+                                            bgcolor=ft.Colors.WHITE,
                                             height=45,
                                             col={"xs": 12, "md": 6},
                                             on_change=lambda e: self.gerar_cards(None)
@@ -398,11 +398,11 @@ class TelaUsuarioDashboard:
                                                     on_click=self.abrir_carrinho
                                                 ),
                                                 ft.Container(
-                                                    content=ft.Text("0", size=10, color=ft.colors.WHITE, ref=self.carrinho_count),
+                                                    content=ft.Text("0", size=10, color=ft.Colors.WHITE, ref=self.carrinho_count),
                                                     width=16,
                                                     height=16,
                                                     alignment=ft.alignment.center,
-                                                    bgcolor=ft.colors.RED,
+                                                    bgcolor=ft.Colors.RED,
                                                     border_radius=8,
                                                     right=0,
                                                     top=0,
@@ -462,13 +462,13 @@ class TelaUsuarioDashboard:
                             color=ft.Colors.BLUE_900,
                             text_align=ft.TextAlign.CENTER,
                         ),
-                        ft.Divider(height=30, color=ft.colors.TRANSPARENT),
+                        ft.Divider(height=30, color=ft.Colors.TRANSPARENT),
                         # Caixa de Documentos
                         ft.Container(
                             padding=30,
-                            bgcolor=ft.colors.WHITE,
+                            bgcolor=ft.Colors.WHITE,
                             border_radius=20,
-                            shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK26, offset=ft.Offset(0, 10)),
+                            shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26, offset=ft.Offset(0, 10)),
                             content=ft.Column([
                                 ft.Text(
                                     "Para retirar medicamentos é necessário apresentar:",
@@ -489,14 +489,14 @@ class TelaUsuarioDashboard:
                                 ),
                             ], spacing=10)
                         ),
-                        ft.Divider(height=30, color=ft.colors.TRANSPARENT),
+                        ft.Divider(height=30, color=ft.Colors.TRANSPARENT),
                         # Botões de Ação
                         ft.Row([
                             ft.ElevatedButton(
                                 "Baixar Documento de Autorização",
                                 icon=ft.icons.FILE_DOWNLOAD,
                                 bgcolor=ft.Colors.BLUE_900,
-                                color=ft.colors.WHITE,
+                                color=ft.Colors.WHITE,
                                 width=260,
                                 style=ft.ButtonStyle(
                                     shape=ft.RoundedRectangleBorder(radius=12),
@@ -507,6 +507,7 @@ class TelaUsuarioDashboard:
                             ft.ElevatedButton(
                                 "Voltar",
                                 icon=ft.icons.ARROW_BACK_IOS_NEW,
+                                bgcolor=ft.Colors.GREY_50,
                                 width=150,
                                 style=ft.ButtonStyle(
                                     shape=ft.RoundedRectangleBorder(radius=12),
@@ -557,7 +558,7 @@ class TelaUsuarioDashboard:
         def salvar(ref_bool, campo, input_ref):
             self.dados_usuario[campo] = input_ref.current.value
             ref_bool.current = False
-            self.page.snack_bar = ft.SnackBar(ft.Text(f"{campo.capitalize()} atualizado com sucesso!"), bgcolor=ft.colors.GREEN_100)
+            self.page.snack_bar = ft.SnackBar(ft.Text(f"{campo.capitalize()} atualizado com sucesso!"), bgcolor=ft.Colors.GREEN_100)
             self.page.snack_bar.open = True
             self.page.update()
 
@@ -572,7 +573,7 @@ class TelaUsuarioDashboard:
                             ft.Text(label, size=16, color=ft.Colors.GREY_700),
                             ft.IconButton(
                                 icon=ft.icons.EDIT,
-                                icon_color=ft.colors.BLUE,
+                                icon_color=ft.Colors.BLUE,
                                 tooltip="Editar",
                                 on_click=lambda e: iniciar_edicao(ref_bool, input_ref)
                             )
@@ -610,11 +611,11 @@ class TelaUsuarioDashboard:
                         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                         spacing=30,
                         controls=[
-                            ft.Text("Perfil do Paciente", size=32, weight=ft.FontWeight.BOLD, color=ft.colors.BLUE_900),
+                            ft.Text("Perfil do Paciente", size=32, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
                             ft.Container(
                                 width=700,
                                 padding=25,
-                                bgcolor=ft.colors.WHITE,
+                                bgcolor=ft.Colors.WHITE,
                                 border_radius=20,
                                 shadow=ft.BoxShadow(blur_radius=24, color=ft.Colors.BLACK26, offset=ft.Offset(0, 12)),
                                 content=ft.Column(
@@ -641,6 +642,7 @@ class TelaUsuarioDashboard:
                             ft.ElevatedButton(
                                 "Voltar",
                                 icon=ft.icons.ARROW_BACK,
+                                bgcolor=ft.Colors.GREY_50,
                                 width=160,
                                 style=ft.ButtonStyle(
                                     shape=ft.RoundedRectangleBorder(radius=16),
@@ -686,18 +688,18 @@ class TelaUsuarioDashboard:
                             color=ft.Colors.BLUE_900,
                             text_align=ft.TextAlign.CENTER,
                         ),
-                        ft.Divider(height=20, color=ft.colors.TRANSPARENT),
+                        ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
                         ft.Container(
                             padding=30,
                             bgcolor="#F8FAFC",
                             border_radius=20,
-                            shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK26, offset=ft.Offset(0, 15)),
+                            shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26, offset=ft.Offset(0, 15)),
                             content=ft.Column([
                                 ft.Row([
                                     ft.TextField(label="🔍 Buscar Medicamento", expand=True, border_radius=30, on_change=lambda e: print(e.control.value)),
                                     ft.IconButton(icon=ft.icons.SEARCH, icon_color=ft.Colors.BLUE_900, on_click=lambda e: print("Buscar"))
                                 ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
-                                ft.Divider(height=20, color=ft.colors.TRANSPARENT),
+                                ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
                                 ft.ListView(
                                     expand=True,
                                     controls=[
@@ -706,17 +708,17 @@ class TelaUsuarioDashboard:
                                             bgcolor="#F8FAFC",
                                             border_radius=16,
                                             margin=ft.margin.only(bottom=20),
-                                            shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK12, offset=ft.Offset(0, 10)),
+                                            shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK12, offset=ft.Offset(0, 10)),
                                             content=ft.Column([
                                                 ft.Text(med["nome"], size=20, weight=ft.FontWeight.BOLD, color="#111827"),
-                                                ft.Divider(height=10, color=ft.colors.TRANSPARENT),
+                                                ft.Divider(height=10, color=ft.Colors.TRANSPARENT),
                                                 ft.Text(f"📅 Data de Retirada: {med['data_retirada']}", size=14, color="#374151"),
                                                 ft.Text(f"📦 Quantidade: {med['quantidade']} unidades", size=14, color="#374151"),
                                                 ft.ElevatedButton(
                                                     "Ver Detalhes",
                                                     icon=ft.icons.INFO_OUTLINE,
                                                     bgcolor=ft.Colors.BLUE_900,
-                                                    color=ft.colors.WHITE,
+                                                    color=ft.Colors.WHITE,
                                                     width=200,
                                                     style=ft.ButtonStyle(
                                                         shape=ft.RoundedRectangleBorder(radius=12),
@@ -731,10 +733,11 @@ class TelaUsuarioDashboard:
                                 )
                             ], spacing=20)
                         ),
-                        ft.Divider(height=30, color=ft.colors.TRANSPARENT),
+                        ft.Divider(height=30, color=ft.Colors.TRANSPARENT),
                         ft.ElevatedButton(
                             "Voltar",
                             icon=ft.Icons.ARROW_BACK_IOS_NEW,
+                            bgcolor=ft.Colors.GREY_50,
                             width=150,
                             style=ft.ButtonStyle(
                                 shape=ft.RoundedRectangleBorder(radius=12),
@@ -759,8 +762,8 @@ class TelaUsuarioDashboard:
         self.data_escolhida = None
         self.horario_escolhido = None
 
-        self.data_selecionada = ft.Text("📅 Nenhuma data selecionada", size=16, color=ft.colors.GREY_700)
-        self.hora_selecionada = ft.Text("⏰ Nenhum horário selecionado", size=16, color=ft.colors.GREY_700)
+        self.data_selecionada = ft.Text("📅 Nenhuma data selecionada", size=16, color=ft.Colors.GREY_700)
+        self.hora_selecionada = ft.Text("⏰ Nenhum horário selecionado", size=16, color=ft.Colors.GREY_700)
 
         calendario_grid = ft.Ref[ft.Column]()
         self.mes_label = ft.Ref[ft.Text]()
@@ -785,8 +788,8 @@ class TelaUsuarioDashboard:
                                 text_style=ft.TextStyle(size=12),
                                 padding=0,
                                 shape=ft.RoundedRectangleBorder(radius=8),
-                                bgcolor="#E0F2FE" if dia == self.data_escolhida else ft.colors.WHITE,
-                                color=ft.colors.BLUE_900,
+                                bgcolor="#E0F2FE" if dia == self.data_escolhida else ft.Colors.WHITE,
+                                color=ft.Colors.BLUE_900,
                             ),
                             on_click=lambda e, dia=dia: selecionar_data(dia)
                         ) if dia.month == self.mes_atual else ft.Container(width=40, height=40)
@@ -824,7 +827,7 @@ class TelaUsuarioDashboard:
 
         def confirmar_agendamento(e):
             if not self.data_escolhida or not self.horario_escolhido:
-                self.page.snack_bar = ft.SnackBar(ft.Text("Por favor, selecione data e horário."), bgcolor=ft.colors.RED_400)
+                self.page.snack_bar = ft.SnackBar(ft.Text("Por favor, selecione data e horário."), bgcolor=ft.Colors.RED_400)
                 self.page.snack_bar.open = True
                 self.page.update()
                 return
@@ -846,8 +849,8 @@ class TelaUsuarioDashboard:
                     style=ft.ButtonStyle(
                         text_style=ft.TextStyle(size=12),
                         shape=ft.RoundedRectangleBorder(radius=8),
-                        bgcolor=ft.colors.BLUE_100 if texto == self.horario_escolhido else ft.colors.WHITE,
-                        color=ft.colors.BLUE_900,
+                        bgcolor=ft.Colors.BLUE_100 if texto == self.horario_escolhido else ft.Colors.WHITE,
+                        color=ft.Colors.BLUE_900,
                     ),
                     on_click=lambda e, h=texto: selecionar_hora_manual(h)
                 )
@@ -868,7 +871,7 @@ class TelaUsuarioDashboard:
             controls=[
                 ft.Container(
                     expand=True,
-                    bgcolor=ft.colors.WHITE,
+                    bgcolor=ft.Colors.WHITE,
                     alignment=ft.alignment.center,
                     padding=40,
                     content=ft.Column(
@@ -877,29 +880,29 @@ class TelaUsuarioDashboard:
                         spacing=30,
                         scroll=ft.ScrollMode.AUTO,
                         controls=[
-                            ft.Text("🗓️ Agendamento de Retirada", size=32, weight=ft.FontWeight.BOLD, color=ft.colors.BLUE_900),
+                            ft.Text("🗓️ Agendamento de Retirada", size=32, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
                             ft.Container(
                                 width=700,
                                 padding=30,
                                 border_radius=24,
                                 bgcolor="#F0F9FF",
-                                shadow=ft.BoxShadow(blur_radius=25, color=ft.colors.BLACK12, offset=ft.Offset(0, 10)),
+                                shadow=ft.BoxShadow(blur_radius=25, color=ft.Colors.BLACK12, offset=ft.Offset(0, 10)),
                                 content=ft.Column(
                                     spacing=25,
                                     alignment=ft.MainAxisAlignment.CENTER,
                                     horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                                     controls=[
-                                        ft.Text("Escolha a data e o horário desejado:", size=18, color=ft.colors.BLUE_900, text_align=ft.TextAlign.CENTER),
+                                        ft.Text("Escolha a data e o horário desejado:", size=18, color=ft.Colors.BLUE_900, text_align=ft.TextAlign.CENTER),
 
-                                        ft.Text("⏰ Selecione o Horário:", size=16, weight=ft.FontWeight.BOLD, color=ft.colors.BLUE_900),
+                                        ft.Text("⏰ Selecione o Horário:", size=16, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
                                         ft.Column(gerar_botoes_horarios(), spacing=10),
                                         self.hora_selecionada,
 
-                                        ft.Text("📅 Selecione a Data:", size=16, weight=ft.FontWeight.BOLD, color=ft.colors.BLUE_900),
+                                        ft.Text("📅 Selecione a Data:", size=16, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
                                         ft.Column([
                                             ft.Row([
                                                 ft.IconButton(ft.icons.ARROW_BACK, on_click=lambda e: mudar_mes("anterior")),
-                                                ft.Text("", ref=self.mes_label, size=16, weight="bold", color=ft.colors.BLUE_900),
+                                                ft.Text("", ref=self.mes_label, size=16, weight="bold", color=ft.Colors.BLUE_900),
                                                 ft.IconButton(ft.icons.ARROW_FORWARD, on_click=lambda e: mudar_mes("proximo")),
                                             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
                                             ft.Divider(),
@@ -912,8 +915,8 @@ class TelaUsuarioDashboard:
                                             icon=ft.icons.CHECK_CIRCLE,
                                             on_click=confirmar_agendamento,
                                             style=ft.ButtonStyle(
-                                                bgcolor=ft.colors.GREEN_600,
-                                                color=ft.colors.WHITE,
+                                                bgcolor=ft.Colors.GREEN_600,
+                                                color=ft.Colors.WHITE,
                                                 padding=ft.padding.symmetric(vertical=14),
                                                 shape=ft.RoundedRectangleBorder(radius=16)
                                             )
@@ -926,8 +929,8 @@ class TelaUsuarioDashboard:
                                 icon=ft.icons.ARROW_BACK,
                                 on_click=lambda e: self.page.go("/usuario"),
                                 style=ft.ButtonStyle(
-                                    bgcolor=ft.colors.GREY_500,
-                                    color=ft.colors.WHITE,
+                                    bgcolor=ft.Colors.GREY_50,
+                                    color=ft.Colors.WHITE,
                                     padding=ft.padding.symmetric(vertical=12, horizontal=24),
                                     shape=ft.RoundedRectangleBorder(radius=12)
                                 )
@@ -949,7 +952,7 @@ class TelaUsuarioDashboard:
                     ft.Container(
                         expand=True,
                         alignment=ft.alignment.center,
-                        content=ft.Text("❌ Nenhum medicamento selecionado.", size=20, color=ft.colors.RED)
+                        content=ft.Text("❌ Nenhum medicamento selecionado.", size=20, color=ft.Colors.RED)
                     )
                 ]
             )
@@ -980,12 +983,12 @@ class TelaUsuarioDashboard:
                 self.atualizar_contador()
                 self.page.snack_bar = ft.SnackBar(
                     content=ft.Text(f"✅ {qtd} unidade(s) adicionadas ao carrinho."),
-                    bgcolor=ft.colors.GREEN_400
+                    bgcolor=ft.Colors.GREEN_400
                 )
             except:
                 self.page.snack_bar = ft.SnackBar(
                     content=ft.Text("❗ Quantidade inválida."),
-                    bgcolor=ft.colors.RED_400
+                    bgcolor=ft.Colors.RED_400
                 )
             self.page.snack_bar.open = True
             self.atualizar_contador()
@@ -1033,7 +1036,7 @@ class TelaUsuarioDashboard:
                                         padding=20,
                                         bgcolor="white",
                                         border_radius=20,
-                                        shadow=ft.BoxShadow(blur_radius=15, color=ft.colors.BLACK12, offset=ft.Offset(0, 10)),
+                                        shadow=ft.BoxShadow(blur_radius=15, color=ft.Colors.BLACK12, offset=ft.Offset(0, 10)),
                                         content=ft.Column([
 
                                             ft.Image(ref=self.imagem_principal, src=medicamento["imagem"], width=300, height=300),
@@ -1058,9 +1061,9 @@ class TelaUsuarioDashboard:
                                         padding=20,
                                         content=ft.Column([
                                             ft.Text(medicamento["nome"], size=26, weight=ft.FontWeight.BOLD, color="#1E3A8A"),
-                                            ft.Text("Tipo: Uso controlado", size=14, color=ft.colors.GREY_700),
-                                            ft.Text("Marca: Genérico", size=14, color=ft.colors.GREY_700),
-                                            ft.Text("Quantidade: 1 unidade", size=14, color=ft.colors.GREY_700),
+                                            ft.Text("Tipo: Uso controlado", size=14, color=ft.Colors.GREY_700),
+                                            ft.Text("Marca: Genérico", size=14, color=ft.Colors.GREY_700),
+                                            ft.Text("Quantidade: 1 unidade", size=14, color=ft.Colors.GREY_700),
                                             ft.Divider(height=20),
                                             ft.Row([
                                                 ft.TextField(
@@ -1077,7 +1080,7 @@ class TelaUsuarioDashboard:
                                                     icon=ft.icons.ADD_SHOPPING_CART,
                                                     style=ft.ButtonStyle(
                                                         bgcolor="#1E3A8A",
-                                                        color=ft.colors.WHITE,
+                                                        color=ft.Colors.WHITE,
                                                         padding=ft.padding.symmetric(vertical=14, horizontal=20),
                                                         shape=ft.RoundedRectangleBorder(radius=12)
                                                     ),
@@ -1095,7 +1098,7 @@ class TelaUsuarioDashboard:
                                         padding=20,
                                         bgcolor="white",
                                         border_radius=16,
-                                        shadow=ft.BoxShadow(blur_radius=10, color=ft.colors.BLACK12, offset=ft.Offset(0, 8)),
+                                        shadow=ft.BoxShadow(blur_radius=10, color=ft.Colors.BLACK12, offset=ft.Offset(0, 8)),
                                         content=ft.Column([
                                             ft.Text("📘 Descrição", size=20, weight=ft.FontWeight.BOLD),
                                             ft.Text(medicamento["descricao"], size=15),
@@ -1112,7 +1115,7 @@ class TelaUsuarioDashboard:
                                         padding=20,
                                         bgcolor="white",
                                         border_radius=16,
-                                        shadow=ft.BoxShadow(blur_radius=10, color=ft.colors.BLACK12, offset=ft.Offset(0, 8)),
+                                        shadow=ft.BoxShadow(blur_radius=10, color=ft.Colors.BLACK12, offset=ft.Offset(0, 8)),
                                         content=ft.Column([
                                             ft.Text("📦 Características", size=20, weight=ft.FontWeight.BOLD),
                                             ft.Divider(),
@@ -1162,11 +1165,11 @@ class TelaUsuarioDashboard:
 
         def status_badge(status):
             cores = {
-                "Pendente": (ft.colors.AMBER_700, ft.colors.AMBER_100),
-                "Confirmado": (ft.colors.GREEN_600, ft.colors.GREEN_100),
-                "Cancelado": (ft.colors.RED_600, ft.colors.RED_100),
+                "Pendente": (ft.Colors.AMBER_700, ft.Colors.AMBER_100),
+                "Confirmado": (ft.Colors.GREEN_600, ft.Colors.GREEN_100),
+                "Cancelado": (ft.Colors.RED_600, ft.Colors.RED_100),
             }
-            cor_texto, cor_bg = cores.get(status, (ft.colors.GREY, ft.colors.GREY_200))
+            cor_texto, cor_bg = cores.get(status, (ft.Colors.GREY, ft.Colors.GREY_200))
             icone = (
                 ft.icons.CHECK_CIRCLE_OUTLINE if status == "Confirmado"
                 else ft.icons.HOURGLASS_EMPTY if status == "Pendente"
@@ -1193,8 +1196,8 @@ class TelaUsuarioDashboard:
                     style=ft.ButtonStyle(
                         padding=ft.padding.symmetric(horizontal=14, vertical=8),
                         shape=ft.RoundedRectangleBorder(radius=12),
-                        bgcolor=ft.colors.INDIGO_100,
-                        color=ft.colors.INDIGO_900
+                        bgcolor=ft.Colors.INDIGO_100,
+                        color=ft.Colors.INDIGO_900
                     ),
                     on_click=lambda e, med=ag["medicamento"]: print(f"Reagendando: {med}")
                 )
@@ -1206,10 +1209,10 @@ class TelaUsuarioDashboard:
                     content=ft.Container(
                         scale=1.0,
                         opacity=1.0,
-                        bgcolor=ft.colors.WHITE,
+                        bgcolor=ft.Colors.WHITE,
                         border_radius=16,
                         padding=20,
-                        shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK26, offset=ft.Offset(0, 10)),
+                        shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26, offset=ft.Offset(0, 10)),
                         animate=ft.Animation(400, "easeInOut"),
                         content=ft.Column([
                             ft.Row([
@@ -1221,7 +1224,7 @@ class TelaUsuarioDashboard:
                             ft.Text(f"🏥 Farmácia: {ag['farmacia']}", size=14),
                             ft.Text(f"🗓️ Data: {ag['data']} às {ag['horario']}", size=14),
                             ft.Text(f"🔐 Código: {ag['codigo']}", size=14),
-                            ft.Text(f"📆 Criado em: {ag['criado_em']}", size=12, color=ft.colors.GREY_600),
+                            ft.Text(f"📆 Criado em: {ag['criado_em']}", size=12, color=ft.Colors.GREY_600),
                             ft.Divider(height=10),
                             acoes
                         ], spacing=8)
@@ -1234,11 +1237,11 @@ class TelaUsuarioDashboard:
             if cards else
             ft.Container(
                 content=ft.Column([
-                    ft.Text("📭 Nenhum agendamento encontrado", size=20, color=ft.colors.GREY_600),
-                    ft.Text("Você ainda não possui agendamentos realizados.", size=14, color=ft.colors.GREY_500),
+                    ft.Text("📭 Nenhum agendamento encontrado", size=20, color=ft.Colors.GREY_600),
+                    ft.Text("Você ainda não possui agendamentos realizados.", size=14, color=ft.Colors.GREY_500),
                 ], alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=8),
                 padding=60,
-                bgcolor=ft.colors.WHITE,
+                bgcolor=ft.Colors.WHITE,
                 border_radius=20,
                 shadow=ft.BoxShadow(blur_radius=12, color="#CBD5E1")
             )
@@ -1263,34 +1266,33 @@ class TelaUsuarioDashboard:
                                 content=ft.IconButton(
                                     icon=ft.icons.DESCRIPTION,
                                     tooltip="Ver documentos necessários",
-                                    icon_color=ft.colors.BLUE_700,
+                                    icon_color=ft.Colors.BLUE_700,
                                     on_click=lambda e: self.page.go("/documentos")
                                 )
                             ),
                             ft.Column([
-                                ft.Icon(name=ft.icons.CALENDAR_MONTH, color=ft.colors.BLUE_900, size=32),
-                                ft.Text("Meus Agendamentos", size=28, weight=ft.FontWeight.BOLD, color=ft.colors.BLUE_900),
+                                ft.Icon(name=ft.icons.CALENDAR_MONTH, color=ft.Colors.BLUE_900, size=32),
+                                ft.Text("Meus Agendamentos", size=28, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
                             ], alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=8),
-                            ft.Divider(height=20, color=ft.colors.TRANSPARENT),
+                            ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
                             conteudo,
-                            ft.Divider(height=20, color=ft.colors.TRANSPARENT),
+                            ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
                             ft.ElevatedButton(
                                 "Exportar",
                                 icon=ft.icons.PICTURE_AS_PDF,
-                                icon_color=ft.colors.WHITE,
+                                icon_color=ft.Colors.WHITE,
                                 style=ft.ButtonStyle(
                                     padding=ft.padding.symmetric(horizontal=20, vertical=14),
                                     shape=ft.RoundedRectangleBorder(radius=12),
-                                    bgcolor=ft.colors.BLUE_700,
-                                    color=ft.colors.WHITE
+                                    bgcolor=ft.Colors.BLUE_700,
+                                    color=ft.Colors.WHITE
                                 ),
                                 on_click=lambda e: print("Exportar todos os agendamentos")
                             ),
-
-                            ft.Divider(height=20, color=ft.colors.TRANSPARENT),
                             ft.ElevatedButton(
                                 "Voltar",
                                 icon=ft.icons.ARROW_BACK_IOS_NEW,
+                                bgcolor=ft.Colors.GREY_50,
                                 width=160,
                                 style=ft.ButtonStyle(
                                     shape=ft.RoundedRectangleBorder(radius=16),
@@ -1319,12 +1321,12 @@ class TelaUsuarioDashboard:
                         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                         spacing=30,
                         controls=[
-                            ft.Icon(ft.icons.CHECK_CIRCLE, size=80, color=ft.colors.GREEN_600),
+                            ft.Icon(ft.icons.CHECK_CIRCLE, size=80, color=ft.Colors.GREEN_600),
                             ft.Text("Agendamento Confirmado!", size=30, weight=ft.FontWeight.BOLD, color="#1E3A8A"),
                             ft.Text(
                                 "Você tem até 10 dias para retirar seu medicamento na farmácia selecionada.",
                                 size=18,
-                                color=ft.colors.GREY_800,
+                                color=ft.Colors.GREY_800,
                                 text_align=ft.TextAlign.CENTER
                             ),
                             ft.ElevatedButton(
@@ -1332,8 +1334,8 @@ class TelaUsuarioDashboard:
                                 icon=ft.icons.CALENDAR_MONTH,
                                 on_click=lambda e: self.page.go("/agendamentos"),
                                 style=ft.ButtonStyle(
-                                    bgcolor=ft.colors.BLUE_700,
-                                    color=ft.colors.WHITE,
+                                    bgcolor=ft.Colors.BLUE_700,
+                                    color=ft.Colors.WHITE,
                                     padding=ft.padding.symmetric(horizontal=24, vertical=14),
                                     shape=ft.RoundedRectangleBorder(radius=12)
                                 )
@@ -1342,7 +1344,7 @@ class TelaUsuarioDashboard:
                                 "Voltar para a Página Inicial",
                                 on_click=lambda e: self.page.go("/usuario"),
                                 style=ft.ButtonStyle(
-                                    color=ft.colors.BLUE_700,
+                                    color=ft.Colors.BLUE_700,
                                     padding=ft.padding.symmetric(horizontal=24, vertical=10)
                                 )
                             )
