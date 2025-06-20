@@ -100,10 +100,10 @@ class TelaUsuarioDashboard:
                     border_radius=12,
                     bgcolor="#F8FAFC",
                     content=ft.Row([
-                        ft.Icon(name=ft.icons.SHOPPING_CART_OUTLINED, size=26, color="#1D4ED8"),
+                        ft.Icon(name=ft.Icons.SHOPPING_CART_OUTLINED, size=26, color="#1D4ED8"),
                         ft.Text("Meu Carrinho", size=22, weight=ft.FontWeight.BOLD, color="#1D4ED8"),
                         ft.IconButton(
-                            icon=ft.icons.CLOSE,
+                            icon=ft.Icons.CLOSE,
                             icon_color=ft.Colors.RED,
                             tooltip="Fechar",
                             icon_size=22,
@@ -116,7 +116,7 @@ class TelaUsuarioDashboard:
                 ft.Container(),
                 ft.ElevatedButton(
                     "Confirmar",
-                    icon=ft.icons.CHECK,
+                    icon=ft.Icons.CHECK,
                     bgcolor="#16A34A",
                     color=ft.Colors.WHITE,
                     style=ft.ButtonStyle(
@@ -191,14 +191,14 @@ class TelaUsuarioDashboard:
                     ft.Text(item["nome"], size=13, weight=ft.FontWeight.BOLD),
                     ft.Row([
                         ft.IconButton(
-                            icon=ft.icons.REMOVE,
+                            icon=ft.Icons.REMOVE,
                             icon_color=ft.Colors.BLUE_600,
                             tooltip="Diminuir",
                             on_click=lambda e, med=item: self.diminuir_quantidade(med)
                         ),
                         ft.Text(f"{item['quantidade']} un.", size=14, weight=ft.FontWeight.BOLD),
                         ft.IconButton(
-                            icon=ft.icons.ADD,
+                            icon=ft.Icons.ADD,
                             icon_color=ft.Colors.BLUE_600,
                             tooltip="Aumentar",
                             on_click=lambda e, med=item: self.aumentar_quantidade(med)
@@ -206,7 +206,7 @@ class TelaUsuarioDashboard:
                     ], spacing=5)
                 ], expand=True),
                 ft.IconButton(
-                    icon=ft.icons.DELETE_OUTLINE,
+                    icon=ft.Icons.DELETE_OUTLINE,
                     icon_color=ft.Colors.RED,
                     tooltip="Remover",
                     on_click=partial(self.remover_do_carrinho, item=item)
@@ -382,7 +382,7 @@ class TelaUsuarioDashboard:
                                         ft.TextField(
                                             ref=self.busca_ref,
                                             hint_text="Buscar medicamentos...",
-                                            prefix_icon=ft.icons.SEARCH,
+                                            prefix_icon=ft.Icons.SEARCH,
                                             border_radius=12,
                                             bgcolor=ft.Colors.WHITE,
                                             height=45,
@@ -392,7 +392,7 @@ class TelaUsuarioDashboard:
                                         ft.Row([
                                             ft.Stack([
                                                 ft.IconButton(
-                                                    icon=ft.icons.SHOPPING_BAG_OUTLINED,
+                                                    icon=ft.Icons.SHOPPING_BAG_OUTLINED,
                                                     icon_size=30,
                                                     icon_color="#1E3A8A",
                                                     on_click=self.abrir_carrinho
@@ -494,7 +494,7 @@ class TelaUsuarioDashboard:
                         ft.Row([
                             ft.ElevatedButton(
                                 "Baixar Documento de Autorização",
-                                icon=ft.icons.FILE_DOWNLOAD,
+                                icon=ft.Icons.FILE_DOWNLOAD,
                                 bgcolor=ft.Colors.BLUE_900,
                                 color=ft.Colors.WHITE,
                                 width=260,
@@ -506,7 +506,7 @@ class TelaUsuarioDashboard:
                             ),
                             ft.ElevatedButton(
                                 "Voltar",
-                                icon=ft.icons.ARROW_BACK_IOS_NEW,
+                                icon=ft.Icons.ARROW_BACK_IOS_NEW,
                                 bgcolor=ft.Colors.GREY_50,
                                 width=150,
                                 style=ft.ButtonStyle(
@@ -572,7 +572,7 @@ class TelaUsuarioDashboard:
                         controls=[
                             ft.Text(label, size=16, color=ft.Colors.GREY_700),
                             ft.IconButton(
-                                icon=ft.icons.EDIT,
+                                icon=ft.Icons.EDIT,
                                 icon_color=ft.Colors.BLUE,
                                 tooltip="Editar",
                                 on_click=lambda e: iniciar_edicao(ref_bool, input_ref)
@@ -641,7 +641,7 @@ class TelaUsuarioDashboard:
                             ),
                             ft.ElevatedButton(
                                 "Voltar",
-                                icon=ft.icons.ARROW_BACK,
+                                icon=ft.Icons.ARROW_BACK,
                                 bgcolor=ft.Colors.GREY_50,
                                 width=160,
                                 style=ft.ButtonStyle(
@@ -697,7 +697,7 @@ class TelaUsuarioDashboard:
                             content=ft.Column([
                                 ft.Row([
                                     ft.TextField(label="🔍 Buscar Medicamento", expand=True, border_radius=30, on_change=lambda e: print(e.control.value)),
-                                    ft.IconButton(icon=ft.icons.SEARCH, icon_color=ft.Colors.BLUE_900, on_click=lambda e: print("Buscar"))
+                                    ft.IconButton(icon=ft.Icons.SEARCH, icon_color=ft.Colors.BLUE_900, on_click=lambda e: print("Buscar"))
                                 ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
                                 ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
                                 ft.ListView(
@@ -716,7 +716,7 @@ class TelaUsuarioDashboard:
                                                 ft.Text(f"📦 Quantidade: {med['quantidade']} unidades", size=14, color="#374151"),
                                                 ft.ElevatedButton(
                                                     "Ver Detalhes",
-                                                    icon=ft.icons.INFO_OUTLINE,
+                                                    icon=ft.Icons.INFO_OUTLINE,
                                                     bgcolor=ft.Colors.BLUE_900,
                                                     color=ft.Colors.WHITE,
                                                     width=200,
@@ -901,9 +901,9 @@ class TelaUsuarioDashboard:
                                         ft.Text("📅 Selecione a Data:", size=16, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
                                         ft.Column([
                                             ft.Row([
-                                                ft.IconButton(ft.icons.ARROW_BACK, on_click=lambda e: mudar_mes("anterior")),
+                                                ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: mudar_mes("anterior")),
                                                 ft.Text("", ref=self.mes_label, size=16, weight="bold", color=ft.Colors.BLUE_900),
-                                                ft.IconButton(ft.icons.ARROW_FORWARD, on_click=lambda e: mudar_mes("proximo")),
+                                                ft.IconButton(ft.Icons.ARROW_FORWARD, on_click=lambda e: mudar_mes("proximo")),
                                             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
                                             ft.Divider(),
                                             ft.Column([], ref=calendario_grid)
@@ -912,7 +912,7 @@ class TelaUsuarioDashboard:
 
                                         ft.ElevatedButton(
                                             "Confirmar Agendamento",
-                                            icon=ft.icons.CHECK_CIRCLE,
+                                            icon=ft.Icons.CHECK_CIRCLE,
                                             on_click=confirmar_agendamento,
                                             style=ft.ButtonStyle(
                                                 bgcolor=ft.Colors.GREEN_600,
@@ -926,7 +926,7 @@ class TelaUsuarioDashboard:
                             ),
                             ft.ElevatedButton(
                                 "Voltar",
-                                icon=ft.icons.ARROW_BACK,
+                                icon=ft.Icons.ARROW_BACK,
                                 on_click=lambda e: self.page.go("/usuario"),
                                 style=ft.ButtonStyle(
                                     bgcolor=ft.Colors.GREY_50,
@@ -1016,7 +1016,7 @@ class TelaUsuarioDashboard:
                                 # Header com título e ícones
                                 ft.Row([
                                     ft.IconButton(
-                                        icon=ft.icons.ARROW_BACK,
+                                        icon=ft.Icons.ARROW_BACK,
                                         tooltip="Voltar",
                                         icon_color="#1E3A8A",
                                         on_click=lambda e: self.page.go("/usuario")
@@ -1077,7 +1077,7 @@ class TelaUsuarioDashboard:
                                                 ),
                                                 ft.ElevatedButton(
                                                     "Adicionar ao Carrinho",
-                                                    icon=ft.icons.ADD_SHOPPING_CART,
+                                                    icon=ft.Icons.ADD_SHOPPING_CART,
                                                     style=ft.ButtonStyle(
                                                         bgcolor="#1E3A8A",
                                                         color=ft.Colors.WHITE,
@@ -1171,9 +1171,9 @@ class TelaUsuarioDashboard:
             }
             cor_texto, cor_bg = cores.get(status, (ft.Colors.GREY, ft.Colors.GREY_200))
             icone = (
-                ft.icons.CHECK_CIRCLE_OUTLINE if status == "Confirmado"
-                else ft.icons.HOURGLASS_EMPTY if status == "Pendente"
-                else ft.icons.CANCEL
+                ft.Icons.CHECK_CIRCLE_OUTLINE if status == "Confirmado"
+                else ft.Icons.HOURGLASS_EMPTY if status == "Pendente"
+                else ft.Icons.CANCEL
             )
             return ft.Container(
                 bgcolor=cor_bg,
@@ -1192,7 +1192,7 @@ class TelaUsuarioDashboard:
             acoes = ft.Row([
                 ft.ElevatedButton(
                     "Reagendar",
-                    icon=ft.icons.UPDATE,
+                    icon=ft.Icons.UPDATE,
                     style=ft.ButtonStyle(
                         padding=ft.padding.symmetric(horizontal=14, vertical=8),
                         shape=ft.RoundedRectangleBorder(radius=12),
@@ -1264,14 +1264,14 @@ class TelaUsuarioDashboard:
                             ft.Container(
                                 alignment=ft.alignment.top_right,
                                 content=ft.IconButton(
-                                    icon=ft.icons.DESCRIPTION,
+                                    icon=ft.Icons.DESCRIPTION,
                                     tooltip="Ver documentos necessários",
                                     icon_color=ft.Colors.BLUE_700,
                                     on_click=lambda e: self.page.go("/documentos")
                                 )
                             ),
                             ft.Column([
-                                ft.Icon(name=ft.icons.CALENDAR_MONTH, color=ft.Colors.BLUE_900, size=32),
+                                ft.Icon(name=ft.Icons.CALENDAR_MONTH, color=ft.Colors.BLUE_900, size=32),
                                 ft.Text("Meus Agendamentos", size=28, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
                             ], alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=8),
                             ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
@@ -1279,7 +1279,7 @@ class TelaUsuarioDashboard:
                             ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
                             ft.ElevatedButton(
                                 "Exportar",
-                                icon=ft.icons.PICTURE_AS_PDF,
+                                icon=ft.Icons.PICTURE_AS_PDF,
                                 icon_color=ft.Colors.WHITE,
                                 style=ft.ButtonStyle(
                                     padding=ft.padding.symmetric(horizontal=20, vertical=14),
@@ -1291,7 +1291,7 @@ class TelaUsuarioDashboard:
                             ),
                             ft.ElevatedButton(
                                 "Voltar",
-                                icon=ft.icons.ARROW_BACK_IOS_NEW,
+                                icon=ft.Icons.ARROW_BACK_IOS_NEW,
                                 bgcolor=ft.Colors.GREY_50,
                                 width=160,
                                 style=ft.ButtonStyle(
@@ -1321,7 +1321,7 @@ class TelaUsuarioDashboard:
                         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                         spacing=30,
                         controls=[
-                            ft.Icon(ft.icons.CHECK_CIRCLE, size=80, color=ft.Colors.GREEN_600),
+                            ft.Icon(ft.Icons.CHECK_CIRCLE, size=80, color=ft.Colors.GREEN_600),
                             ft.Text("Agendamento Confirmado!", size=30, weight=ft.FontWeight.BOLD, color="#1E3A8A"),
                             ft.Text(
                                 "Você tem até 10 dias para retirar seu medicamento na farmácia selecionada.",
@@ -1331,7 +1331,7 @@ class TelaUsuarioDashboard:
                             ),
                             ft.ElevatedButton(
                                 "Ver Meus Agendamentos",
-                                icon=ft.icons.CALENDAR_MONTH,
+                                icon=ft.Icons.CALENDAR_MONTH,
                                 on_click=lambda e: self.page.go("/agendamentos"),
                                 style=ft.ButtonStyle(
                                     bgcolor=ft.Colors.BLUE_700,
