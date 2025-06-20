@@ -18,6 +18,7 @@ def criar_tabelas():
             email TEXT NOT NULL UNIQUE,
             cpf TEXT NOT NULL UNIQUE,
             nascimento TEXT NOT NULL,
+            telefone TEXT NOT NULL UNIQUE,
             senha TEXT NOT NULL,
             status TEXT DEFAULT 'Pendente',
             data_criacao TEXT DEFAULT CURRENT_TIMESTAMP
@@ -220,7 +221,7 @@ def registrar_usuario(nome, email, cpf, nascimento, telefone, senha):
     try:
         cursor.execute("""
             INSERT INTO usuarios (nome, email, cpf, nascimento, telefone, senha)
-            VALUES (?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?)
         """, (nome, email, cpf, nascimento, telefone, senha))
         conn.commit()
         return True
@@ -262,6 +263,28 @@ def buscar_nome_usuario(email):
         return nome[0]
     else:
         return None
+    
+def buscar_dados_usuario(email):
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT nome, cpf, nascimento, email, telefone
+        FROM usuarios
+        WHERE email = ?
+    """, (email,))
+    resultado = cursor.fetchone()
+    cursor.close()
+    conn.close()
+
+    if resultado:
+        return {
+            "nome": resultado[0],
+            "cpf": resultado[1],
+            "nasc": resultado[2],
+            "email": resultado[3],
+            "tel": resultado[4]  # opcional: você pode adicionar o campo telefone depois se estiver no banco
+        }
+    return None
         
 def listar_medicamentos(include_inativos=True):
     conn = conectar()
