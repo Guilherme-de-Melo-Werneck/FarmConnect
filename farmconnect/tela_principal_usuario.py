@@ -1,6 +1,6 @@
 import flet as ft
 from functools import partial
-from database import listar_medicamentos, carregar_carrinho_usuario, adicionar_ao_carrinho_db, remover_do_carrinho_db, buscar_nome_usuario, diminuir_quantidade_db, aumentar_quantidade_db
+from database import listar_medicamentos, carregar_carrinho_usuario, adicionar_ao_carrinho_db, remover_do_carrinho_db, buscar_nome_usuario, diminuir_quantidade_db, aumentar_quantidade_db, buscar_dados_usuario
 
 class TelaUsuarioDashboard:
     def __init__(self, page: ft.Page):
@@ -542,12 +542,12 @@ class TelaUsuarioDashboard:
         self.editando_email.current = False
         self.editando_tel.current = False
 
-        self.dados_usuario = {
-            "nome": "João Nascimento",
-            "cpf": "123.456.789-00",
-            "nasc": "01/01/1990",
-            "email": "joao@gmail.com",
-            "tel": "(11) 98765-4321"
+        self.dados_usuario = buscar_dados_usuario(self.email_usuario) or {
+            "nome": "Desconhecido",
+            "cpf": "",
+            "nasc": "",
+            "email": self.email_usuario,
+            "tel": "(00) 00000-0000"
         }
 
         def iniciar_edicao(ref_bool, input_ref):
