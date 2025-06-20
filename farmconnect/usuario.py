@@ -67,7 +67,7 @@ class TelaLoginUsuario:
             numeros = ''.join(filter(str.isdigit, texto_original))[:8]
 
             if len(numeros) == 8:
-                self.cadastro_senha.focus()
+                self.cadastro_telefone.focus()
 
         def nascimento_blur(e):
             texto_original = self.cadastro_nascimento.value
@@ -84,6 +84,27 @@ class TelaLoginUsuario:
             self.cadastro_nascimento.value = formatado
             self.cadastro_nascimento.update()
 
+        def telefone_blur(e):
+            texto_original = self.cadastro_telefone.value
+            numeros = ''.join(filter(str.isdigit, texto_original))[:11]
+            
+            if len(numeros) < 2:
+                self.cadastro_telefone.value = numeros
+            else:
+                ddd = numeros[:2]
+                parte1 = numeros[2:7] if len(numeros) > 6 else numeros[2:]
+                parte2 = numeros[7:] if len(numeros) > 7 else ''
+                self.cadastro_telefone.value = f"({ddd}) {parte1}-{parte2}" if parte1 else f"({ddd})"
+
+            self.cadastro_telefone.update()
+
+        def telefone_change(e):
+            texto_original = self.cadastro_telefone.value
+            numeros = ''.join(filter(str.isdigit, texto_original))[:11]
+
+            if len(numeros) == 11:
+                self.cadastro_senha.focus()
+
         self.page.snack_bar = ft.SnackBar(content=ft.Text(""), bgcolor=ft.Colors.RED_400, duration=3000)
 
         # Campos de Login
@@ -95,6 +116,7 @@ class TelaLoginUsuario:
         self.cadastro_email = ft.TextField(label="Email", prefix_icon=ft.Icons.EMAIL, border_radius=10, filled=True, bgcolor=ft.Colors.GREY_50)
         self.cadastro_cpf = ft.TextField(label="CPF", prefix_icon=ft.Icons.BADGE, border_radius=10, filled=True, bgcolor=ft.Colors.GREY_50, on_blur=cpf_blur, on_change=cpf_change)
         self.cadastro_nascimento = ft.TextField(label="Nascimento", prefix_icon=ft.Icons.CALENDAR_MONTH, border_radius=10, filled=True, bgcolor=ft.Colors.GREY_50, on_blur=nascimento_blur, on_change=nascimento_change)
+        self.cadastro_telefone = ft.TextField(label="Telefone", prefix_icon=ft.Icons.PHONE, border_radius=10, filled=True, bgcolor=ft.Colors.GREY_50, keyboard_type=ft.KeyboardType.PHONE, on_blur=telefone_blur, on_change=telefone_change)
         self.cadastro_senha = ft.TextField(label="Senha", password=True, can_reveal_password=True, prefix_icon=ft.Icons.LOCK, border_radius=10, filled=True, bgcolor=ft.Colors.GREY_50)
         self.cadastro_confirmar_senha = ft.TextField(label="Confirmar Senha", password=True, can_reveal_password=True, prefix_icon=ft.Icons.LOCK_OUTLINE, border_radius=10, filled=True, bgcolor=ft.Colors.GREY_50)
 
@@ -127,6 +149,7 @@ class TelaLoginUsuario:
                         self.cadastro_email.value.strip(),
                         self.cadastro_cpf.value.strip(),
                         self.cadastro_nascimento.value.strip(),
+                        self.cadastro_telefone.value.strip(),
                         self.cadastro_senha.value.strip()
                     )
                     if sucesso:
@@ -193,6 +216,7 @@ class TelaLoginUsuario:
                 self.cadastro_email,
                 self.cadastro_cpf,
                 self.cadastro_nascimento,
+                self.cadastro_telefone,
                 self.cadastro_senha,
                 self.cadastro_confirmar_senha,
                 ft.Row([
