@@ -214,14 +214,14 @@ def recusar_usuario(usuario_id):
     cursor.close()
     conn.close()
 
-def registrar_usuario(nome, email, cpf, nascimento, senha):
+def registrar_usuario(nome, email, cpf, nascimento, telefone, senha):
     conn = conectar()
     cursor = conn.cursor()
     try:
         cursor.execute("""
-            INSERT INTO usuarios (nome, email, cpf, nascimento, senha)
+            INSERT INTO usuarios (nome, email, cpf, nascimento, telefone, senha)
             VALUES (?, ?, ?, ?, ?)
-        """, (nome, email, cpf, nascimento, senha))
+        """, (nome, email, cpf, nascimento, telefone, senha))
         conn.commit()
         return True
     except sqlite3.IntegrityError as e:
@@ -604,7 +604,7 @@ def listar_usuarios():
     conn = conectar()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT id, nome, email, cpf, nascimento, data_criacao, status FROM usuarios ORDER BY data_criacao DESC")
+    cursor.execute("SELECT id, nome, email, cpf, nascimento, telefone, data_criacao, status FROM usuarios ORDER BY data_criacao DESC")
 
     usuarios = cursor.fetchall()
 
