@@ -570,7 +570,7 @@ class TelaUsuarioDashboard:
                         alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                         vertical_alignment=ft.CrossAxisAlignment.CENTER,
                         controls=[
-                            ft.Text(label, size=16, color=ft.Colors.GREY_700),
+                            ft.Text(label, size=16, color=ft.Colors.GREY_50),
                             ft.IconButton(
                                 icon=ft.Icons.EDIT,
                                 icon_color=ft.Colors.BLUE,
@@ -585,6 +585,7 @@ class TelaUsuarioDashboard:
                         read_only=not ref_bool.current,
                         filled=True,
                         dense=True,
+                        bgcolor=ft.Colors.GREY_50,
                         border_radius=12,
                         content_padding=10,
                         text_size=16,
