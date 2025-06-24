@@ -1,6 +1,7 @@
 import flet as ft
 from functools import partial
 from database import listar_medicamentos, carregar_carrinho_usuario, adicionar_ao_carrinho_db, remover_do_carrinho_db, buscar_nome_usuario, diminuir_quantidade_db, aumentar_quantidade_db, buscar_dados_usuario
+from flet import DatePicker
 
 class TelaUsuarioDashboard:
     def __init__(self, page: ft.Page):
@@ -9,6 +10,9 @@ class TelaUsuarioDashboard:
         self.pagina_atual = 1
         self.carrinho_count = ft.Ref[ft.Text]()
         self.busca_ref = ft.Ref[ft.TextField]()
+        self.date_picker_ref = ft.Ref[ft.DatePicker]()
+        self.data_escolhida_label = ft.Text("📅 Nenhuma data selecionada", size=16, color=ft.Colors.GREY_700)
+        self.data_escolhida = None
         self.contador = {"valor": 0}
         self.carrinho = []
         self.botoes_paginacao = ft.Row(alignment=ft.MainAxisAlignment.CENTER, spacing=10)
@@ -508,6 +512,7 @@ class TelaUsuarioDashboard:
                                 "Voltar",
                                 icon=ft.Icons.ARROW_BACK_IOS_NEW,
                                 bgcolor=ft.Colors.GREY_50,
+                                color=ft.Colors.BLUE_900,
                                 width=150,
                                 style=ft.ButtonStyle(
                                     shape=ft.RoundedRectangleBorder(radius=12),
@@ -644,6 +649,7 @@ class TelaUsuarioDashboard:
                                 "Voltar",
                                 icon=ft.Icons.ARROW_BACK,
                                 bgcolor=ft.Colors.GREY_50,
+                                color=ft.Colors.BLUE_900,
                                 width=160,
                                 style=ft.ButtonStyle(
                                     shape=ft.RoundedRectangleBorder(radius=16),
@@ -739,6 +745,7 @@ class TelaUsuarioDashboard:
                             "Voltar",
                             icon=ft.Icons.ARROW_BACK_IOS_NEW,
                             bgcolor=ft.Colors.GREY_50,
+                            color=ft.Colors.BLUE_900,
                             width=150,
                             style=ft.ButtonStyle(
                                 shape=ft.RoundedRectangleBorder(radius=12),
@@ -750,81 +757,31 @@ class TelaUsuarioDashboard:
                 )
             ]
         )
-
+    def abrir_datepicker(self):
+        self.date_picker_ref.current.open = True
+        self.page.update()
 
     def tela_agendamento(self):
-        import calendar
         import datetime
-        import flet as ft
 
-        hoje = datetime.date.today()
-        self.mes_atual = hoje.month
-        self.ano_atual = hoje.year
         self.data_escolhida = None
         self.horario_escolhido = None
-
-        self.data_selecionada = ft.Text("📅 Nenhuma data selecionada", size=16, color=ft.Colors.GREY_700)
+        self.date_picker_ref = ft.Ref[ft.DatePicker]()
+        self.data_escolhida_label = ft.Text("📅 Nenhuma data selecionada", size=16, color=ft.Colors.GREY_700)
         self.hora_selecionada = ft.Text("⏰ Nenhum horário selecionado", size=16, color=ft.Colors.GREY_700)
+        self.botao_data_ref = ft.Ref[ft.ElevatedButton]()
 
-        calendario_grid = ft.Ref[ft.Column]()
-        self.mes_label = ft.Ref[ft.Text]()
-
-        def atualizar_calendario():
-            if not self.mes_label.current or not calendario_grid.current:
-                return
-            dias = []
-            self.mes_label.current.value = f"{calendar.month_name[self.mes_atual]} {self.ano_atual}"
-            cal = calendar.Calendar(firstweekday=6)
-            for semana in cal.monthdatescalendar(self.ano_atual, self.mes_atual):
-                linha = ft.Row(
-                    spacing=4,
-                    alignment=ft.MainAxisAlignment.CENTER,
-                    controls=[
-                        ft.ElevatedButton(
-                            text=str(dia.day),
-                            width=32,
-                            height=32,
-                            disabled=dia < datetime.date.today() or dia.month != self.mes_atual,
-                            style=ft.ButtonStyle(
-                                text_style=ft.TextStyle(size=12),
-                                padding=0,
-                                shape=ft.RoundedRectangleBorder(radius=8),
-                                bgcolor="#E0F2FE" if dia == self.data_escolhida else ft.Colors.WHITE,
-                                color=ft.Colors.BLUE_900,
-                            ),
-                            on_click=lambda e, dia=dia: selecionar_data(dia)
-                        ) if dia.month == self.mes_atual else ft.Container(width=40, height=40)
-                        for dia in semana
-                    ]
-                )
-                dias.append(linha)
-            calendario_grid.current.controls = dias
+        def on_data_selecionada(e):
+            self.data_escolhida = e.control.value
+            data_formatada = self.data_escolhida.strftime('%d/%m/%Y')
+            self.data_escolhida_label.value = f"📅 Data: {data_formatada}"
+            self.botao_data_ref.current.text = data_formatada
             self.page.update()
-
-        def selecionar_data(data):
-            self.data_escolhida = data
-            self.data_selecionada.value = f"📅 Data: {data.strftime('%d/%m/%Y')}"
-            atualizar_calendario()
 
         def selecionar_hora_manual(hora):
             self.horario_escolhido = hora
-            self.hora_selecionada.value = f"⏰ Horário: {hora}"
+            self.hora_selecionada.value = f"⏰ Horário escolhido: {hora}"
             self.page.update()
-
-        def mudar_mes(direcao):
-            if direcao == "anterior":
-                if self.mes_atual == 1:
-                    self.mes_atual = 12
-                    self.ano_atual -= 1
-                else:
-                    self.mes_atual -= 1
-            elif direcao == "proximo":
-                if self.mes_atual == 12:
-                    self.mes_atual = 1
-                    self.ano_atual += 1
-                else:
-                    self.mes_atual += 1
-            atualizar_calendario()
 
         def confirmar_agendamento(e):
             if not self.data_escolhida or not self.horario_escolhido:
@@ -832,9 +789,6 @@ class TelaUsuarioDashboard:
                 self.page.snack_bar.open = True
                 self.page.update()
                 return
-
-            # Aqui você pode salvar no banco se quiser...
-
             self.page.go("/agendamento_confirmado")
 
         def gerar_botoes_horarios():
@@ -865,11 +819,25 @@ class TelaUsuarioDashboard:
                 linhas.append(ft.Row(horarios[i:i+4], spacing=10, alignment=ft.MainAxisAlignment.CENTER))
             return linhas
 
-        atualizar_calendario()  # Garante que o calendário apareça assim que abrir a tela
+        # DatePicker e botão para abrir
+        datepicker = ft.DatePicker(
+            ref=self.date_picker_ref,
+            on_change=on_data_selecionada,
+            first_date=datetime.date.today(),
+            last_date=datetime.date.today() + datetime.timedelta(days=365)
+        )
+
+        botao_abrir_calendario = ft.ElevatedButton(
+            ref=self.botao_data_ref,
+            text="Selecionar Data",
+            icon=ft.icons.CALENDAR_MONTH,
+            on_click=lambda _: self.abrir_datepicker()
+        )
 
         return ft.View(
             route="/agendamento",
             controls=[
+                datepicker,
                 ft.Container(
                     expand=True,
                     bgcolor=ft.Colors.WHITE,
@@ -894,26 +862,15 @@ class TelaUsuarioDashboard:
                                     horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                                     controls=[
                                         ft.Text("Escolha a data e o horário desejado:", size=18, color=ft.Colors.BLUE_900, text_align=ft.TextAlign.CENTER),
-
                                         ft.Text("⏰ Selecione o Horário:", size=16, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
                                         ft.Column(gerar_botoes_horarios(), spacing=10),
                                         self.hora_selecionada,
-
                                         ft.Text("📅 Selecione a Data:", size=16, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
-                                        ft.Column([
-                                            ft.Row([
-                                                ft.IconButton(ft.Icons.ARROW_BACK, on_click=lambda e: mudar_mes("anterior")),
-                                                ft.Text("", ref=self.mes_label, size=16, weight="bold", color=ft.Colors.BLUE_900),
-                                                ft.IconButton(ft.Icons.ARROW_FORWARD, on_click=lambda e: mudar_mes("proximo")),
-                                            ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
-                                            ft.Divider(),
-                                            ft.Column([], ref=calendario_grid)
-                                        ], spacing=10, alignment=ft.MainAxisAlignment.CENTER),
-                                        self.data_selecionada,
-
+                                        botao_abrir_calendario,
+                                        self.data_escolhida_label,
                                         ft.ElevatedButton(
                                             "Confirmar Agendamento",
-                                            icon=ft.Icons.CHECK_CIRCLE,
+                                            icon=ft.icons.CHECK_CIRCLE,
                                             on_click=confirmar_agendamento,
                                             style=ft.ButtonStyle(
                                                 bgcolor=ft.Colors.GREEN_600,
@@ -927,7 +884,7 @@ class TelaUsuarioDashboard:
                             ),
                             ft.ElevatedButton(
                                 "Voltar",
-                                icon=ft.Icons.ARROW_BACK,
+                                icon=ft.icons.ARROW_BACK,
                                 on_click=lambda e: self.page.go("/usuario"),
                                 style=ft.ButtonStyle(
                                     bgcolor=ft.Colors.GREY_50,
@@ -941,6 +898,7 @@ class TelaUsuarioDashboard:
                 )
             ]
         )
+
 
     def tela_detalhes_medicamento(self):
         self.atualizar_contador()
@@ -1294,6 +1252,7 @@ class TelaUsuarioDashboard:
                                 "Voltar",
                                 icon=ft.Icons.ARROW_BACK_IOS_NEW,
                                 bgcolor=ft.Colors.GREY_50,
+                                color=ft.Colors.BLUE_900,
                                 width=160,
                                 style=ft.ButtonStyle(
                                     shape=ft.RoundedRectangleBorder(radius=16),
