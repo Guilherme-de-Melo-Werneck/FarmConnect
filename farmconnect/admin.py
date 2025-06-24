@@ -134,9 +134,9 @@ class TelaLoginAdmin:
                 self.cadastro_senha,
                 self.cadastro_confirmar_senha,
                 ft.Row([
-                    ft.ElevatedButton("Entrar", bgcolor=ft.Colors.BLUE_900, color="white",
+                    ft.ElevatedButton("Registrar", bgcolor=ft.Colors.BLUE_900, color="white",
                     style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10), overlay_color=ft.Colors.BLUE_500),
-                    on_click=login_click
+                    on_click=registrar_click
                 ),
                 ft.ElevatedButton("Voltar", bgcolor=ft.Colors.GREY_50, color=ft.Colors.BLUE_900,
                     style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10), overlay_color=ft.Colors.BLUE_500),

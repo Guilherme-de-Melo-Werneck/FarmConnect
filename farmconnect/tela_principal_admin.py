@@ -651,6 +651,7 @@ class TelaAdminDashboard:
 
 
     def load_cadastro_medicamento(self, e=None):
+        self.editando_medicamento = False
         self.current_view.controls.clear()
 
         # Carregar categorias e fabricantes do banco
@@ -677,6 +678,7 @@ class TelaAdminDashboard:
         self.campo_nome = ft.TextField(label="Nome do Medicamento", border_radius=10, bgcolor="#F9FAFB")
         self.campo_codigo = ft.TextField(label="Código do Medicamento", border_radius=10, bgcolor="#F9FAFB")
         self.campo_estoque = ft.TextField(label="Quantidade em Estoque", keyboard_type=ft.KeyboardType.NUMBER, border_radius=10, bgcolor="#F9FAFB")
+        self.campo_descricao = ft.TextField(label="Descrição do Medicamento", border_radius=10, bgcolor="#F9FAFB")
         self.campo_imagem = ft.TextField(label="URL da Imagem", border_radius=10, bgcolor="#F9FAFB")
         self.campo_observacoes = ft.TextField(label="Observações", multiline=True, min_lines=3, max_lines=5, border_radius=10, bgcolor="#F9FAFB")
 
@@ -696,6 +698,7 @@ class TelaAdminDashboard:
                                 [
                                     self.campo_nome,
                                     self.campo_codigo,
+                                    self.campo_descricao,
                                     ft.Row([
                                         self.dropdown_categoria,
                                         ft.IconButton(
