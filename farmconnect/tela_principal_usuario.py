@@ -830,7 +830,7 @@ class TelaUsuarioDashboard:
         botao_abrir_calendario = ft.ElevatedButton(
             ref=self.botao_data_ref,
             text="Selecionar Data",
-            icon=ft.icons.CALENDAR_MONTH,
+            icon=ft.Icons.CALENDAR_MONTH,
             on_click=lambda _: self.abrir_datepicker()
         )
 
@@ -870,7 +870,7 @@ class TelaUsuarioDashboard:
                                         self.data_escolhida_label,
                                         ft.ElevatedButton(
                                             "Confirmar Agendamento",
-                                            icon=ft.icons.CHECK_CIRCLE,
+                                            icon=ft.Icons.CHECK_CIRCLE,
                                             on_click=confirmar_agendamento,
                                             style=ft.ButtonStyle(
                                                 bgcolor=ft.Colors.GREEN_600,
@@ -884,7 +884,8 @@ class TelaUsuarioDashboard:
                             ),
                             ft.ElevatedButton(
                                 "Voltar",
-                                icon=ft.icons.ARROW_BACK,
+                                icon=ft.Icons.ARROW_BACK,
+                                color=ft.Colors.BLUE_900,
                                 on_click=lambda e: self.page.go("/usuario"),
                                 style=ft.ButtonStyle(
                                     bgcolor=ft.Colors.GREY_50,
