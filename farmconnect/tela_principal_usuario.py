@@ -1,6 +1,6 @@
 import flet as ft
 from functools import partial
-from database import listar_medicamentos, carregar_carrinho_usuario, adicionar_ao_carrinho_db, remover_do_carrinho_db, buscar_nome_usuario, diminuir_quantidade_db, aumentar_quantidade_db, buscar_dados_usuario
+from database import listar_medicamentos, carregar_carrinho_usuario, adicionar_ao_carrinho_db, remover_do_carrinho_db, buscar_nome_usuario, diminuir_quantidade_db, aumentar_quantidade_db, buscar_dados_usuario, adicionar_agendamento
 from flet import DatePicker
 
 class TelaUsuarioDashboard:
@@ -138,8 +138,6 @@ class TelaUsuarioDashboard:
             remover_do_carrinho_db(self.usuario_id, item["id"])
             self.atualizar_contador()
             self.abrir_carrinho()
-
-
 
     def adicionar_ao_carrinho(self, medicamento):
         # Verifica se já está no carrinho
@@ -757,9 +755,7 @@ class TelaUsuarioDashboard:
                 )
             ]
         )
-    def abrir_datepicker(self):
-        self.date_picker_ref.current.open = True
-        self.page.update()
+    
 
     def tela_agendamento(self):
         import datetime
@@ -771,6 +767,9 @@ class TelaUsuarioDashboard:
         self.hora_selecionada = ft.Text("⏰ Nenhum horário selecionado", size=16, color=ft.Colors.GREY_700)
         self.botao_data_ref = ft.Ref[ft.ElevatedButton]()
 
+        def abrir_datepicker():
+            self.date_picker_ref.current.open = True
+            self.page.update()
         def on_data_selecionada(e):
             self.data_escolhida = e.control.value
             data_formatada = self.data_escolhida.strftime('%d/%m/%Y')
@@ -831,7 +830,7 @@ class TelaUsuarioDashboard:
             ref=self.botao_data_ref,
             text="Selecionar Data",
             icon=ft.Icons.CALENDAR_MONTH,
-            on_click=lambda _: self.abrir_datepicker()
+            on_click=lambda _: abrir_datepicker()
         )
 
         return ft.View(
