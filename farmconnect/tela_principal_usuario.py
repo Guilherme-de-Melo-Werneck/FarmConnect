@@ -1,6 +1,6 @@
 import flet as ft
 from functools import partial
-from database import listar_medicamentos, carregar_carrinho_usuario, adicionar_ao_carrinho_db, remover_do_carrinho_db, buscar_nome_usuario, diminuir_quantidade_db, aumentar_quantidade_db, buscar_dados_usuario, adicionar_agendamento
+from database import listar_medicamentos, carregar_carrinho_usuario, adicionar_ao_carrinho_db, remover_do_carrinho_db, buscar_nome_usuario, diminuir_quantidade_db, aumentar_quantidade_db, buscar_dados_usuario, adicionar_agendamento, listar_agendamentos_usuario
 from flet import DatePicker
 
 class TelaUsuarioDashboard:
@@ -26,7 +26,6 @@ class TelaUsuarioDashboard:
         self.nome_usuario = self.page.session.get("usuario_nome") or "Paciente"
         self.email_usuario = self.page.session.get("usuario_email")
         self.usuario_id = self.get_usuario_id_por_email(self.email_usuario)
-        self.nome_usuario = self.page.session.get("usuario_nome") or "Paciente"
 
         self.carrinho = carregar_carrinho_usuario(self.usuario_id)
         self.contador = {"valor": sum(item["quantidade"] for item in self.carrinho)}
@@ -1114,36 +1113,8 @@ class TelaUsuarioDashboard:
         )
     
     def tela_meus_agendamentos(self):
-        agendamentos_mock = [
-            {
-                "medicamento": "Adalimumabe 40mg",
-                "farmacia": "Farmácia Central - RJ",
-                "codigo": "ABC123456",
-                "data": "22/06/2025",
-                "horario": "09:30",
-                "status": "Confirmado",
-                "criado_em": "15/06/2025"
-            },
-            {
-                "medicamento": "Interferon Beta",
-                "farmacia": "Unidade Zona Sul",
-                "codigo": "XYZ789012",
-                "data": "25/06/2025",
-                "horario": "14:00",
-                "status": "Pendente",
-                "criado_em": "16/06/2025"
-            },
-            {
-                "medicamento": "Trastuzumabe",
-                "farmacia": "Farmácia Norte",
-                "codigo": "RET564738",
-                "data": "28/06/2025",
-                "horario": "11:15",
-                "status": "Cancelado",
-                "criado_em": "17/06/2025"
-            }
-        ]
-
+        from database import listar_agendamentos_usuario
+        agendamentos = listar_agendamentos_usuario(self.usuario_id)
         def status_badge(status):
             cores = {
                 "Pendente": (ft.Colors.AMBER_700, ft.Colors.AMBER_100),
@@ -1167,9 +1138,20 @@ class TelaUsuarioDashboard:
             )
 
         cards = []
-        for ag in agendamentos_mock:
-            badge = status_badge(ag["status"])
+        for ag in agendamentos:
+            agendamento = {
+                "medicamento": ag[1],
+                "farmacia": ag[2],
+                "codigo": ag[3],
+                "data": ag[4],
+                "horario": ag[5],
+                "status": ag[6],
+                "criado_em": ag[7]
+            }
 
+            badge = status_badge(agendamento["status"])
+
+            # importante: usar lambda com default para capturar valor corretamente
             acoes = ft.Row([
                 ft.ElevatedButton(
                     "Reagendar",
@@ -1180,41 +1162,34 @@ class TelaUsuarioDashboard:
                         bgcolor=ft.Colors.INDIGO_100,
                         color=ft.Colors.INDIGO_900
                     ),
-                    on_click=lambda e, med=ag["medicamento"]: print(f"Reagendando: {med}")
+                    on_click=lambda e, med=agendamento["medicamento"]: print(f"Reagendando: {med}")
                 )
             ], spacing=10)
 
             cards.append(
-                ft.AnimatedSwitcher(
-                    transition=ft.Animation(600, "easeInOut"),
-                    content=ft.Container(
-                        scale=1.0,
-                        opacity=1.0,
-                        bgcolor=ft.Colors.WHITE,
-                        border_radius=16,
-                        padding=20,
-                        shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26, offset=ft.Offset(0, 10)),
-                        animate=ft.Animation(400, "easeInOut"),
-                        content=ft.Column([
-                            ft.Row([
-                                ft.Text(f"💊 {ag['medicamento']}", size=18, weight="bold", color="#1E3A8A"),
-                                ft.Container(expand=True),
-                                badge
-                            ]),
-                            ft.Divider(thickness=1),
-                            ft.Text(f"🏥 Farmácia: {ag['farmacia']}", size=14),
-                            ft.Text(f"🗓️ Data: {ag['data']} às {ag['horario']}", size=14),
-                            ft.Text(f"🔐 Código: {ag['codigo']}", size=14),
-                            ft.Text(f"📆 Criado em: {ag['criado_em']}", size=12, color=ft.Colors.GREY_600),
-                            ft.Divider(height=10),
-                            acoes
-                        ], spacing=8)
-                    )
+                ft.Container(
+                    padding=20,
+                    margin=10,
+                    border_radius=12,
+                    bgcolor=ft.Colors.WHITE,
+                    shadow=ft.BoxShadow(blur_radius=8, color=ft.Colors.BLACK12),
+                    content=ft.Column([
+                        ft.Text(f"💊 Medicamento: {agendamento['medicamento']}", size=16, weight="bold"),
+                        ft.Text(f"🏥 Farmácia: {agendamento['farmacia']}"),
+                        ft.Text(f"🆔 Código: {agendamento['codigo']}"),
+                        ft.Text(f"📅 Data: {agendamento['data']}"),
+                        ft.Text(f"⏰ Horário: {agendamento['horario']}"),
+                        badge,
+                        ft.Text(f"🕓 Criado em: {agendamento['criado_em']}"),
+                        acoes
+                    ], spacing=5)
                 )
             )
 
         conteudo = (
-            ft.Column(cards, spacing=20)
+            ft.Container(
+                content=ft.Column(cards, spacing=20),
+            )
             if cards else
             ft.Container(
                 content=ft.Column([
@@ -1230,61 +1205,71 @@ class TelaUsuarioDashboard:
 
         return ft.View(
             route="/agendamentos",
-            scroll=ft.ScrollMode.ALWAYS,
+            scroll=ft.ScrollMode.AUTO,  # ✅ Scroll só aqui
             controls=[
-                ft.Stack([
-                    ft.Container(
-                        expand=True,
-                        padding=40,
-                        gradient=ft.LinearGradient(
-                            begin=ft.alignment.top_left,
-                            end=ft.alignment.bottom_right,
-                            colors=["#E0F2FE", "#F0F4FF"]
-                        ),
-                        content=ft.Column([
-                            ft.Container(
-                                alignment=ft.alignment.top_right,
-                                content=ft.IconButton(
-                                    icon=ft.Icons.DESCRIPTION,
-                                    tooltip="Ver documentos necessários",
-                                    icon_color=ft.Colors.BLUE_700,
-                                    on_click=lambda e: self.page.go("/documentos")
-                                )
-                            ),
-                            ft.Column([
-                                ft.Icon(name=ft.Icons.CALENDAR_MONTH, color=ft.Colors.BLUE_900, size=32),
-                                ft.Text("Meus Agendamentos", size=28, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
-                            ], alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=8),
-                            ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
-                            conteudo,
-                            ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
-                            ft.ElevatedButton(
-                                "Exportar",
-                                icon=ft.Icons.PICTURE_AS_PDF,
-                                icon_color=ft.Colors.WHITE,
-                                style=ft.ButtonStyle(
-                                    padding=ft.padding.symmetric(horizontal=20, vertical=14),
-                                    shape=ft.RoundedRectangleBorder(radius=12),
-                                    bgcolor=ft.Colors.BLUE_700,
-                                    color=ft.Colors.WHITE
-                                ),
-                                on_click=lambda e: print("Exportar todos os agendamentos")
-                            ),
-                            ft.ElevatedButton(
-                                "Voltar",
-                                icon=ft.Icons.ARROW_BACK_IOS_NEW,
-                                bgcolor=ft.Colors.GREY_50,
-                                color=ft.Colors.BLUE_900,
-                                width=160,
-                                style=ft.ButtonStyle(
-                                    shape=ft.RoundedRectangleBorder(radius=16),
-                                    padding=ft.padding.symmetric(vertical=14)
-                                ),
-                                on_click=lambda e: self.page.go("/usuario")
-                            )
-                        ], alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=30)
+                ft.Container(
+                    padding=40,
+                    gradient=ft.LinearGradient(
+                        begin=ft.alignment.top_left,
+                        end=ft.alignment.bottom_right,
+                        colors=["#E0F2FE", "#F0F4FF"]
                     ),
-                ])
+                    content=ft.Column([
+                        ft.Container(
+                            alignment=ft.alignment.top_right,
+                            content=ft.IconButton(
+                                icon=ft.Icons.DESCRIPTION,
+                                tooltip="Ver documentos necessários",
+                                icon_color=ft.Colors.BLUE_700,
+                                on_click=lambda e: self.page.go("/documentos")
+                            )
+                        ),
+                        ft.Column([
+                            ft.Icon(name=ft.Icons.CALENDAR_MONTH, color=ft.Colors.BLUE_900, size=32),
+                            ft.Text("Meus Agendamentos", size=28, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
+                        ],
+                        alignment=ft.MainAxisAlignment.CENTER,
+                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                        spacing=8),
+                        ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
+
+                        # Conteúdo dos cards + botões no fim
+                        conteudo,  # Cards de agendamentos
+
+                        ft.Divider(height=30, color=ft.Colors.TRANSPARENT),
+
+                        ft.ElevatedButton(
+                            "Exportar",
+                            icon=ft.Icons.PICTURE_AS_PDF,
+                            icon_color=ft.Colors.WHITE,
+                            style=ft.ButtonStyle(
+                                padding=ft.padding.symmetric(horizontal=20, vertical=14),
+                                shape=ft.RoundedRectangleBorder(radius=12),
+                                bgcolor=ft.Colors.BLUE_700,
+                                color=ft.Colors.WHITE
+                            ),
+                            on_click=lambda e: print("Exportar todos os agendamentos")
+                        ),
+
+                        ft.ElevatedButton(
+                            "Voltar",
+                            icon=ft.Icons.ARROW_BACK_IOS_NEW,
+                            bgcolor=ft.Colors.GREY_50,
+                            color=ft.Colors.BLUE_900,
+                            width=160,
+                            style=ft.ButtonStyle(
+                                shape=ft.RoundedRectangleBorder(radius=16),
+                                padding=ft.padding.symmetric(vertical=14)
+                            ),
+                            on_click=lambda e: self.page.go("/usuario")
+                        ),
+
+                        ft.Container(height=40)  # espaço extra final para segurança
+                    ],
+                    spacing=30,
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER)
+                )
             ]
         )
     
