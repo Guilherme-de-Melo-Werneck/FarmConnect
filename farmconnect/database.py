@@ -186,6 +186,51 @@ def criar_tabelas():
 
         conn.commit()
 
+def consultar_estoque_farmacia(farmacia_id, medicamento_id):
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT quantidade FROM estoque
+        WHERE farmacia_id = ? AND medicamento_id = ?
+    """, (farmacia_id, medicamento_id))
+    resultado = cursor.fetchone()
+    conn.close()
+    return resultado[0] if resultado else 0
+
+def reduzir_estoque_farmacia(farmacia_id, medicamento_id, quantidade=1):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    # Pega quantidade anterior (para log)
+    cursor.execute("""
+        SELECT quantidade FROM estoque
+        WHERE farmacia_id = ? AND medicamento_id = ?
+    """, (farmacia_id, medicamento_id))
+    atual = cursor.fetchone()
+    if not atual:
+        conn.close()
+        return False
+
+    anterior = atual[0]
+    novo = max(anterior - quantidade, 0)
+
+    # Atualiza estoque
+    cursor.execute("""
+        UPDATE estoque
+        SET quantidade = ?
+        WHERE farmacia_id = ? AND medicamento_id = ?
+    """, (novo, farmacia_id, medicamento_id))
+
+    # Registra log
+    cursor.execute("""
+        INSERT INTO estoque_logs (farmacia_id, medicamento_id, quantidade_anterior, quantidade_nova, alterado_por)
+        VALUES (?, ?, ?, ?, ?)
+    """, (farmacia_id, medicamento_id, anterior, novo, "Sistema"))
+
+    conn.commit()
+    conn.close()
+    return True
+
 def aprovar_usuario(usuario_id):
     conn = conectar()
     cursor = conn.cursor()
@@ -291,15 +336,22 @@ def listar_medicamentos(include_inativos=True):
     cursor = conn.cursor()
 
     sql = """
-        SELECT m.id, m.nome, m.codigo, m.descricao, m.imagem, m.estoque,
-               c.nome AS categoria, f.nome AS fabricante, m.ativo
+        SELECT 
+            m.id, m.nome, m.codigo, m.descricao, m.imagem, 
+            e.quantidade AS estoque,
+            c.nome AS categoria, 
+            f.nome AS fabricante,
+            fa.nome AS farmacia,
+            m.ativo
         FROM medicamentos m
         LEFT JOIN categorias c ON m.categoria_id = c.id
         LEFT JOIN fabricantes f ON m.fabricante_id = f.id
+        LEFT JOIN estoque e ON m.id = e.medicamento_id
+        LEFT JOIN farmacias fa ON e.farmacia_id = fa.id
     """
-    
+
     if not include_inativos:
-        sql += "WHERE m.ativo = 1"
+        sql += " WHERE m.ativo = 1"
 
     cursor.execute(sql)
     medicamentos = cursor.fetchall()
@@ -309,6 +361,25 @@ def listar_medicamentos(include_inativos=True):
 
     return medicamentos
 
+
+def adicionar_estoque(farmacia_id, medicamento_id, quantidade):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    # Insere no estoque
+    cursor.execute("""
+        INSERT INTO estoque (farmacia_id, medicamento_id, quantidade)
+        VALUES (?, ?, ?)
+    """, (farmacia_id, medicamento_id, quantidade))
+
+    # Registra log
+    cursor.execute("""
+        INSERT INTO estoque_logs (farmacia_id, medicamento_id, quantidade_anterior, quantidade_nova, alterado_por)
+        VALUES (?, ?, ?, ?, ?)
+    """, (farmacia_id, medicamento_id, 0, quantidade, "Cadastro inicial"))
+
+    conn.commit()
+    conn.close()
 
 def adicionar_medicamento(codigo, nome, descricao, imagem, estoque, categoria_id=None, fabricante_id=None):
     conn = conectar()
@@ -320,8 +391,11 @@ def adicionar_medicamento(codigo, nome, descricao, imagem, estoque, categoria_id
     """, (codigo, nome, descricao, imagem, estoque, categoria_id, fabricante_id))
 
     conn.commit()
+    id_medicamento = cursor.lastrowid
     cursor.close()
     conn.close()
+
+    return id_medicamento
 
 def desativar_medicamento(id):
     conn = conectar()
