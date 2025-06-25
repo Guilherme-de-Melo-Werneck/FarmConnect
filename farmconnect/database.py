@@ -665,6 +665,31 @@ def listar_agendamentos():
 
     return agendamentos
 
+def listar_agendamentos_usuario(usuario_id):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT 
+            a.id, 
+            m.nome AS medicamento,
+            f.nome AS farmacia, 
+            a.codigo,
+            a.data, 
+            a.horario, 
+            a.status,
+            a.data_criacao
+        FROM agendamentos a
+        JOIN medicamentos m ON a.medicamento_id = m.id
+        JOIN farmacias f ON a.farmacia_id = f.id
+        WHERE a.usuario_id = ?
+        ORDER BY a.data_criacao DESC
+    """, (usuario_id,))
+
+    resultado = cursor.fetchall()
+    conn.close()
+    return resultado
+
 def adicionar_agendamento(usuario_id, medicamento_id, farmacia_id, codigo, data, horario, status="Pendente"):
     conn = conectar()
     cursor = conn.cursor()
