@@ -1,6 +1,6 @@
 import flet as ft
 from functools import partial
-from database import listar_medicamentos, carregar_carrinho_usuario, adicionar_ao_carrinho_db, remover_do_carrinho_db, buscar_nome_usuario, diminuir_quantidade_db, aumentar_quantidade_db, buscar_dados_usuario, adicionar_agendamento, listar_agendamentos_usuario
+from database import listar_medicamentos, carregar_carrinho_usuario, adicionar_ao_carrinho_db, remover_do_carrinho_db, buscar_nome_usuario, diminuir_quantidade_db, aumentar_quantidade_db, buscar_dados_usuario, adicionar_agendamento, listar_agendamentos_usuario, reduzir_estoque_farmacia, consultar_estoque_farmacia
 from flet import DatePicker
 
 class TelaUsuarioDashboard:
@@ -781,6 +781,16 @@ class TelaUsuarioDashboard:
             self.page.update()
 
         def confirmar_agendamento(e):
+            estoque_disponivel = consultar_estoque_farmacia(farmacia_id, medicamento_id)
+            if estoque_disponivel <= 0:
+                self.page.snack_bar = ft.SnackBar(ft.Text("❌ Estoque insuficiente na farmácia selecionada!"), bgcolor=ft.colors.RED_400)
+                self.page.snack_bar.open = True
+                self.page.update()
+                return
+
+            # Descontar estoque
+            reduzir_estoque_farmacia(farmacia_id, medicamento_id, quantidade=1)
+
             if not self.data_escolhida or not self.horario_escolhido:
                 self.page.snack_bar = ft.SnackBar(ft.Text("Por favor, selecione data e horário."), bgcolor=ft.Colors.RED_400)
                 self.page.snack_bar.open = True
@@ -1146,7 +1156,6 @@ class TelaUsuarioDashboard:
                 "data": ag[4],
                 "horario": ag[5],
                 "status": ag[6],
-                "criado_em": ag[7]
             }
 
             badge = status_badge(agendamento["status"])
@@ -1180,7 +1189,6 @@ class TelaUsuarioDashboard:
                         ft.Text(f"📅 Data: {agendamento['data']}"),
                         ft.Text(f"⏰ Horário: {agendamento['horario']}"),
                         badge,
-                        ft.Text(f"🕓 Criado em: {agendamento['criado_em']}"),
                         acoes
                     ], spacing=5)
                 )
