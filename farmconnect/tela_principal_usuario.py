@@ -139,11 +139,17 @@ class TelaUsuarioDashboard:
             self.abrir_carrinho()
 
     def adicionar_ao_carrinho(self, medicamento):
+        # Garante que medicamento["estoque"] == None será convertido para 0.
+        try:
+            estoque = int(medicamento.get("estoque") or 0)
+        except (TypeError, ValueError):
+            estoque = 0
+
         # Verifica se já está no carrinho
         existente = next((item for item in self.carrinho if item["id"] == medicamento["id"]), None)
 
         if existente:
-            if existente["quantidade"] < medicamento["estoque"]:
+            if existente["quantidade"] < estoque:
                 existente["quantidade"] += 1
                 adicionar_ao_carrinho_db(self.usuario_id, medicamento["id"])
             else:
@@ -153,7 +159,7 @@ class TelaUsuarioDashboard:
                 self.page.update()
                 return
         else:
-            if medicamento["estoque"] > 0:
+            if estoque > 0:
                 novo = {**medicamento, "quantidade": 1}
                 self.carrinho.append(novo)
                 adicionar_ao_carrinho_db(self.usuario_id, medicamento["id"])
