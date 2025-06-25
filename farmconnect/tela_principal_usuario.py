@@ -798,7 +798,7 @@ class TelaUsuarioDashboard:
             medicamento_id = medicamento["id"]
             farmacia_id = 1  # pode ser fixo por enquanto, ou você pode buscar de outro local
             usuario_id = self.usuario_id
-            codigo = f"{medicamento['codigo']}-{self.data_escolhida.strftime('%Y%m%d')}"
+            codigo = f"{medicamento['codigo']}"
             data = self.data_escolhida.strftime('%Y-%m-%d')
             horario = self.horario_escolhido
             status = "Pendente"
