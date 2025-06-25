@@ -1,6 +1,6 @@
 import flet as ft
 from functools import partial
-from database import listar_medicamentos, carregar_carrinho_usuario, adicionar_ao_carrinho_db, remover_do_carrinho_db, buscar_nome_usuario, diminuir_quantidade_db, aumentar_quantidade_db, buscar_dados_usuario, adicionar_agendamento, listar_agendamentos_usuario, reduzir_estoque_farmacia, consultar_estoque_farmacia
+from database import listar_medicamentos, carregar_carrinho_usuario, adicionar_ao_carrinho_db, remover_do_carrinho_db, buscar_nome_usuario, diminuir_quantidade_db, aumentar_quantidade_db, buscar_dados_usuario, adicionar_agendamento, listar_agendamentos_usuario, reduzir_estoque_farmacia, consultar_estoque_farmacia, listar_farmacias
 from flet import DatePicker
 
 class TelaUsuarioDashboard:
@@ -771,6 +771,7 @@ class TelaUsuarioDashboard:
         self.data_escolhida_label = ft.Text("📅 Nenhuma data selecionada", size=16, color=ft.Colors.GREY_700)
         self.hora_selecionada = ft.Text("⏰ Nenhum horário selecionado", size=16, color=ft.Colors.GREY_700)
         self.botao_data_ref = ft.Ref[ft.ElevatedButton]()
+
         def abrir_datepicker():
             self.date_picker_ref.current.open = True
             self.page.update()
@@ -787,23 +788,14 @@ class TelaUsuarioDashboard:
             self.page.update()
 
         def confirmar_agendamento(e):
-            estoque_disponivel = consultar_estoque_farmacia(farmacia_id, medicamento_id)
-            if estoque_disponivel <= 0:
-                self.page.snack_bar = ft.SnackBar(ft.Text("❌ Estoque insuficiente na farmácia selecionada!"), bgcolor=ft.colors.RED_400)
-                self.page.snack_bar.open = True
-                self.page.update()
-                return
-
-            # Descontar estoque
-            reduzir_estoque_farmacia(farmacia_id, medicamento_id, quantidade=1)
-
+            # Valida data e horário
             if not self.data_escolhida or not self.horario_escolhido:
                 self.page.snack_bar = ft.SnackBar(ft.Text("Por favor, selecione data e horário."), bgcolor=ft.Colors.RED_400)
                 self.page.snack_bar.open = True
                 self.page.update()
                 return
 
-            # ⚠️ Supondo que o medicamento selecionado esteja em self.page.session
+            # Valida medicamento
             medicamento = self.page.client_storage.get("medicamento_detalhe")
             if not medicamento:
                 self.page.snack_bar = ft.SnackBar(ft.Text("Erro: nenhum medicamento selecionado."), bgcolor=ft.Colors.RED_400)
@@ -812,16 +804,36 @@ class TelaUsuarioDashboard:
                 return
 
             medicamento_id = medicamento["id"]
-            farmacia_id = 1  # pode ser fixo por enquanto, ou você pode buscar de outro local
-            usuario_id = self.usuario_id
             codigo = f"{medicamento['codigo']}"
+            usuario_id = self.usuario_id
             data = self.data_escolhida.strftime('%Y-%m-%d')
             horario = self.horario_escolhido
             status = "Pendente"
 
+            # Valida farmácia
+            try:
+                farmacia_id = int(self.dropdown_farmacia.value)
+            except (TypeError, ValueError):
+                self.page.snack_bar = ft.SnackBar(ft.Text("❗ Selecione uma farmácia para continuar."), bgcolor=ft.colors.RED_400)
+                self.page.snack_bar.open = True
+                self.page.update()
+                return
+
+            # Verifica estoque
+            estoque_disponivel = consultar_estoque_farmacia(farmacia_id, medicamento_id)
+            if estoque_disponivel <= 0:
+                self.page.snack_bar = ft.SnackBar(ft.Text("❌ Estoque insuficiente na farmácia selecionada!"), bgcolor=ft.colors.RED_400)
+                self.page.snack_bar.open = True
+                self.page.update()
+                return
+
+            # Desconta estoque
+            reduzir_estoque_farmacia(farmacia_id, medicamento_id, quantidade=1)
+
+            # Adiciona agendamento
             adicionar_agendamento(usuario_id, medicamento_id, farmacia_id, codigo, data, horario, status)
 
-            # Redireciona para confirmação
+            # Confirmação final
             self.page.snack_bar = ft.SnackBar(ft.Text("✅ Agendamento realizado com sucesso!"), bgcolor=ft.Colors.GREEN_500)
             self.page.snack_bar.open = True
             self.page.update()
@@ -870,6 +882,12 @@ class TelaUsuarioDashboard:
             on_click=lambda _: abrir_datepicker()
         )
 
+        farmacias = listar_farmacias()
+        self.dropdown_farmacia = ft.Dropdown(
+                                        label="Selecione a Farmácia",
+                                        options=[ft.dropdown.Option(str(f[0]), f[1]) for f in farmacias],
+                                        width=400)
+
         return ft.View(
             route="/agendamento",
             controls=[
@@ -898,6 +916,7 @@ class TelaUsuarioDashboard:
                                     horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                                     controls=[
                                         ft.Text("Escolha a data e o horário desejado:", size=18, color=ft.Colors.BLUE_900, text_align=ft.TextAlign.CENTER),
+                                        self.dropdown_farmacia,
                                         ft.Text("⏰ Selecione o Horário:", size=16, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
                                         ft.Column(gerar_botoes_horarios(), spacing=10),
                                         self.hora_selecionada,
