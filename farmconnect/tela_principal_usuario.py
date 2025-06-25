@@ -90,36 +90,34 @@ class TelaUsuarioDashboard:
     medicamentos_por_pagina = 8    
     def criar_carrinho_drawer(self):
         return ft.Container(
-            width=360,
+            width=480,
             bgcolor="#FFFFFF",
-            padding=20,
+            padding=30,
             visible=False,
             animate=ft.Animation(300, "easeInOut"),
             border_radius=24,
-            shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26, offset=ft.Offset(0, 6)),
+            shadow=ft.BoxShadow(blur_radius=24, color=ft.Colors.BLACK26, offset=ft.Offset(0, 6)),
             border=ft.border.all(1, color="#E2E8F0"),
             content=ft.Column([
-                ft.Container(
-                    padding=10,
-                    border_radius=12,
-                    bgcolor="#F8FAFC",
-                    content=ft.Row([
-                        ft.Icon(name=ft.Icons.SHOPPING_CART_OUTLINED, size=26, color="#1D4ED8"),
-                        ft.Text("Meu Carrinho", size=22, weight=ft.FontWeight.BOLD, color="#1D4ED8"),
-                        ft.IconButton(
-                            icon=ft.Icons.CLOSE,
-                            icon_color=ft.Colors.RED,
-                            tooltip="Fechar",
-                            icon_size=22,
-                            on_click=lambda e: self.fechar_carrinho()
-                        )
-                    ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
-                ),
-                ft.Divider(thickness=1),
-                ft.Column([], spacing=10, scroll=ft.ScrollMode.ALWAYS),  # <- index 2 usado em abrir_carrinho
-                ft.Container(),
+                ft.Row([
+                    ft.Row([
+                        ft.Icon(name=ft.Icons.SHOPPING_BAG, size=32, color="#1D4ED8"),
+                        ft.Text("Meu Carrinho", size=24, weight=ft.FontWeight.BOLD, color="#1D4ED8")
+                    ], spacing=12),
+                    ft.Container(expand=True),
+                    ft.IconButton(
+                        icon=ft.Icons.CLOSE,
+                        icon_color=ft.Colors.RED,
+                        tooltip="Fechar",
+                        icon_size=22,
+                        on_click=lambda e: self.fechar_carrinho()
+                    )
+                ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+                ft.Divider(thickness=1, color="#CBD5E1"),
+                ft.Column([], spacing=12, scroll=ft.ScrollMode.ALWAYS),  # <- índice 2 usado em abrir_carrinho
+                ft.Divider(thickness=1, color="#CBD5E1"),
                 ft.ElevatedButton(
-                    "Confirmar",
+                    "Confirmar Retirada",
                     icon=ft.Icons.CHECK,
                     bgcolor="#16A34A",
                     color=ft.Colors.WHITE,
@@ -129,8 +127,9 @@ class TelaUsuarioDashboard:
                     ),
                     on_click=lambda e: self.page.go("/agendamento")
                 )
-            ], spacing=16)
+            ], spacing=20)
         )
+
 
     def remover_do_carrinho(self, e=None, item=None):
         if item in self.carrinho:
@@ -1013,21 +1012,37 @@ class TelaUsuarioDashboard:
             try:
                 qtd = int(self.qtd_ref.current.value)
                 if qtd <= 0:
-                    raise ValueError
-                carrinho = self.page.session.get("carrinho") or []
-                for item in carrinho:
-                    if item["nome"] == medicamento["nome"]:
-                        item["quantidade"] += qtd
-                        break
+                    raise ValueError("Quantidade inválida.")
+
+                estoque_disponivel = int(medicamento.get("estoque") or 0)
+                if estoque_disponivel <= 0:
+                    self.page.snack_bar = ft.SnackBar(
+                        content=ft.Text("❗ Medicamento fora de estoque."),
+                        bgcolor=ft.Colors.RED_400
+                    )
+                elif qtd > estoque_disponivel:
+                    self.page.snack_bar = ft.SnackBar(
+                        content=ft.Text(f"❗ Estoque disponível: {estoque_disponivel} unidade(s)."),
+                        bgcolor=ft.Colors.RED_400
+                    )
                 else:
-                    carrinho.append({
-                        "nome": medicamento["nome"],
-                        "imagem": medicamento["imagem"],
-                        "descricao": medicamento["descricao"],
-                        "quantidade": qtd
-                    })
-                self.page.session.set("carrinho", carrinho)
-                self.atualizar_contador()
+                    for _ in range(qtd):
+                        self.adicionar_ao_carrinho(medicamento)
+
+                    self.page.snack_bar = ft.SnackBar(
+                        content=ft.Text(f"✅ {qtd} unidade(s) adicionadas ao carrinho."),
+                        bgcolor=ft.Colors.GREEN_400
+                    )
+
+            except Exception:
+                self.page.snack_bar = ft.SnackBar(
+                    content=ft.Text("❗ Quantidade inválida."),
+                    bgcolor=ft.Colors.RED_400
+                )
+
+                self.page.snack_bar.open = True
+                self.page.update()
+
                 self.page.snack_bar = ft.SnackBar(
                     content=ft.Text(f"✅ {qtd} unidade(s) adicionadas ao carrinho."),
                     bgcolor=ft.Colors.GREEN_400
