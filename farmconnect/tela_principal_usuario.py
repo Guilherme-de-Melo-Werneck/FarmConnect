@@ -851,12 +851,13 @@ class TelaUsuarioDashboard:
 
             # Verifica estoque
             estoque_disponivel = consultar_estoque_farmacia(farmacia_id, medicamento_id)
-            if estoque_disponivel <= 0:
-                self.page.snack_bar.content.value = "❌ Estoque insuficiente na farmácia selecionada!"
-                self.page.snack_bar.bgcolor = ft.Colors.RED_400
+            print(f"Estoque atual da farmácia: {estoque_disponivel}")
+            if estoque_disponivel < 1:
+                self.page.snack_bar = ft.SnackBar(ft.Text("❌ Estoque insuficiente!"), bgcolor=ft.colors.RED_400)
                 self.page.snack_bar.open = True
                 self.page.update()
                 return
+
 
             # Desconta estoque
             reduzir_estoque_farmacia(farmacia_id, medicamento_id, quantidade=1)
