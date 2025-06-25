@@ -46,8 +46,9 @@ class TelaUsuarioDashboard:
     def atualizar_contador(self):
         total = sum(item["quantidade"] for item in self.carrinho)
         self.contador["valor"] = total
-        self.carrinho_count.current.value = str(total)
-        self.carrinho_count.current.update()
+        if self.carrinho_count.current:
+            self.carrinho_count.current.value = str(total)
+            self.carrinho_count.current.update()
 
     def aumentar_quantidade(self, item):
         if item["quantidade"] < item["estoque"]:
@@ -509,7 +510,8 @@ class TelaUsuarioDashboard:
                                     shape=ft.RoundedRectangleBorder(radius=12),
                                     padding=ft.padding.symmetric(vertical=12)
                                 ),
-                                on_click=lambda e: print("Documento baixado")
+                                url="inserir_o_link_do_documento_aqui.pdf",  # substitua pelo link do documento
+                                url_target=ft.UrlTarget.BLANK  # abre em nova aba e inicia download
                             ),
                             ft.ElevatedButton(
                                 "Voltar",
@@ -531,24 +533,27 @@ class TelaUsuarioDashboard:
 
 
     def tela_perfil_paciente(self):
+        import flet as ft
+
         # Refs e dados
-        self.editando_nome = ft.Ref[bool]()
-        self.editando_cpf = ft.Ref[bool]()
-        self.editando_nasc = ft.Ref[bool]()
-        self.editando_email = ft.Ref[bool]()
-        self.editando_tel = ft.Ref[bool]()
+        self.editando = {
+            "nome": ft.Ref[bool](),
+            "cpf": ft.Ref[bool](),
+            "nasc": ft.Ref[bool](),
+            "email": ft.Ref[bool](),
+            "tel": ft.Ref[bool](),
+        }
 
-        self.nome_field = ft.Ref[ft.TextField]()
-        self.cpf_field = ft.Ref[ft.TextField]()
-        self.nasc_field = ft.Ref[ft.TextField]()
-        self.email_field = ft.Ref[ft.TextField]()
-        self.tel_field = ft.Ref[ft.TextField]()
+        self.campos = {
+            "nome": ft.Ref[ft.TextField](),
+            "cpf": ft.Ref[ft.TextField](),
+            "nasc": ft.Ref[ft.TextField](),
+            "email": ft.Ref[ft.TextField](),
+            "tel": ft.Ref[ft.TextField](),
+        }
 
-        self.editando_nome.current = False
-        self.editando_cpf.current = False
-        self.editando_nasc.current = False
-        self.editando_email.current = False
-        self.editando_tel.current = False
+        for ref in self.editando.values():
+            ref.current = False
 
         self.dados_usuario = buscar_dados_usuario(self.email_usuario) or {
             "nome": "Desconhecido",
@@ -558,52 +563,67 @@ class TelaUsuarioDashboard:
             "tel": "(00) 00000-0000"
         }
 
-        def iniciar_edicao(ref_bool, input_ref):
-            ref_bool.current = True
+        def iniciar_edicao(campo):
+            self.editando[campo].current = True
             self.page.update()
-            input_ref.current.focus()
+            self.campos[campo].current.focus()
 
-        def salvar(ref_bool, campo, input_ref):
-            self.dados_usuario[campo] = input_ref.current.value
-            ref_bool.current = False
-            self.page.snack_bar = ft.SnackBar(ft.Text(f"{campo.capitalize()} atualizado com sucesso!"), bgcolor=ft.Colors.GREEN_100)
+        def salvar(campo):
+            self.dados_usuario[campo] = self.campos[campo].current.value
+            self.editando[campo].current = False
+            self.page.snack_bar = ft.SnackBar(
+                content=ft.Text(f"{campo.capitalize()} atualizado com sucesso!"),
+                bgcolor=ft.Colors.GREEN_500
+            )
             self.page.snack_bar.open = True
             self.page.update()
 
-        def campo_editavel(label, campo, ref_bool, input_ref):
-            return ft.Column(
-                spacing=2,
-                controls=[
-                    ft.Row(
-                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                        vertical_alignment=ft.CrossAxisAlignment.CENTER,
-                        controls=[
-                            ft.Text(label, size=16, color=ft.Colors.GREY_50),
-                            ft.IconButton(
-                                icon=ft.Icons.EDIT,
-                                icon_color=ft.Colors.BLUE,
-                                tooltip="Editar",
-                                on_click=lambda e: iniciar_edicao(ref_bool, input_ref)
-                            )
-                        ]
-                    ),
-                    ft.TextField(
-                        ref=input_ref,
-                        value=self.dados_usuario[campo],
-                        read_only=not ref_bool.current,
-                        filled=True,
-                        dense=True,
-                        bgcolor=ft.Colors.GREY_50,
-                        border_radius=12,
-                        content_padding=10,
-                        text_size=16,
-                        on_submit=lambda e: salvar(ref_bool, campo, input_ref)
+        def campo_editavel(label, campo, icone):
+            return ft.Column([
+                ft.Row([
+                    ft.Icon(icone, size=20, color=ft.Colors.BLUE_900),
+                    ft.Text(label, size=14, weight="bold", color=ft.Colors.BLUE_900),
+                    ft.Container(expand=True),
+                    ft.IconButton(
+                        icon=ft.Icons.EDIT,
+                        icon_color=ft.Colors.BLUE_700,
+                        tooltip="Editar",
+                        on_click=lambda e: iniciar_edicao(campo)
                     )
-                ]
-            )
+                ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+                ft.Row([
+                    ft.Container(
+                        expand=True,
+                        content=ft.TextField(
+                            ref=self.campos[campo],
+                            value=self.dados_usuario[campo],
+                            read_only=not self.editando[campo].current,
+                            border_radius=12,
+                            filled=True,
+                            bgcolor="#F3F4F6",
+                            dense=True,
+                            text_size=15,
+                            content_padding=ft.padding.all(12),
+                            border_color=ft.Colors.BLUE_100 if self.editando[campo].current else ft.Colors.GREY_300,
+                            on_submit=lambda e: salvar(campo)
+                        )
+                    ),
+                    ft.AnimatedSwitcher(
+                        transition=ft.Animation(300, "easeInOut"),
+                        content=ft.IconButton(
+                            icon=ft.Icons.SAVE,
+                            icon_color=ft.Colors.GREEN_700,
+                            tooltip="Salvar",
+                            visible=self.editando[campo].current,
+                            on_click=lambda e: salvar(campo)
+                        ) if self.editando[campo].current else ft.Container()
+                    )
+                ])
+            ], spacing=6)
 
         return ft.View(
             route="/perfil",
+            scroll=ft.ScrollMode.AUTO,
             controls=[
                 ft.Container(
                     expand=True,
@@ -614,60 +634,69 @@ class TelaUsuarioDashboard:
                         end=ft.alignment.bottom_right,
                         colors=["#E0F2FE", "#F0F4FF"]
                     ),
-                    content=ft.Column(
-                        scroll=ft.ScrollMode.AUTO,
-                        alignment=ft.MainAxisAlignment.CENTER,
-                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                        spacing=30,
-                        controls=[
-                            ft.Text("Perfil do Paciente", size=32, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
-                            ft.Container(
-                                width=700,
-                                padding=25,
-                                bgcolor=ft.Colors.WHITE,
-                                border_radius=20,
-                                shadow=ft.BoxShadow(blur_radius=24, color=ft.Colors.BLACK26, offset=ft.Offset(0, 12)),
-                                content=ft.Column(
-                                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                                    spacing=30,
-                                    controls=[
-                                        ft.Column(
-                                            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                                            spacing=10,
+                    content=ft.Column([
+                        ft.Row(
+                            alignment=ft.MainAxisAlignment.CENTER,
+                            controls=[
+                                ft.Text("👤 Perfil do Paciente", size=32, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900)
+                            ]
+                        ),
+                        ft.Row(
+                            alignment=ft.MainAxisAlignment.CENTER,
+                            controls=[
+                                ft.Container(
+                                    width=700,
+                                    padding=30,
+                                    bgcolor=ft.Colors.WHITE,
+                                    border_radius=20,
+                                    shadow=ft.BoxShadow(blur_radius=24, color=ft.Colors.BLACK12, offset=ft.Offset(0, 12)),
+                                    content=ft.Column([
+                                        ft.Row(
+                                            alignment=ft.MainAxisAlignment.CENTER,
                                             controls=[
-                                                ft.CircleAvatar(foreground_image_src="/images/profile.jpg", radius=60),
-                                                ft.Text(self.dados_usuario["nome"], size=24, weight=ft.FontWeight.BOLD),
-                                                ft.Text("Paciente FarmConnect", size=16, color=ft.Colors.GREY_600)
+                                                ft.Column(
+                                                    alignment=ft.MainAxisAlignment.CENTER,
+                                                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                                                    spacing=8,
+                                                    controls=[
+                                                        ft.Text(self.dados_usuario["nome"], size=30, weight=ft.FontWeight.BOLD, text_align=ft.TextAlign.CENTER),
+                                                        ft.Text("Paciente FarmConnect", size=14, color=ft.Colors.GREY_600, text_align=ft.TextAlign.CENTER),
+                                                    ]
+                                                )
                                             ]
                                         ),
-                                        campo_editavel("Nome", "nome", self.editando_nome, self.nome_field,),
-                                        campo_editavel("CPF", "cpf", self.editando_cpf, self.cpf_field),
-                                        campo_editavel("Data de Nascimento", "nasc", self.editando_nasc, self.nasc_field),
-                                        campo_editavel("Email", "email", self.editando_email, self.email_field),
-                                        campo_editavel("Telefone", "tel", self.editando_tel, self.tel_field),
-                                    ]
+                                        ft.Divider(height=30),
+                                        campo_editavel("Nome completo", "nome", ft.Icons.PERSON),
+                                        campo_editavel("CPF", "cpf", ft.Icons.BADGE),
+                                        campo_editavel("Data de nascimento", "nasc", ft.Icons.CALENDAR_MONTH),
+                                        campo_editavel("Email", "email", ft.Icons.EMAIL),
+                                        campo_editavel("Telefone", "tel", ft.Icons.PHONE)
+                                    ], spacing=25)
+                        )
+                            ]
+                        ),
+                        ft.Row(
+                            alignment=ft.MainAxisAlignment.CENTER,
+                            controls=[
+                                ft.ElevatedButton(
+                                    "Voltar",
+                                    icon=ft.Icons.ARROW_BACK,
+                                    bgcolor=ft.Colors.GREY_50,
+                                    color=ft.Colors.BLUE_900,
+                                    width=160,
+                                    style=ft.ButtonStyle(
+                                        shape=ft.RoundedRectangleBorder(radius=16),
+                                        padding=ft.padding.symmetric(vertical=12),
+                                        elevation=4
+                                    ),
+                                    on_click=lambda e: self.page.go("/usuario")
                                 )
-                            ),
-                            ft.ElevatedButton(
-                                "Voltar",
-                                icon=ft.Icons.ARROW_BACK,
-                                bgcolor=ft.Colors.GREY_50,
-                                color=ft.Colors.BLUE_900,
-                                width=160,
-                                style=ft.ButtonStyle(
-                                    shape=ft.RoundedRectangleBorder(radius=16),
-                                    padding=ft.padding.symmetric(vertical=12),
-                                    elevation=4
-                                ),
-                                on_click=lambda e: self.page.go("/usuario")
-                            )
-                        ]
-                    )
+                            ]
+                        )
+                    ], spacing=30, alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
                 )
             ]
         )
-
-
 
     def tela_medicamentos_retirados(self):
         self.medicamentos_retirados_mock = [
@@ -814,7 +843,8 @@ class TelaUsuarioDashboard:
             try:
                 farmacia_id = int(self.dropdown_farmacia.value)
             except (TypeError, ValueError):
-                self.page.snack_bar = ft.SnackBar(ft.Text("❗ Selecione uma farmácia para continuar."), bgcolor=ft.colors.RED_400)
+                self.page.snack_bar = "❗ Selecione uma farmácia para continuar."
+                self.page.snack_bar.bgcolor = ft.Colors.RED_400
                 self.page.snack_bar.open = True
                 self.page.update()
                 return
@@ -822,7 +852,8 @@ class TelaUsuarioDashboard:
             # Verifica estoque
             estoque_disponivel = consultar_estoque_farmacia(farmacia_id, medicamento_id)
             if estoque_disponivel <= 0:
-                self.page.snack_bar = ft.SnackBar(ft.Text("❌ Estoque insuficiente na farmácia selecionada!"), bgcolor=ft.colors.RED_400)
+                self.page.snack_bar.content.value = "❌ Estoque insuficiente na farmácia selecionada!"
+                self.page.snack_bar.bgcolor = ft.Colors.RED_400
                 self.page.snack_bar.open = True
                 self.page.update()
                 return
@@ -834,7 +865,8 @@ class TelaUsuarioDashboard:
             adicionar_agendamento(usuario_id, medicamento_id, farmacia_id, codigo, data, horario, status)
 
             # Confirmação final
-            self.page.snack_bar = ft.SnackBar(ft.Text("✅ Agendamento realizado com sucesso!"), bgcolor=ft.Colors.GREEN_500)
+            self.page.snack_bar.content.value = "✅ Agendamento realizado com sucesso!"
+            self.page.snack_bar.bgcolor=ft.Colors.GREEN_500
             self.page.snack_bar.open = True
             self.page.update()
             self.page.go("/agendamento_confirmado")
@@ -957,7 +989,6 @@ class TelaUsuarioDashboard:
 
 
     def tela_detalhes_medicamento(self):
-        self.atualizar_contador()
         medicamento = self.page.client_storage.get("medicamento_detalhe")
 
         if not medicamento:
