@@ -1,5 +1,5 @@
 import flet as ft
-from database import listar_medicamentos, editar_medicamento, adicionar_medicamento, listar_categorias, listar_fabricantes, desativar_medicamento, adicionar_farmacia, listar_farmacias, deletar_farmacia, editar_farmacia, listar_usuarios, registrar_usuario, aprovar_usuario, recusar_usuario, listar_agendamentos, adicionar_agendamento, reativar_medicamento
+from database import listar_medicamentos, editar_medicamento, adicionar_medicamento, listar_categorias, listar_fabricantes, desativar_medicamento, adicionar_farmacia, listar_farmacias, deletar_farmacia, editar_farmacia, listar_usuarios, registrar_usuario, aprovar_usuario, recusar_usuario, listar_agendamentos, adicionar_agendamento, reativar_medicamento, adicionar_estoque
 from datetime import datetime
 from collections import Counter
 import calendar
@@ -49,8 +49,8 @@ class TelaAdminDashboard:
     
     def card_estoque_medicamentos(self):
         medicamentos = listar_medicamentos(include_inativos=False)
-        total_estoque = sum([m[5] for m in medicamentos])  # m[5] = estoque
-        abaixo_limite = [(m[1], m[5]) for m in medicamentos if m[5] < 5]  # m[1] = nome
+        total_estoque = sum([m[5] or 0 for m in medicamentos]) # m[5] = estoque
+        abaixo_limite = [(m[1], m[5] or 0) for m in medicamentos if (m[5] or 0) < 5]  # m[1] = nome
 
         if not medicamentos: # Nenhum medicamento ativo no banco
             return ft.Container(
@@ -379,12 +379,13 @@ class TelaAdminDashboard:
             rows.append(
                 ft.DataRow(
                     cells=[
-                        ft.DataCell(ft.Text(str(med[0]), color=cor)),
-                        ft.DataCell(ft.Text(med[1], color=cor)),
-                        ft.DataCell(ft.Text(med[2] or "-", color=cor)),
-                        ft.DataCell(ft.Text(med[6] or "-", color=cor)),
-                        ft.DataCell(ft.Text(med[7] or "-", color=cor)),
-                        ft.DataCell(ft.Text(str(med[5]), color=cor)),
+                        ft.DataCell(ft.Text(str(med[0]), color=cor)),  # ID
+                        ft.DataCell(ft.Text(med[1], color=cor)),       # Nome
+                        ft.DataCell(ft.Text(med[2] or "-", color=cor)),# Código
+                        ft.DataCell(ft.Text(med[6] or "-", color=cor)),# Categoria
+                        ft.DataCell(ft.Text(med[7] or "-", color=cor)),# Fabricante
+                        ft.DataCell(ft.Text(med[8] or "-", color=cor)),# Farmácia
+                        ft.DataCell(ft.Text(str(med[5] or 0), color=cor)),  # Estoque
                         ft.DataCell(
                             ft.IconButton(
                                 icon=ft.Icons.LOCK_OPEN if inativo else ft.Icons.CANCEL_OUTLINED,
@@ -438,6 +439,7 @@ class TelaAdminDashboard:
                 ft.DataColumn(ft.Text("Código")),
                 ft.DataColumn(ft.Text("Categoria")),
                 ft.DataColumn(ft.Text("Fabricante")),
+                ft.DataColumn(ft.Text("Farmácia")),
                 ft.DataColumn(ft.Text("Estoque")),
                 ft.DataColumn(ft.Text("Ações")),
             ],
@@ -636,7 +638,16 @@ class TelaAdminDashboard:
                 fabricante_id=fabricante_id
             )
         else:
-            adicionar_medicamento(
+            farmacia_id = int(self.dropdown_farmacia.value) if self.dropdown_farmacia.value else None
+
+            if not farmacia_id:
+                self.page.snack_bar = ft.SnackBar(content=ft.Text("Você deve selecionar uma farmácia."), bgcolor="red")
+                self.page.snack_bar.open = True
+                self.page.update()
+                return
+
+            # 1. Cadastra o medicamento e pega o ID
+            id_medicamento = adicionar_medicamento(
                 nome=nome,
                 codigo=codigo,
                 descricao=descricao,
@@ -645,6 +656,9 @@ class TelaAdminDashboard:
                 categoria_id=categoria_id,
                 fabricante_id=fabricante_id,
             )
+
+            # 2. Relaciona ao estoque da farmácia
+            adicionar_estoque(farmacia_id, id_medicamento, estoque)
 
         # Voltar para lista
         self.load_medicamentos()
@@ -657,6 +671,7 @@ class TelaAdminDashboard:
         # Carregar categorias e fabricantes do banco
         categorias = listar_categorias()
         fabricantes = listar_fabricantes()
+        farmacias = listar_farmacias()
 
         # Dropdowns salvos como atributos para uso posterior
         self.dropdown_categoria = ft.Dropdown(
@@ -672,6 +687,14 @@ class TelaAdminDashboard:
             border_radius=10,
             bgcolor="#F9FAFB",
             options=[ft.dropdown.Option(str(f[0]), f[1]) for f in fabricantes],
+            expand=True
+        )
+
+        self.dropdown_farmacia = ft.Dropdown(
+            label="Farmácia",
+            options=[ft.dropdown.Option(str(f[0]), f[1]) for f in farmacias],
+            border_radius=10,
+            bgcolor="#F9FAFB",
             expand=True
         )
 
@@ -718,7 +741,7 @@ class TelaAdminDashboard:
                                             on_click=self.load_cadastro_fabricante
                                         )
                                     ], spacing=10),
-                        
+                                    self.dropdown_farmacia,
                                     self.campo_estoque,
                                     self.campo_imagem,
                                     self.campo_observacoes,
