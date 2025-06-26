@@ -431,9 +431,9 @@ class TelaUsuarioDashboard:
                                             alignment=ft.alignment.center
                                         ),
                                         ft.Row([
-                                            ft.OutlinedButton("Mais Buscados"),
-                                            ft.OutlinedButton("Meus Agendamentos"),
-                                            ft.OutlinedButton("Feedback"),
+                                            ft.OutlinedButton("."),
+                                            ft.OutlinedButton("."),
+                                            ft.OutlinedButton("."),
                                         ], alignment=ft.MainAxisAlignment.CENTER, spacing=16),
                                         ft.Divider(height=25),
                                         self.cards_container,
