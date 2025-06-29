@@ -8,13 +8,10 @@ class TelaUsuarioDashboard:
         self.page = page
         self.cards_container = ft.ResponsiveRow(run_spacing=20, spacing=20)
         self.pagina_atual = 1
-        self.carrinho_count = ft.Ref[ft.Text]()
         self.busca_ref = ft.Ref[ft.TextField]()
         self.date_picker_ref = ft.Ref[ft.DatePicker]()
         self.data_escolhida_label = ft.Text("📅 Nenhuma data selecionada", size=16, color=ft.Colors.GREY_700)
         self.data_escolhida = None
-        self.contador = {"valor": 0}
-        self.carrinho = []
         self.botoes_paginacao = ft.Row(alignment=ft.MainAxisAlignment.CENTER, spacing=10)
         self.page.theme_mode = ft.ThemeMode.LIGHT
         self.medicamentos = self.carregar_medicamentos()
@@ -28,7 +25,9 @@ class TelaUsuarioDashboard:
         self.usuario_id = self.get_usuario_id_por_email(self.email_usuario)
 
         self.carrinho = carregar_carrinho_usuario(self.usuario_id)
-        self.contador = {"valor": sum(item["quantidade"] for item in self.carrinho)}
+        self.contador = {"valor": 0}
+        self.carrinho_count = ft.Ref[ft.Text]()
+        self.sincronizar_carrinho()
 
         # Cria o drawer do carrinho
         self.carrinho_drawer = self.criar_carrinho_drawer()
@@ -46,7 +45,8 @@ class TelaUsuarioDashboard:
     def atualizar_contador(self):
         total = sum(item["quantidade"] for item in self.carrinho)
         self.contador["valor"] = total
-        if self.carrinho_count.current:
+
+        if self.carrinho_count and self.carrinho_count.current:
             self.carrinho_count.current.value = str(total)
             self.carrinho_count.current.update()
 
@@ -229,8 +229,9 @@ class TelaUsuarioDashboard:
         self.carrinho_drawer.visible = False
         self.page.update()
 
-
-
+    def sincronizar_carrinho(self):
+        self.carrinho = carregar_carrinho_usuario(self.usuario_id)
+        self.atualizar_contador()
 
     def gerar_cards(self, pagina=None):
         busca = self.busca_ref.current.value.lower() if self.busca_ref.current and self.busca_ref.current.value else ""
@@ -287,6 +288,7 @@ class TelaUsuarioDashboard:
 
 
     def icone_carrinho(self):
+        texto = ft.Text(str(self.contador["valor"]), size=10, color=ft.Colors.WHITE, ref=self.carrinho_count)
         return ft.Stack([
             ft.IconButton(
                 icon=ft.Icons.SHOPPING_BAG_OUTLINED,
@@ -295,7 +297,7 @@ class TelaUsuarioDashboard:
                 on_click=self.abrir_carrinho
             ),
             ft.Container(
-                content=ft.Text("0", size=10, color=ft.Colors.WHITE, ref=self.carrinho_count),
+                content=texto,
                 width=16,
                 height=16,
                 alignment=ft.alignment.center,
@@ -332,6 +334,7 @@ class TelaUsuarioDashboard:
 
 
     def build_tela(self):
+
         sidebar = ft.Container(
             width=280,
             bgcolor="#F8FAFC",
@@ -364,6 +367,7 @@ class TelaUsuarioDashboard:
             ], spacing=10, expand=True)
         )
 
+        self.sincronizar_carrinho()
         self.gerar_cards(self.pagina_atual)
 
         return ft.View(
@@ -405,7 +409,7 @@ class TelaUsuarioDashboard:
                                                     on_click=self.abrir_carrinho
                                                 ),
                                                 ft.Container(
-                                                    content=ft.Text("0", size=10, color=ft.Colors.WHITE, ref=self.carrinho_count),
+                                                    content=ft.Text(str(self.contador["valor"]), size=10, color=ft.Colors.WHITE, ref=self.carrinho_count),
                                                     width=16,
                                                     height=16,
                                                     alignment=ft.alignment.center,
@@ -449,6 +453,7 @@ class TelaUsuarioDashboard:
         )
 
     def tela_documentos(self):
+        self.sincronizar_carrinho()
         return ft.View(
             route="/documentos",
             controls=[
@@ -533,6 +538,7 @@ class TelaUsuarioDashboard:
 
     def tela_perfil_paciente(self):
         import flet as ft
+        self.sincronizar_carrinho()
 
         # Refs e dados
         self.editando = {
@@ -698,6 +704,7 @@ class TelaUsuarioDashboard:
         )
 
     def tela_medicamentos_retirados(self):
+        self.sincronizar_carrinho()
         self.medicamentos_retirados_mock = [
             {"nome": "Interferon Alfa", "data_retirada": "10/05/2025", "quantidade": 2},
             {"nome": "Rituximabe", "data_retirada": "08/05/2025", "quantidade": 1},
@@ -792,6 +799,7 @@ class TelaUsuarioDashboard:
 
     def tela_agendamento(self):
         import datetime
+        self.sincronizar_carrinho()
 
         self.data_escolhida = None
         self.horario_escolhido = None
@@ -990,6 +998,7 @@ class TelaUsuarioDashboard:
 
     def tela_detalhes_medicamento(self):
         medicamento = self.page.client_storage.get("medicamento_detalhe")
+        self.sincronizar_carrinho()
 
         if not medicamento:
             return ft.View(
@@ -1005,7 +1014,6 @@ class TelaUsuarioDashboard:
 
         self.qtd_ref = ft.Ref[ft.TextField]()
         self.imagem_principal = ft.Ref[ft.Image]()
-        self.carrinho_count = ft.Ref[ft.Text]()
 
         
         def adicionar_ao_carrinho(e):
@@ -1047,11 +1055,7 @@ class TelaUsuarioDashboard:
                     content=ft.Text(f"✅ {qtd} unidade(s) adicionadas ao carrinho."),
                     bgcolor=ft.Colors.GREEN_400
                 )
-            except:
-                self.page.snack_bar = ft.SnackBar(
-                    content=ft.Text("❗ Quantidade inválida."),
-                    bgcolor=ft.Colors.RED_400
-                )
+
             self.page.snack_bar.open = True
             self.atualizar_contador()
             self.page.update()
@@ -1197,6 +1201,7 @@ class TelaUsuarioDashboard:
     def tela_meus_agendamentos(self):
         from database import listar_agendamentos_usuario
         agendamentos = listar_agendamentos_usuario(self.usuario_id)
+        self.sincronizar_carrinho()
         def status_badge(status):
             cores = {
                 "Pendente": (ft.Colors.AMBER_700, ft.Colors.AMBER_100),
@@ -1354,6 +1359,7 @@ class TelaUsuarioDashboard:
         )
     
     def tela_agendamento_confirmado(self):
+        self.sincronizar_carrinho()
         return ft.View(
             route="/agendamento_confirmado",
             scroll=ft.ScrollMode.AUTO,
@@ -1400,10 +1406,6 @@ class TelaUsuarioDashboard:
                 )
             ]
         )
-
-
-
-from tela_principal_usuario import TelaUsuarioDashboard  # certifique-se que o nome do arquivo esteja correto
 
 if __name__ == "__main__":
     def main(page: ft.Page):
