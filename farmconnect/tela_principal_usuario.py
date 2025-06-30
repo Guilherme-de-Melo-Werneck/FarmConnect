@@ -1,6 +1,6 @@
 import flet as ft
 from functools import partial
-from database import listar_medicamentos, carregar_carrinho_usuario, adicionar_ao_carrinho_db, remover_do_carrinho_db, buscar_nome_usuario, diminuir_quantidade_db, aumentar_quantidade_db, buscar_dados_usuario, adicionar_agendamento, listar_agendamentos_usuario, reduzir_estoque_farmacia, consultar_estoque_farmacia, listar_farmacias
+from database import listar_medicamentos, carregar_carrinho_usuario, adicionar_ao_carrinho_db, remover_do_carrinho_db, buscar_nome_usuario, diminuir_quantidade_db, aumentar_quantidade_db, buscar_dados_usuario, adicionar_agendamento, listar_agendamentos_usuario, reduzir_estoque_farmacia, consultar_estoque_farmacia, listar_farmacias, consultar_estoque_farmacia, adicionar_ao_carrinho_db
 from flet import DatePicker
 
 class TelaUsuarioDashboard:
@@ -138,33 +138,33 @@ class TelaUsuarioDashboard:
             self.atualizar_contador()
             self.abrir_carrinho()
 
-    def adicionar_ao_carrinho(self, medicamento):
-        # Garante que medicamento["estoque"] == None será convertido para 0.
+    def adicionar_ao_carrinho(self, medicamento, quantidade=1):
         try:
             estoque = int(medicamento.get("estoque") or 0)
         except (TypeError, ValueError):
             estoque = 0
 
-        # Verifica se já está no carrinho
         existente = next((item for item in self.carrinho if item["id"] == medicamento["id"]), None)
 
         if existente:
-            if existente["quantidade"] < estoque:
-                existente["quantidade"] += 1
-                adicionar_ao_carrinho_db(self.usuario_id, medicamento["id"])
+            if existente["quantidade"] + quantidade <= estoque:
+                existente["quantidade"] += quantidade
+                for _ in range(quantidade):
+                    adicionar_ao_carrinho_db(self.usuario_id, medicamento["id"])
             else:
-                self.page.snack_bar.content.value = "Você já adicionou todas as unidades disponíveis."
+                self.page.snack_bar.content.value = f"Estoque insuficiente. Disponível: {estoque - existente['quantidade']} unidade(s)."
                 self.page.snack_bar.bgcolor = ft.Colors.RED_400
                 self.page.snack_bar.open = True
                 self.page.update()
                 return
         else:
-            if estoque > 0:
-                novo = {**medicamento, "quantidade": 1}
+            if estoque >= quantidade:
+                novo = {**medicamento, "quantidade": quantidade}
                 self.carrinho.append(novo)
-                adicionar_ao_carrinho_db(self.usuario_id, medicamento["id"])
+                for _ in range(quantidade):
+                    adicionar_ao_carrinho_db(self.usuario_id, medicamento["id"])
             else:
-                self.page.snack_bar.content.value = "❗ Medicamento fora de estoque."
+                self.page.snack_bar.content.value = "❗ Medicamento fora de estoque ou quantidade maior que o disponível."
                 self.page.snack_bar.bgcolor = ft.Colors.RED_400
                 self.page.snack_bar.open = True
                 self.page.update()
@@ -369,6 +369,7 @@ class TelaUsuarioDashboard:
 
         self.sincronizar_carrinho()
         self.gerar_cards(self.pagina_atual)
+        self.atualizar_contador()
 
         return ft.View(
             route="/usuario",
@@ -1015,51 +1016,6 @@ class TelaUsuarioDashboard:
         self.qtd_ref = ft.Ref[ft.TextField]()
         self.imagem_principal = ft.Ref[ft.Image]()
 
-        
-        def adicionar_ao_carrinho(e):
-            try:
-                qtd = int(self.qtd_ref.current.value)
-                if qtd <= 0:
-                    raise ValueError("Quantidade inválida.")
-
-                estoque_disponivel = int(medicamento.get("estoque") or 0)
-                if estoque_disponivel <= 0:
-                    self.page.snack_bar = ft.SnackBar(
-                        content=ft.Text("❗ Medicamento fora de estoque."),
-                        bgcolor=ft.Colors.RED_400
-                    )
-                elif qtd > estoque_disponivel:
-                    self.page.snack_bar = ft.SnackBar(
-                        content=ft.Text(f"❗ Estoque disponível: {estoque_disponivel} unidade(s)."),
-                        bgcolor=ft.Colors.RED_400
-                    )
-                else:
-                    for _ in range(qtd):
-                        self.adicionar_ao_carrinho(medicamento)
-
-                    self.page.snack_bar = ft.SnackBar(
-                        content=ft.Text(f"✅ {qtd} unidade(s) adicionadas ao carrinho."),
-                        bgcolor=ft.Colors.GREEN_400
-                    )
-
-            except Exception:
-                self.page.snack_bar = ft.SnackBar(
-                    content=ft.Text("❗ Quantidade inválida."),
-                    bgcolor=ft.Colors.RED_400
-                )
-
-                self.page.snack_bar.open = True
-                self.page.update()
-
-                self.page.snack_bar = ft.SnackBar(
-                    content=ft.Text(f"✅ {qtd} unidade(s) adicionadas ao carrinho."),
-                    bgcolor=ft.Colors.GREEN_400
-                )
-
-            self.page.snack_bar.open = True
-            self.atualizar_contador()
-            self.page.update()
-
         def trocar_imagem(nova_src):
             def handler(e):
                 self.imagem_principal.current.src = nova_src
@@ -1150,7 +1106,7 @@ class TelaUsuarioDashboard:
                                                         padding=ft.padding.symmetric(vertical=14, horizontal=20),
                                                         shape=ft.RoundedRectangleBorder(radius=12)
                                                     ),
-                                                    on_click=adicionar_ao_carrinho
+                                                    on_click=lambda e: self.adicionar_ao_carrinho(medicamento, int(self.qtd_ref.current.value or "1"))
                                                 )
                                             ], spacing=20)
                                         ], spacing=10)
