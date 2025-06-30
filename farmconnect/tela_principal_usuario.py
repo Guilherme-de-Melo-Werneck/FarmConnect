@@ -457,14 +457,10 @@ class TelaUsuarioDashboard:
         self.sincronizar_carrinho()
         return ft.View(
             route="/documentos",
+            scroll=ft.ScrollMode.AUTO,
+            bgcolor="#F0F9FF",
             controls=[
                 ft.Container(
-                    expand=True,
-                    gradient=ft.LinearGradient(
-                        begin=ft.alignment.top_left,
-                        end=ft.alignment.bottom_right,
-                        colors=["#EFF6FF", "#DBEAFE"]
-                    ),
                     padding=40,
                     content=ft.Column([
                         # Título da Página
@@ -538,7 +534,6 @@ class TelaUsuarioDashboard:
 
 
     def tela_perfil_paciente(self):
-        import flet as ft
         self.sincronizar_carrinho()
 
         # Refs e dados
@@ -630,16 +625,12 @@ class TelaUsuarioDashboard:
         return ft.View(
             route="/perfil",
             scroll=ft.ScrollMode.AUTO,
+            bgcolor="#F0F9FF",
             controls=[
                 ft.Container(
                     expand=True,
                     padding=30,
                     alignment=ft.alignment.center,
-                    gradient=ft.LinearGradient(
-                        begin=ft.alignment.top_left,
-                        end=ft.alignment.bottom_right,
-                        colors=["#E0F2FE", "#F0F4FF"]
-                    ),
                     content=ft.Column([
                         ft.Row(
                             alignment=ft.MainAxisAlignment.CENTER,
@@ -717,15 +708,11 @@ class TelaUsuarioDashboard:
         return ft.View(
             route="/medicamentos_retirados",
             scroll=ft.ScrollMode.AUTO,
+            bgcolor="#F0F9FF",
             controls=[
                 ft.Container(
                     expand=True,
                     padding=40,
-                    gradient=ft.LinearGradient(
-                        begin=ft.alignment.top_left,
-                        end=ft.alignment.bottom_right,
-                        colors=["#E0F2FE", "#F0F4FF"]
-                    ),
                     content=ft.Column([
                         ft.Text(
                             "💊 MEDICAMENTOS RETIRADOS", 
@@ -1240,13 +1227,14 @@ class TelaUsuarioDashboard:
                 padding=60,
                 bgcolor=ft.Colors.WHITE,
                 border_radius=20,
-                shadow=ft.BoxShadow(blur_radius=12, color="#CBD5E1")
+                shadow=ft.BoxShadow(blur_radius=12, color=ft.Colors.BLACK26)
             )
         )
 
         return ft.View(
             route="/agendamentos",
-            scroll=ft.ScrollMode.AUTO,  # ✅ Scroll só aqui
+            scroll=ft.ScrollMode.AUTO,
+            bgcolor="#F0F9FF",  # ✅ Scroll só aqui
             controls=[
                 ft.Container(
                     padding=40,
