@@ -1047,7 +1047,7 @@ class TelaUsuarioDashboard:
                                     ft.Container(expand=True),
                                     self.icone_carrinho(),
                                     ft.CircleAvatar(foreground_image_src="/images/profile.jpg", radius=20),
-                                    ft.Text("JOÃO NASCIMENTO", size=13, weight=ft.FontWeight.BOLD)
+                                    ft.Text(self.nome_usuario.upper(), size=13, weight=ft.FontWeight.BOLD)
                                 ]),
 
                                 # Imagem e info do medicamento
