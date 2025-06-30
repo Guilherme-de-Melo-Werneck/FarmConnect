@@ -1123,7 +1123,7 @@ class TelaUsuarioDashboard:
                                         shadow=ft.BoxShadow(blur_radius=10, color=ft.Colors.BLACK12, offset=ft.Offset(0, 8)),
                                         content=ft.Column([
                                             ft.Text("📘 Descrição", size=20, weight=ft.FontWeight.BOLD),
-                                            ft.Text(medicamento["descricao"], size=15),
+                                            ft.Text("Medicamento de uso controlado, indicado conforme prescrição médica. Para garantir sua eficácia e segurança, utilize conforme orientação profissional. Em caso de dúvidas, consulte um farmacêutico.", size=14),
                                             ft.Divider(height=20),
                                             ft.Text("📌 Instruções de Uso", size=18, weight=ft.FontWeight.BOLD),
                                             ft.Text("Aplicar conforme orientação médica.", size=14),
