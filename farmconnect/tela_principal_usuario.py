@@ -1084,7 +1084,7 @@ class TelaUsuarioDashboard:
                                         content=ft.Column([
                                             ft.Text(medicamento["nome"], size=26, weight=ft.FontWeight.BOLD, color="#1E3A8A"),
                                             ft.Text("Tipo: Uso controlado", size=14, color=ft.Colors.GREY_700),
-                                            ft.Text("Marca: Genérico", size=14, color=ft.Colors.GREY_700),
+                                            ft.Text("Marca: " + medicamento["fabricante"], size=14, color=ft.Colors.GREY_700),
                                             ft.Text("Quantidade: 1 unidade", size=14, color=ft.Colors.GREY_700),
                                             ft.Divider(height=20),
                                             ft.Row([
@@ -1141,9 +1141,9 @@ class TelaUsuarioDashboard:
                                         content=ft.Column([
                                             ft.Text("📦 Características", size=20, weight=ft.FontWeight.BOLD),
                                             ft.Divider(),
-                                            ft.Row([ft.Text("Código:", expand=True), ft.Text("1275221")]),
+                                            ft.Row([ft.Text("Código: ", expand=True), ft.Text(medicamento["codigo"])]),
                                             ft.Row([ft.Text("Peso:", expand=True), ft.Text("1g")]),
-                                            ft.Row([ft.Text("Marca:", expand=True), ft.Text("Genérico")])
+                                            ft.Row([ft.Text("Marca: ", expand=True), ft.Text(medicamento["fabricante"])]),
                                         ], spacing=8)
                                     )
                                 ], run_spacing=20, spacing=30)
