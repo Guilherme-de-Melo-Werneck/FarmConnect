@@ -1,6 +1,6 @@
 import flet as ft
 import asyncio
-from database import registrar_admin, verificar_login_admin
+from database import registrar_admin, verificar_login_admin, buscar_nome_adm
 
 class TelaLoginAdmin:
     def __init__(self, page: ft.Page):
@@ -48,6 +48,8 @@ class TelaLoginAdmin:
             if self.login_email.value.strip() and self.login_senha.value.strip():
                 valido = verificar_login_admin(self.login_email.value.strip(), self.login_senha.value.strip())
                 if valido:
+                    nome_admin = buscar_nome_adm(self.login_email.value.strip())
+                    self.page.session.set("admin_nome", nome_admin)
                     self.page.go("/admin_dashboard")
                 else:
                     self.page.snack_bar.content.value = "Email ou senha incorretos."
