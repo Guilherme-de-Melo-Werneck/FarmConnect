@@ -931,6 +931,18 @@ def cancelar_agendamento(agendamento_id):
     cursor.close()
     conn.close()
 
+def buscar_nome_adm(email):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT nome FROM administradores WHERE email = ?", (email,))
+    resultado = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    return resultado[0] if resultado else "Administrador"
+
 
 
 
