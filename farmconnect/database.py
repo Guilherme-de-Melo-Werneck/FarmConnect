@@ -907,6 +907,30 @@ def carregar_carrinho_usuario(usuario_id):
 
     return carrinho
 
+def aprovar_agendamento(agendamento_id):
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("""
+        UPDATE agendamentos
+        SET status = 'Confirmado'
+        WHERE id = ?
+    """, (agendamento_id,))
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+def cancelar_agendamento(agendamento_id):
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("""
+        UPDATE agendamentos
+        SET status = 'Cancelado'
+        WHERE id = ?
+    """, (agendamento_id,))
+    conn.commit()
+    cursor.close()
+    conn.close()
+
 
 
 
