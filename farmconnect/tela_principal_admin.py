@@ -250,7 +250,7 @@ class TelaAdminDashboard:
                                     ft.IconButton(ft.Icons.DARK_MODE_OUTLINED, icon_color=ft.Colors.BLUE_900),
                                     ft.IconButton(ft.Icons.SCHEDULE_OUTLINED, icon_color=ft.Colors.BLUE_900),
                                     ft.Text("Bem-vindo!", size=12, color=ft.Colors.BLUE_900),
-                                    ft.Text("DESENVOLVIMENTO", size=12, weight="bold", color=ft.Colors.BLUE_900),
+                                    ft.Text(self.page.session.get("admin_nome").upper() or "Administrador", size=12, weight="bold", color=ft.Colors.BLUE_900),
                                     ft.IconButton(ft.Icons.REFRESH, icon_color=ft.Colors.BLUE_900),
                                 ]
                             )
