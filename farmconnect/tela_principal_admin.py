@@ -246,7 +246,8 @@ class TelaAdminDashboard:
             columns=12,
             spacing=20,
             controls=[
-                
+
+                # Card do gráfico com botão de atualizar
                 ft.Container(
                     col={"sm": 12, "md": 4},
                     bgcolor="#FFFFFF",
@@ -254,12 +255,22 @@ class TelaAdminDashboard:
                     shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26),
                     padding=20,
                     content=ft.Column([
-                        ft.Text("Evolução dos Agendamentos", size=16, weight="bold", color="#111827"),
+                        ft.Row([
+                            ft.Text("Evolução dos Agendamentos", size=16, weight="bold", color="#111827"),
+                            ft.Container(expand=True),
+                            ft.IconButton(
+                                icon=ft.Icons.REFRESH,
+                                tooltip="Atualizar Gráfico",
+                                icon_color=ft.Colors.BLUE_600,
+                                on_click=lambda e: self.load_dashboard()
+                            )
+                        ]),
                         self.gerar_grafico_agendamentos_semanais()
                     ], spacing=10)
                 ),
 
                 self.card_estoque_medicamentos(),
+
                 ft.Container(
                     col={"sm": 12, "md": 4},
                     bgcolor="#FFFFFF",
@@ -279,7 +290,6 @@ class TelaAdminDashboard:
                 )
             ]
         )
-
 
     def metric_cards(self):
         return ft.ResponsiveRow(
@@ -2003,25 +2013,17 @@ class TelaAdminDashboard:
     def gerar_grafico_agendamentos_semanais(self):
         from collections import Counter
         from datetime import datetime
+        from database import listar_agendamentos
 
         agendamentos = listar_agendamentos()
 
-        dias_pt = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"]
+        # Extrai o dia da semana de cada agendamento
         dias_semana = [datetime.strptime(a[5], "%Y-%m-%d").weekday() for a in agendamentos]
 
-        # Simulação (remova essa linha para usar dados reais)
-        contagem = Counter({
-            0: 3,
-            1: 7,
-            2: 2,
-            3: 9,
-            4: 5,
-            5: 1,
-            6: 4
-        })
+        # Contagem real por dia da semana
+        contagem = Counter(dias_semana)
 
-        # contagem = Counter(dias_semana)  # Use isso no final
-
+        dias_pt = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"]
         maior_valor_real = max(contagem.values(), default=0)
         maior_valor_visual = max(maior_valor_real, 5) + 1
 
@@ -2036,7 +2038,6 @@ class TelaAdminDashboard:
         ]
 
         grupos = []
-
         for i in range(7):
             valor_real = contagem.get(i, 0)
             altura_barra = max(valor_real, 1)
@@ -2048,7 +2049,7 @@ class TelaAdminDashboard:
             grupo = ft.Column([
                 ft.Text(str(valor_real), size=11, color=ft.colors.BLACK, weight=ft.FontWeight.BOLD),
                 ft.Container(
-                    height=120,  # 🔽 diminuído
+                    height=120,
                     width=30,
                     alignment=ft.alignment.bottom_center,
                     content=ft.BarChart(
@@ -2090,10 +2091,7 @@ class TelaAdminDashboard:
                 ),
                 ft.Row(
                     alignment=ft.MainAxisAlignment.SPACE_AROUND,
-                    controls=[
-                        ft.Text(dias_pt[i][:3], size=11)
-                        for i in range(7)
-                    ]
+                    controls=[ft.Text(dias_pt[i][:3], size=11) for i in range(7)]
                 )
             ], spacing=8)
         )
