@@ -892,7 +892,6 @@ class TelaAdminDashboard:
 
         # Buscar farmácias do banco de dados
         agendamentos_db = listar_agendamentos()
-        print("Agendamentos encontrados:", agendamentos_db)
         
         # Campos de edição
         self.campo_busca_agendamentos = ft.TextField(
