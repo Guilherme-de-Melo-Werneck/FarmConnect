@@ -47,6 +47,11 @@ class TelaAdminDashboard:
         total_hoje = sum(1 for a in agendamentos if a[5] == hoje.strftime("%Y-%m-%d"))
         return total_hoje
     
+    def count_agendamentos_pendentes(self):
+        agendamentos = listar_agendamentos()
+        total_pendentes = sum(1 for a in agendamentos if a[7] == "Pendente")
+        return total_pendentes
+    
     def desativar_medicamento(self, id):
         desativar_medicamento(id)
         self.page.snack_bar = ft.SnackBar(content=ft.Text("Medicamento desativado."), bgcolor="red")
@@ -257,53 +262,57 @@ class TelaAdminDashboard:
 
     def graph_cards(self):
         return ft.ResponsiveRow(
-            columns=12,
-            spacing=20,
-            controls=[
+        columns=12,
+        spacing=20,
+        controls=[
+            ft.Container(
+                col={"sm": 12, "md": 4},
+                bgcolor="#FFFFFF",
+                border_radius=12,
+                shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26),
+                padding=20,
+                content=ft.Column([
+                    ft.Row([
+                        ft.Text("Agendamentos Pendentes", size=16, weight="bold", color="#111827"),
+                    ], spacing=10),
+                    ft.Text(
+                        str(self.count_agendamentos_pendentes()),
+                        size=40,
+                        weight="bold",
+                        color="#111827"
+                    ),
+                    ft.Text("Aguardando aprovação", size=13, color="#111827"),
+                    ft.Container(height=12),
+                    ft.OutlinedButton(
+                        text="Ver Agendamentos",
+                        icon=ft.Icons.CALENDAR_MONTH,
+                        style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=8)),
+                        on_click=self.load_agendamentos
+                    )
+                ], spacing=10)
+            ),
 
-                # Card do gráfico com botão de atualizar
-                ft.Container(
-                    col={"sm": 12, "md": 4},
-                    bgcolor="#FFFFFF",
-                    border_radius=12,
-                    shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26),
-                    padding=20,
-                    content=ft.Column([
-                        ft.Row([
-                            ft.Text("Evolução dos Agendamentos", size=16, weight="bold", color="#111827"),
-                            ft.Container(expand=True),
-                            ft.IconButton(
-                                icon=ft.Icons.REFRESH,
-                                tooltip="Atualizar Gráfico",
-                                icon_color=ft.Colors.BLUE_600,
-                                on_click=lambda e: self.load_dashboard()
-                            )
-                        ]),
-                        self.gerar_grafico_agendamentos_semanais()
-                    ], spacing=10)
-                ),
+            self.card_estoque_medicamentos(),
 
-                self.card_estoque_medicamentos(),
-
-                ft.Container(
-                    col={"sm": 12, "md": 4},
-                    bgcolor="#FFFFFF",
-                    border_radius=12,
-                    shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26),
-                    padding=20,
-                    content=ft.Column([
-                        ft.Text("Medicamentos mais solicitados", size=16, weight="bold", color="#111827"),
-                        ft.Column([
-                            ft.Row([ft.Container(width=50, height=20, bgcolor="#047857", border_radius=5), ft.Text("Medicamento 1", size=13)], spacing=8),
-                            ft.Row([ft.Container(width=45, height=20, bgcolor="#059669", border_radius=5), ft.Text("Medicamento 2", size=13)], spacing=8),
-                            ft.Row([ft.Container(width=40, height=20, bgcolor="#10B981", border_radius=5), ft.Text("Medicamento 3", size=13)], spacing=8),
-                            ft.Row([ft.Container(width=35, height=20, bgcolor="#3B82F6", border_radius=5), ft.Text("Medicamento 4", size=13)], spacing=8),
-                            ft.Row([ft.Container(width=30, height=20, bgcolor="#6366F1", border_radius=5), ft.Text("Medicamento 5", size=13)], spacing=8)
-                        ], spacing=6)
-                    ], spacing=10)
-                )
-            ]
-        )
+            ft.Container(
+                col={"sm": 12, "md": 4},
+                bgcolor="#FFFFFF",
+                border_radius=12,
+                shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26),
+                padding=20,
+                content=ft.Column([
+                    ft.Text("Medicamentos mais solicitados", size=16, weight="bold", color="#111827"),
+                    ft.Column([
+                        ft.Row([ft.Container(width=50, height=20, bgcolor="#047857", border_radius=5), ft.Text("Medicamento 1", size=13)], spacing=8),
+                        ft.Row([ft.Container(width=45, height=20, bgcolor="#059669", border_radius=5), ft.Text("Medicamento 2", size=13)], spacing=8),
+                        ft.Row([ft.Container(width=40, height=20, bgcolor="#10B981", border_radius=5), ft.Text("Medicamento 3", size=13)], spacing=8),
+                        ft.Row([ft.Container(width=35, height=20, bgcolor="#3B82F6", border_radius=5), ft.Text("Medicamento 4", size=13)], spacing=8),
+                        ft.Row([ft.Container(width=30, height=20, bgcolor="#6366F1", border_radius=5), ft.Text("Medicamento 5", size=13)], spacing=8)
+                    ], spacing=6)
+                ], spacing=10)
+            )
+        ]
+    )
 
     def metric_cards(self):
         return ft.ResponsiveRow(
