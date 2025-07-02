@@ -968,8 +968,7 @@ class TelaAdminDashboard:
             "Pendente": ("#D97706", "#FEF3C7"),
             "Confirmado": ("#15803D", "#D1FAE5"),
             "Cancelado": ("#DC2626", "#FEE2E2"),
-            "Concluído": ("#047857", "#D1FAE5"),
-            "Medicamento Retirado": ("#047857", "#D1FAE5"),
+            "Concluído/Retirado": ("#047857", "#D1FAE5"),
         }
 
         def status_badge(status):
