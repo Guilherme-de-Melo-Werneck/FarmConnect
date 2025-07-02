@@ -3,6 +3,7 @@ from database import listar_medicamentos, editar_medicamento, adicionar_medicame
 from datetime import datetime
 from collections import Counter
 import calendar
+from database import medicamentos_mais_solicitados 
 
 
 
@@ -279,57 +280,64 @@ class TelaAdminDashboard:
 
     def graph_cards(self):
         return ft.ResponsiveRow(
-        columns=12,
-        spacing=20,
-        controls=[
-            ft.Container(
-                col={"sm": 12, "md": 4},
-                bgcolor="#FFFFFF",
-                border_radius=12,
-                shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26),
-                padding=20,
-                content=ft.Column([
-                    ft.Row([
-                        ft.Text("Agendamentos Pendentes", size=16, weight="bold", color="#111827"),
-                    ], spacing=10),
-                    ft.Text(
-                        str(self.count_agendamentos_pendentes()),
-                        size=40,
-                        weight="bold",
-                        color="#111827"
-                    ),
-                    ft.Text("Aguardando aprovação", size=13, color="#111827"),
-                    ft.Container(height=12),
-                    ft.OutlinedButton(
-                        text="Ver Agendamentos",
-                        icon=ft.Icons.CALENDAR_MONTH,
-                        style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=8)),
-                        on_click=self.load_agendamentos
-                    )
-                ], spacing=10)
-            ),
+            columns=12,
+            spacing=20,
+            controls=[
+                ft.Container(
+                    col={"sm": 12, "md": 4},
+                    bgcolor="#FFFFFF",
+                    border_radius=12,
+                    shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26),
+                    padding=20,
+                    content=ft.Column([
+                        ft.Row([ft.Text("Agendamentos Pendentes", size=16, weight="bold", color="#111827")]),
+                        ft.Text(str(self.count_agendamentos_pendentes()), size=40, weight="bold", color="#111827"),
+                        ft.Text("Aguardando aprovação", size=13, color="#111827"),
+                        ft.Container(height=12),
+                        ft.OutlinedButton(
+                            text="Ver Agendamentos",
+                            icon=ft.Icons.CALENDAR_MONTH,
+                            style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=8)),
+                            on_click=self.load_agendamentos
+                        )
+                    ], spacing=10)
+                ),
 
-            self.card_estoque_medicamentos(),
+                self.card_estoque_medicamentos(),
 
-            ft.Container(
-                col={"sm": 12, "md": 4},
-                bgcolor="#FFFFFF",
-                border_radius=12,
-                shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26),
-                padding=20,
-                content=ft.Column([
-                    ft.Text("Medicamentos mais solicitados", size=16, weight="bold", color="#111827"),
-                    ft.Column([
-                        ft.Row([ft.Container(width=50, height=20, bgcolor="#047857", border_radius=5), ft.Text("Medicamento 1", size=13)], spacing=8),
-                        ft.Row([ft.Container(width=45, height=20, bgcolor="#059669", border_radius=5), ft.Text("Medicamento 2", size=13)], spacing=8),
-                        ft.Row([ft.Container(width=40, height=20, bgcolor="#10B981", border_radius=5), ft.Text("Medicamento 3", size=13)], spacing=8),
-                        ft.Row([ft.Container(width=35, height=20, bgcolor="#3B82F6", border_radius=5), ft.Text("Medicamento 4", size=13)], spacing=8),
-                        ft.Row([ft.Container(width=30, height=20, bgcolor="#6366F1", border_radius=5), ft.Text("Medicamento 5", size=13)], spacing=8)
-                    ], spacing=6)
-                ], spacing=10)
-            )
-        ]
-    )
+                ft.Container(
+                    col={"sm": 12, "md": 4},
+                    bgcolor="#FFFFFF",
+                    border_radius=12,
+                    shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26),
+                    padding=20,
+                    content=self.card_medicamentos_mais_solicitados()
+                )
+            ]
+        )
+    
+    def card_medicamentos_mais_solicitados(self):
+        dados = medicamentos_mais_solicitados()
+        cores = ["#047857", "#059669", "#10B981", "#3B82F6", "#6366F1"]
+
+        if not dados:
+            return ft.Column([
+                ft.Text("Medicamentos mais solicitados", size=16, weight="bold", color="#111827"),
+                ft.Text("Nenhum agendamento registrado.", size=13, color="#6B7280")
+            ])
+
+        return ft.Column([
+            ft.Text("Medicamentos mais solicitados", size=16, weight="bold", color="#111827"),
+            ft.Column([
+                ft.Row([
+                    ft.Container(width=50 - i * 5, height=20, bgcolor=cores[i % len(cores)], border_radius=5),
+                    ft.Text(f"{nome} ({quantidade})", size=13)
+                ], spacing=8)
+                for i, (nome, quantidade) in enumerate(dados)
+            ], spacing=6)
+        ])
+
+
 
     def metric_cards(self):
         return ft.ResponsiveRow(
@@ -423,19 +431,22 @@ class TelaAdminDashboard:
     def gerar_rows_medicamentos(self, lista):
         rows = []
         for med in lista:
-            inativo = med[8] == 0  # Supondo que a posição 8 indica ativo/inativo
-            cor = "red" if inativo else None
+            inativo = med[9] == 0  # Índice 9 é o campo 'ativo' na tabela
+            estilo_riscado = ft.TextStyle(
+                decoration=ft.TextDecoration.LINE_THROUGH,
+                color=ft.Colors.RED
+            ) if inativo else None
 
             rows.append(
                 ft.DataRow(
                     cells=[
-                        ft.DataCell(ft.Text(str(med[0]), color=cor)),  # ID
-                        ft.DataCell(ft.Text(med[1], color=cor)),       # Nome
-                        ft.DataCell(ft.Text(med[2] or "-", color=cor)),# Código
-                        ft.DataCell(ft.Text(med[6] or "-", color=cor)),# Categoria
-                        ft.DataCell(ft.Text(med[7] or "-", color=cor)),# Fabricante
-                        ft.DataCell(ft.Text(med[8] or "-", color=cor)),# Farmácia
-                        ft.DataCell(ft.Text(str(med[5] or 0), color=cor)),  # Estoque
+                        ft.DataCell(ft.Text(str(med[0]), style=estilo_riscado)),  # ID
+                        ft.DataCell(ft.Text(med[1], style=estilo_riscado)),       # Nome
+                        ft.DataCell(ft.Text(med[2] or "-", style=estilo_riscado)),# Código
+                        ft.DataCell(ft.Text(med[6] or "-", style=estilo_riscado)),# Categoria
+                        ft.DataCell(ft.Text(med[7] or "-", style=estilo_riscado)),# Fabricante
+                        ft.DataCell(ft.Text(med[8] or "-", style=estilo_riscado)),# Farmácia
+                        ft.DataCell(ft.Text(str(med[5] or 0), style=estilo_riscado)),  # Estoque
                         ft.DataCell(
                             ft.IconButton(
                                 icon=ft.Icons.LOCK_OPEN if inativo else ft.Icons.CANCEL_OUTLINED,
@@ -443,8 +454,8 @@ class TelaAdminDashboard:
                                 tooltip="Reativar" if inativo else "Desativar",
                                 icon_size=22,
                                 style=ft.ButtonStyle(padding=0),
-                                on_click=lambda e, id=med[0]: (
-                                    self.reativar_medicamento(id) if inativo else self.desativar_medicamento(id)
+                                on_click=(lambda e, id=med[0], inativo=med[9]:
+                                    self.reativar_medicamento(id) if inativo == 0 else self.desativar_medicamento(id)
                                 )
                             )
                         )
@@ -452,6 +463,7 @@ class TelaAdminDashboard:
                 )
             )
         return rows
+
 
     def load_medicamentos(self, e=None, medicamento=None):
 
@@ -986,16 +998,49 @@ class TelaAdminDashboard:
                 ft.Container(width=8, height=8, bgcolor=cor_texto, border_radius=20),
                 ft.Text(status, color=cor_texto, weight="bold")
             ], spacing=6, alignment=ft.MainAxisAlignment.CENTER)
-        
+
         rows = []
         for a in lista:
+            acoes = []
+
+            # ✅ Confirmar agendamento
+            acoes.append(ft.IconButton(
+                icon=ft.Icons.CHECK_CIRCLE_OUTLINE,
+                icon_color="#059669",
+                tooltip="Confirmar Agendamento",
+                icon_size=20,
+                on_click=lambda e, ag_id=a[0]: self.confirmar_agendamento(ag_id),
+                style=ft.ButtonStyle(padding=0),
+            ))
+
+            # 🔁 Confirmar retirada (se status permitir)
+            if a[7] in ["Confirmado", "Pendente"]:
+                acoes.append(ft.IconButton(
+                    icon=ft.Icons.EXIT_TO_APP,
+                    icon_color=ft.Colors.BLUE_700,
+                    tooltip="Confirmar Retirada",
+                    icon_size=20,
+                    on_click=lambda e, ag_id=a[0]: self.confirmar_retirada(ag_id),
+                    style=ft.ButtonStyle(padding=0),
+                ))
+
+            # ❌ Cancelar agendamento
+            acoes.append(ft.IconButton(
+                icon=ft.Icons.CANCEL_OUTLINED,
+                icon_color="#DC2626",
+                tooltip="Cancelar Agendamento",
+                icon_size=20,
+                on_click=lambda e, ag_id=a[0]: self.cancelar_agendamento(ag_id),
+                style=ft.ButtonStyle(padding=0),
+            ))
+
             rows.append(
                 ft.DataRow(
                     cells=[
                         ft.DataCell(ft.Text(str(a[0]))),
                         ft.DataCell(ft.Text(a[1])),
                         ft.DataCell(ft.Text(a[2])),
-                        ft.DataCell(ft.Text(a[3])),  
+                        ft.DataCell(ft.Text(a[3])),
                         ft.DataCell(ft.Text(a[4])),
                         ft.DataCell(ft.Text(a[5])),
                         ft.DataCell(ft.Text(a[6])),
@@ -1003,53 +1048,17 @@ class TelaAdminDashboard:
                             ft.Container(
                                 content=status_badge(a[7]),
                                 padding=ft.padding.symmetric(horizontal=8, vertical=4),
-                                bgcolor=status_cores.get(a[7], "#E5E7EB"),
+                                bgcolor=status_cores.get(a[7], "#E5E7EB")[1],
                                 border_radius=20,
                             )
                         ),
                         ft.DataCell(
                             ft.Container(
-                                width=100,
+                                width=140,  # AUMENTA ESPAÇO PARA OS 3 ÍCONES
                                 alignment=ft.alignment.center,
                                 content=ft.Row(
-                                    controls=[
-                                        ft.IconButton(
-                                            icon=ft.Icons.CHECK_CIRCLE_OUTLINE,
-                                            icon_color="#059669",
-                                            tooltip="Confirmar Agendamento",
-                                            icon_size=20,
-                                            on_click=lambda e, ag_id=a[0]: self.confirmar_agendamento(ag_id),
-                                            style=ft.ButtonStyle(
-                                                padding=ft.padding.all(0),
-                                                shape=ft.RoundedRectangleBorder(radius=8),
-                                            )
-                                        ),
-                                        *([
-                                            ft.IconButton(
-                                                icon=ft.Icons.EXIT_TO_APP,
-                                                icon_color=ft.Colors.BLUE_700,
-                                                tooltip="Confirmar Retirada",
-                                                icon_size=20,
-                                                on_click=lambda e, ag_id=a[0]: self.confirmar_retirada(ag_id),
-                                                style=ft.ButtonStyle(
-                                                    padding=ft.padding.all(0),
-                                                    shape=ft.RoundedRectangleBorder(radius=8),
-                                                )
-                                            )
-                                        ] if a[7] == "Confirmado" or a[7] == "Pendente" else []),
-                                        ft.IconButton(
-                                            icon=ft.Icons.CANCEL_OUTLINED,
-                                            icon_color="#DC2626",
-                                            tooltip="Cancelar Agendamento",
-                                            icon_size=20,
-                                            on_click=lambda e, ag_id=a[0]: self.cancelar_agendamento(ag_id),
-                                            style=ft.ButtonStyle(
-                                                padding=ft.padding.all(0),
-                                                shape=ft.RoundedRectangleBorder(radius=8),
-                                            )
-                                        )
-                                    ],
-                                    spacing=8,
+                                    controls=acoes,
+                                    spacing=6,
                                     alignment=ft.MainAxisAlignment.CENTER
                                 )
                             )
@@ -1059,6 +1068,7 @@ class TelaAdminDashboard:
             )
 
         return rows
+
 
     def renderizar_tabela_agendamentos(self, lista):
         self.tabela_agendamentos = ft.DataTable(
@@ -1089,11 +1099,15 @@ class TelaAdminDashboard:
                         ft.Icon(name=ft.Icons.LOCAL_HOSPITAL, size=40, color=ft.Colors.BLUE_600),
                         ft.Text("Gerenciamento de Agendamentos", size=32, weight="bold", color=ft.Colors.BLUE_900)
                     ], spacing=10, alignment=ft.MainAxisAlignment.CENTER),
-                    ft.Text("Adicione, edite ou gerencie os agendamentos cadastrados no sistema.",
-                            size=14, color=ft.Colors.GREY_700, text_align=ft.TextAlign.CENTER),
+                    ft.Text(
+                        "Adicione, edite ou gerencie os agendamentos cadastrados no sistema.",
+                        size=14,
+                        color=ft.Colors.GREY_700,
+                        text_align=ft.TextAlign.CENTER
+                    ),
                     ft.Divider(height=30),
 
-                   ft.Container(
+                    ft.Container(
                         bgcolor="#FFFFFF",
                         border_radius=20,
                         padding=25,
@@ -1123,10 +1137,16 @@ class TelaAdminDashboard:
                                 )
                             ]),
                             ft.Container(height=20),
-                            ft.Container(
-                                content=self.tabela_agendamentos,
-                                expand=True,
-                                width=1200
+
+                            # SCROLL HORIZONTAL APLICADO AQUI
+                            ft.Row(
+                                scroll=ft.ScrollMode.ALWAYS,
+                                controls=[
+                                    ft.Container(
+                                        content=self.tabela_agendamentos,
+                                        width=1200
+                                    )
+                                ]
                             )
                         ], spacing=20)
                     )
@@ -1135,6 +1155,7 @@ class TelaAdminDashboard:
         )
 
         self.page.update()
+
 
     def cnpj_change(self, e):
         texto_original = self.campo_cnpj.value
@@ -2063,14 +2084,14 @@ class TelaAdminDashboard:
         self.load_agendamentos()
        
 
-    
+
     def gerar_relatorio_pdf(self):
         from reportlab.lib.pagesizes import A4
         from reportlab.pdfgen import canvas
         from reportlab.lib.units import cm
         from reportlab.lib.colors import HexColor, lightgrey, black
         from datetime import datetime
-        from collections import Counter
+        from collections import Counter, defaultdict
         import calendar
         from database import listar_usuarios, listar_agendamentos, listar_medicamentos
 
@@ -2078,6 +2099,11 @@ class TelaAdminDashboard:
         c = canvas.Canvas(caminho, pagesize=A4)
         largura, altura = A4
         y = altura - 2 * cm
+
+        def nova_pagina():
+            nonlocal y
+            c.showPage()
+            y = altura - 2 * cm
 
         def header(titulo, subtitulo=""):
             nonlocal y
@@ -2092,26 +2118,25 @@ class TelaAdminDashboard:
                 y -= 0.5 * cm
             c.setStrokeColor(HexColor("#1E3A8A"))
             c.line(2 * cm, y, largura - 2 * cm, y)
-            y -= 0.4 * cm
+            y -= 0.6 * cm
             c.setFillColor(black)
 
         def linha(campo, valor):
             nonlocal y
             if y < 3 * cm:
-                c.showPage()
-                y = altura - 2 * cm
+                nova_pagina()
             c.setFont("Helvetica-Bold", 10)
             c.drawString(2.2 * cm, y, f"{campo}:")
             c.setFont("Helvetica", 10)
-            c.drawString(6 * cm, y, valor)
+            c.drawRightString(18 * cm, y, valor)
             y -= 0.5 * cm
 
         def divider():
             nonlocal y
-            y -= 0.2 * cm
+            y -= 0.3 * cm
             c.setStrokeColor(lightgrey)
             c.line(2 * cm, y, largura - 2 * cm, y)
-            y -= 0.4 * cm
+            y -= 0.5 * cm
 
         def rodape():
             c.setFont("Helvetica-Oblique", 9)
@@ -2119,10 +2144,11 @@ class TelaAdminDashboard:
             c.drawString(2 * cm, 1.5 * cm, f"Relatório gerado automaticamente em {datetime.now().strftime('%d/%m/%Y %H:%M')}")
             c.setFillColor(black)
 
-        # ░░░ PACIENTES ░░░
+        # ░░░ PACIENTES
         pacientes = listar_usuarios()
         header("📋 Pacientes Cadastrados", f"Total: {len(pacientes)}")
         pacientes_mes = Counter()
+        status_pacientes = defaultdict(Counter)
         for u in pacientes:
             linha("ID", str(u[0]))
             linha("Nome", u[1])
@@ -2134,19 +2160,21 @@ class TelaAdminDashboard:
             data_cad = u[6] if len(u) >= 8 else "-"
             linha("Data de Cadastro", data_cad)
             try:
-                mes = datetime.strptime(data_cad, "%Y-%m-%d %H:%M:%S").month
-                pacientes_mes[calendar.month_name[mes]] += 1
+                mes = calendar.month_name[datetime.strptime(data_cad, "%Y-%m-%d %H:%M:%S").month]
+                pacientes_mes[mes] += 1
+                status_pacientes[mes][u[7]] += 1
             except:
                 pass
             divider()
 
-        c.showPage()
-
-        # ░░░ AGENDAMENTOS ░░░
+        # ░░░ AGENDAMENTOS
+        nova_pagina()
         agendamentos = listar_agendamentos()
         header("📅 Agendamentos Realizados", f"Total: {len(agendamentos)}")
-        status_count = Counter([a[7] for a in agendamentos])
         agendamentos_mes = Counter()
+        status_agendamento = defaultdict(Counter)
+        medicamentos_mes = defaultdict(Counter)
+        farmacias_mes = defaultdict(Counter)
         for a in agendamentos:
             linha("ID", str(a[0]))
             linha("Paciente", a[1])
@@ -2158,55 +2186,114 @@ class TelaAdminDashboard:
             linha("Status", a[7])
             linha("Criado em", a[8])
             try:
-                mes = datetime.strptime(a[8], "%Y-%m-%d %H:%M:%S").month
-                agendamentos_mes[calendar.month_name[mes]] += 1
+                mes = calendar.month_name[datetime.strptime(a[8], "%Y-%m-%d %H:%M:%S").month]
+                agendamentos_mes[mes] += 1
+                status_agendamento[mes][a[7]] += 1
+                medicamentos_mes[mes][a[2]] += 1
+                farmacias_mes[mes][a[3]] += 1
             except:
                 pass
             divider()
 
-        c.showPage()
-
-        # ░░░ COMPARATIVO MENSAL ░░░
+        # ░░░ COMPARATIVO MENSAL
+        nova_pagina()
         header("📊 Comparativo Mensal")
+
         meses_todos = sorted(set(list(pacientes_mes.keys()) + list(agendamentos_mes.keys())),
                             key=lambda m: list(calendar.month_name).index(m))
+
         for mes in meses_todos:
-            linha(f"Mês: {mes}",
-                f"Pacientes: {pacientes_mes.get(mes, 0)} | Agendamentos: {agendamentos_mes.get(mes, 0)}")
+            linha(f"Mês: {mes}", "")
+            linha("  • Pacientes cadastrados", str(pacientes_mes.get(mes, 0)))
+            linha("     - Aprovados", str(status_pacientes[mes].get("Aprovado", 0)))
+            linha("     - Cancelados", str(status_pacientes[mes].get("Cancelado", 0)))
+            linha("     - Pendentes", str(status_pacientes[mes].get("Pendente", 0)))
 
-        c.showPage()
+            linha("  • Agendamentos realizados", str(agendamentos_mes.get(mes, 0)))
+            linha("     - Confirmados", str(status_agendamento[mes].get("Confirmado", 0)))
+            linha("     - Pendentes", str(status_agendamento[mes].get("Pendente", 0)))
+            linha("     - Cancelados", str(status_agendamento[mes].get("Cancelado", 0)))
 
-        # ░░░ MEDICAMENTOS ░░░
+            if medicamentos_mes[mes]:
+                mais_medicamento = medicamentos_mes[mes].most_common(1)[0]
+                linha("     - Medicamento mais agendado", f"{mais_medicamento[0]} ({mais_medicamento[1]} vezes)")
+
+            if farmacias_mes[mes]:
+                mais_farmacia = farmacias_mes[mes].most_common(1)[0]
+                linha("     - Farmácia mais utilizada", f"{mais_farmacia[0]} ({mais_farmacia[1]} agendamentos)")
+
+            divider()
+
+        # ░░░ MEDICAMENTOS
+        nova_pagina()
         medicamentos = listar_medicamentos()
         header("💊 Medicamentos Cadastrados", f"Total: {len(medicamentos)}")
+        total_estoque_medicamentos = 0  # ← acumulador
         for m in medicamentos:
+            estoque_valor = m[5] or 0
+            total_estoque_medicamentos += estoque_valor
             linha("ID", str(m[0]))
             linha("Nome", m[1])
             linha("Código", m[2])
             linha("Descrição", m[3] or "Não informado")
-            linha("Estoque", str(m[5]))
+            linha("Estoque", str(estoque_valor))
             linha("Categoria", m[6] or "-")
             linha("Fabricante", m[7] or "-")
             linha("Farmácia", m[8] or "-")
             linha("Ativo", "Sim" if m[9] else "Não")
             divider()
 
-        # ░░░ RESUMO FINAL ░░░
-        c.showPage()
+        # ░░░ RESUMO FINAL
+        nova_pagina()
         header("📌 Resumo Final")
-        linha("Total de Pacientes", str(len(pacientes)))
-        linha("Total de Agendamentos", str(len(agendamentos)))
-        linha("Total de Medicamentos", str(len(medicamentos)))
-        linha("Confirmados", str(status_count.get("Confirmado", 0)))
-        linha("Pendentes", str(status_count.get("Pendente", 0)))
-        linha("Cancelados", str(status_count.get("Cancelado", 0)))
+
+        total_pac = len(pacientes)
+        total_ag = len(agendamentos)
+        total_med = len(medicamentos)
+
+        total_aprovados = sum(v.get("Aprovado", 0) for v in status_pacientes.values())
+        total_cancelados_pac = sum(v.get("Cancelado", 0) for v in status_pacientes.values())
+        total_pendentes_pac = sum(v.get("Pendente", 0) for v in status_pacientes.values())
+
+        total_conf = sum(v.get("Confirmado", 0) for v in status_agendamento.values())
+        total_pend = sum(v.get("Pendente", 0) for v in status_agendamento.values())
+        total_cancelados_ag = sum(v.get("Cancelado", 0) for v in status_agendamento.values())
+
+        linha("Total de pacientes cadastrados", str(total_pac))
+        linha("  - Aprovados", str(total_aprovados))
+        linha("  - Cancelados", str(total_cancelados_pac))
+        linha("  - Pendentes", str(total_pendentes_pac))
+        divider()
+        linha("Total de agendamentos", str(total_ag))
+        linha("  - Confirmados", str(total_conf))
+        linha("  - Pendentes", str(total_pend))
+        linha("  - Cancelados", str(total_cancelados_ag))
+        divider()
+        linha("Total de medicamentos cadastrados", str(total_med))
+        linha("Quantidade total em estoque", str(total_estoque_medicamentos))  # ← Adicionado aqui
+
+        todos_meds = Counter()
+        for meds in medicamentos_mes.values():
+            todos_meds.update(meds)
+        if todos_meds:
+            med_top = todos_meds.most_common(1)[0]
+            linha("Medicamento mais agendado (geral)", f"{med_top[0]} ({med_top[1]} vezes)")
+
+        todas_farms = Counter()
+        for f in farmacias_mes.values():
+            todas_farms.update(f)
+        if todas_farms:
+            farm_top = todas_farms.most_common(1)[0]
+            linha("Farmácia mais utilizada (geral)", f"{farm_top[0]} ({farm_top[1]} agendamentos)")
+
         if agendamentos_mes:
             mes_top = max(agendamentos_mes, key=agendamentos_mes.get)
-            linha("Mês com mais Agendamentos", f"{mes_top} ({agendamentos_mes[mes_top]})")
+            linha("Mês com mais agendamentos", f"{mes_top} ({agendamentos_mes[mes_top]})")
+
         rodape()
         c.save()
-
         self.page.launch_url(caminho)
+
 
 
     def build_tela(self):

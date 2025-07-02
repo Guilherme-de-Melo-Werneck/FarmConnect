@@ -962,6 +962,22 @@ def atualizar_dados_usuario(email_antigo, nome, cpf, nasc, email_novo, telefone)
         cursor.close()
         conn.close()
 
+def medicamentos_mais_solicitados(limit=5):
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT m.nome, COUNT(*) as total
+        FROM agendamentos a
+        JOIN medicamentos m ON a.medicamento_id = m.id
+        GROUP BY m.nome
+        ORDER BY total DESC
+        LIMIT ?
+    """, (limit,))
+    resultados = cursor.fetchall()
+    conn.close()
+    return resultados
+
+
 def confirmar_retirada_medicamento(agendamento_id):
     conn = conectar()
     cursor = conn.cursor()
