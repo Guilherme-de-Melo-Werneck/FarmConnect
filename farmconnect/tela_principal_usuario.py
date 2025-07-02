@@ -775,18 +775,6 @@ class TelaUsuarioDashboard:
                                                 ft.Divider(height=10, color=ft.Colors.TRANSPARENT),
                                                 ft.Text(f"📅 Data de Retirada: {med['data_retirada']}", size=14, color="#374151"),
                                                 ft.Text(f"📦 Quantidade: {med['quantidade']} unidades", size=14, color="#374151"),
-                                                ft.ElevatedButton(
-                                                    "Ver Detalhes",
-                                                    icon=ft.Icons.INFO_OUTLINE,
-                                                    bgcolor=ft.Colors.BLUE_900,
-                                                    color=ft.Colors.WHITE,
-                                                    width=200,
-                                                    style=ft.ButtonStyle(
-                                                        shape=ft.RoundedRectangleBorder(radius=12),
-                                                        padding=ft.padding.symmetric(vertical=10)
-                                                    ),
-                                                    on_click=lambda e, med=med: print(f"Detalhes de {med['nome']}")
-                                                )
                                             ], spacing=10, alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
                                         )
                                         for med in self.medicamentos_retirados_mock
@@ -893,6 +881,12 @@ class TelaUsuarioDashboard:
             self.page.snack_bar.bgcolor=ft.Colors.GREEN_500
             self.page.snack_bar.open = True
             self.page.update()
+            
+            for item in self.carrinho:
+                remover_do_carrinho_db(self.usuario_id, item["id"])
+            self.carrinho.clear()
+            self.atualizar_contador()
+
             self.page.go("/agendamento_confirmado")
 
         def gerar_botoes_horarios():
@@ -1296,19 +1290,6 @@ class TelaUsuarioDashboard:
                         conteudo,  # Cards de agendamentos
 
                         ft.Divider(height=30, color=ft.Colors.TRANSPARENT),
-
-                        ft.ElevatedButton(
-                            "Exportar",
-                            icon=ft.Icons.PICTURE_AS_PDF,
-                            icon_color=ft.Colors.WHITE,
-                            style=ft.ButtonStyle(
-                                padding=ft.padding.symmetric(horizontal=20, vertical=14),
-                                shape=ft.RoundedRectangleBorder(radius=12),
-                                bgcolor=ft.Colors.BLUE_700,
-                                color=ft.Colors.WHITE
-                            ),
-                            on_click=lambda e: print("Exportar todos os agendamentos")
-                        ),
 
                         ft.ElevatedButton(
                             "Voltar",

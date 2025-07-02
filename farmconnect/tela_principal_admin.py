@@ -4,6 +4,8 @@ from datetime import datetime
 from collections import Counter
 import calendar
 
+
+
 class TelaAdminDashboard:
     def __init__(self, page: ft.Page):
         self.page = page
@@ -395,7 +397,7 @@ class TelaAdminDashboard:
                                 padding=ft.padding.symmetric(vertical=12),
                                 elevation=6
                             ),
-                            on_click=lambda e: print("Botão de relatório clicado")
+                            on_click=lambda e: self.gerar_relatorio_pdf()
                         )
                     )
                 ], spacing=20)
@@ -2034,94 +2036,150 @@ class TelaAdminDashboard:
         self.load_agendamentos()
        
 
-    def gerar_grafico_agendamentos_semanais(self):
-        from collections import Counter
+    
+    def gerar_relatorio_pdf(self):
+        from reportlab.lib.pagesizes import A4
+        from reportlab.pdfgen import canvas
+        from reportlab.lib.units import cm
+        from reportlab.lib.colors import HexColor, lightgrey, black
         from datetime import datetime
-        from database import listar_agendamentos
+        from collections import Counter
+        import calendar
+        from database import listar_usuarios, listar_agendamentos, listar_medicamentos
 
+        caminho = "relatorio_farmconnect.pdf"
+        c = canvas.Canvas(caminho, pagesize=A4)
+        largura, altura = A4
+        y = altura - 2 * cm
+
+        def header(titulo, subtitulo=""):
+            nonlocal y
+            c.setFont("Helvetica-Bold", 16)
+            c.setFillColor(HexColor("#1E3A8A"))
+            c.drawString(2 * cm, y, titulo)
+            y -= 0.6 * cm
+            if subtitulo:
+                c.setFont("Helvetica", 10)
+                c.setFillColor(HexColor("#374151"))
+                c.drawString(2 * cm, y, subtitulo)
+                y -= 0.5 * cm
+            c.setStrokeColor(HexColor("#1E3A8A"))
+            c.line(2 * cm, y, largura - 2 * cm, y)
+            y -= 0.4 * cm
+            c.setFillColor(black)
+
+        def linha(campo, valor):
+            nonlocal y
+            if y < 3 * cm:
+                c.showPage()
+                y = altura - 2 * cm
+            c.setFont("Helvetica-Bold", 10)
+            c.drawString(2.2 * cm, y, f"{campo}:")
+            c.setFont("Helvetica", 10)
+            c.drawString(6 * cm, y, valor)
+            y -= 0.5 * cm
+
+        def divider():
+            nonlocal y
+            y -= 0.2 * cm
+            c.setStrokeColor(lightgrey)
+            c.line(2 * cm, y, largura - 2 * cm, y)
+            y -= 0.4 * cm
+
+        def rodape():
+            c.setFont("Helvetica-Oblique", 9)
+            c.setFillColor(HexColor("#6B7280"))
+            c.drawString(2 * cm, 1.5 * cm, f"Relatório gerado automaticamente em {datetime.now().strftime('%d/%m/%Y %H:%M')}")
+            c.setFillColor(black)
+
+        # ░░░ PACIENTES ░░░
+        pacientes = listar_usuarios()
+        header("📋 Pacientes Cadastrados", f"Total: {len(pacientes)}")
+        pacientes_mes = Counter()
+        for u in pacientes:
+            linha("ID", str(u[0]))
+            linha("Nome", u[1])
+            linha("Email", u[2])
+            linha("CPF", u[3])
+            linha("Nascimento", u[4])
+            linha("Telefone", u[5])
+            linha("Status", u[7])
+            data_cad = u[6] if len(u) >= 8 else "-"
+            linha("Data de Cadastro", data_cad)
+            try:
+                mes = datetime.strptime(data_cad, "%Y-%m-%d %H:%M:%S").month
+                pacientes_mes[calendar.month_name[mes]] += 1
+            except:
+                pass
+            divider()
+
+        c.showPage()
+
+        # ░░░ AGENDAMENTOS ░░░
         agendamentos = listar_agendamentos()
+        header("📅 Agendamentos Realizados", f"Total: {len(agendamentos)}")
+        status_count = Counter([a[7] for a in agendamentos])
+        agendamentos_mes = Counter()
+        for a in agendamentos:
+            linha("ID", str(a[0]))
+            linha("Paciente", a[1])
+            linha("Medicamento", a[2])
+            linha("Farmácia", a[3])
+            linha("Código", a[4])
+            linha("Data", a[5])
+            linha("Horário", a[6])
+            linha("Status", a[7])
+            linha("Criado em", a[8])
+            try:
+                mes = datetime.strptime(a[8], "%Y-%m-%d %H:%M:%S").month
+                agendamentos_mes[calendar.month_name[mes]] += 1
+            except:
+                pass
+            divider()
 
-        # Extrai o dia da semana de cada agendamento
-        dias_semana = [datetime.strptime(a[5], "%Y-%m-%d").weekday() for a in agendamentos]
+        c.showPage()
 
-        # Contagem real por dia da semana
-        contagem = Counter(dias_semana)
+        # ░░░ COMPARATIVO MENSAL ░░░
+        header("📊 Comparativo Mensal")
+        meses_todos = sorted(set(list(pacientes_mes.keys()) + list(agendamentos_mes.keys())),
+                            key=lambda m: list(calendar.month_name).index(m))
+        for mes in meses_todos:
+            linha(f"Mês: {mes}",
+                f"Pacientes: {pacientes_mes.get(mes, 0)} | Agendamentos: {agendamentos_mes.get(mes, 0)}")
 
-        dias_pt = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"]
-        maior_valor_real = max(contagem.values(), default=0)
-        maior_valor_visual = max(maior_valor_real, 5) + 1
+        c.showPage()
 
-        cores_dias = [
-            ft.colors.BLUE_600,
-            ft.colors.INDIGO_600,
-            ft.colors.CYAN_600,
-            ft.colors.GREEN_600,
-            ft.colors.AMBER_600,
-            ft.colors.ORANGE_600,
-            ft.colors.RED_600
-        ]
+        # ░░░ MEDICAMENTOS ░░░
+        medicamentos = listar_medicamentos()
+        header("💊 Medicamentos Cadastrados", f"Total: {len(medicamentos)}")
+        for m in medicamentos:
+            linha("ID", str(m[0]))
+            linha("Nome", m[1])
+            linha("Código", m[2])
+            linha("Descrição", m[3] or "Não informado")
+            linha("Estoque", str(m[5]))
+            linha("Categoria", m[6] or "-")
+            linha("Fabricante", m[7] or "-")
+            linha("Farmácia", m[8] or "-")
+            linha("Ativo", "Sim" if m[9] else "Não")
+            divider()
 
-        grupos = []
-        for i in range(7):
-            valor_real = contagem.get(i, 0)
-            altura_barra = max(valor_real, 1)
-            cor = cores_dias[i]
+        # ░░░ RESUMO FINAL ░░░
+        c.showPage()
+        header("📌 Resumo Final")
+        linha("Total de Pacientes", str(len(pacientes)))
+        linha("Total de Agendamentos", str(len(agendamentos)))
+        linha("Total de Medicamentos", str(len(medicamentos)))
+        linha("Confirmados", str(status_count.get("Confirmado", 0)))
+        linha("Pendentes", str(status_count.get("Pendente", 0)))
+        linha("Cancelados", str(status_count.get("Cancelado", 0)))
+        if agendamentos_mes:
+            mes_top = max(agendamentos_mes, key=agendamentos_mes.get)
+            linha("Mês com mais Agendamentos", f"{mes_top} ({agendamentos_mes[mes_top]})")
+        rodape()
+        c.save()
 
-            if valor_real == maior_valor_real and valor_real > 0:
-                cor = ft.colors.BLUE_ACCENT_700
-
-            grupo = ft.Column([
-                ft.Text(str(valor_real), size=11, color=ft.colors.BLACK, weight=ft.FontWeight.BOLD),
-                ft.Container(
-                    height=120,
-                    width=30,
-                    alignment=ft.alignment.bottom_center,
-                    content=ft.BarChart(
-                        bar_groups=[
-                            ft.BarChartGroup(
-                                x=0,
-                                bar_rods=[
-                                    ft.BarChartRod(
-                                        to_y=altura_barra,
-                                        width=24,
-                                        color=cor,
-                                        border_radius=6
-                                    )
-                                ]
-                            )
-                        ],
-                        max_y=maior_valor_visual,
-                        left_axis=None,
-                        bottom_axis=None,
-                        horizontal_grid_lines=None,
-                        border=None,
-                        expand=True
-                    )
-                )
-            ], horizontal_alignment=ft.CrossAxisAlignment.CENTER)
-            grupos.append(grupo)
-
-        return ft.Container(
-            bgcolor="#FFFFFF",
-            border_radius=12,
-            shadow=ft.BoxShadow(blur_radius=20, color=ft.colors.BLACK12),
-            padding=16,
-            content=ft.Column([
-                ft.Text("📊 Agendamentos por Dia da Semana", size=15, weight="bold", color="#1E3A8A"),
-                ft.Row(
-                    alignment=ft.MainAxisAlignment.SPACE_AROUND,
-                    vertical_alignment=ft.CrossAxisAlignment.END,
-                    controls=grupos
-                ),
-                ft.Row(
-                    alignment=ft.MainAxisAlignment.SPACE_AROUND,
-                    controls=[ft.Text(dias_pt[i][:3], size=11) for i in range(7)]
-                )
-            ], spacing=8)
-        )
-
-
-
+        self.page.launch_url(caminho)
 
 
     def build_tela(self):
