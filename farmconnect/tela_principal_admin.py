@@ -30,10 +30,19 @@ class TelaAdminDashboard:
         self.page.update()
 
     def confirmar_retirada(self, agendamento_id):
-        confirmar_retirada_medicamento(agendamento_id)
-        self.page.snack_bar = ft.SnackBar(content=ft.Text("Retirada confirmada!"), bgcolor="green")
+        sucesso = confirmar_retirada_medicamento(agendamento_id)
+
+        if sucesso:
+            self.page.snack_bar.content.value = "✅ Retirada confirmada com sucesso!"
+            self.page.snack_bar.bgcolor = ft.Colors.GREEN_500
+        else:
+            self.page.snack_bar.content.value = "⚠️ Retirada já registrada anteriormente."
+            self.page.snack_bar.bgcolor = ft.Colors.AMBER_500
+
         self.page.snack_bar.open = True
         self.page.update()
+
+        # 🔁 Atualiza a lista/tabela após o clique
         self.load_agendamentos()
 
     def confirmar_agendamento(self, agendamento_id):
@@ -258,7 +267,7 @@ class TelaAdminDashboard:
                                     ft.IconButton(ft.Icons.DARK_MODE_OUTLINED, icon_color=ft.Colors.BLUE_900),
                                     ft.IconButton(ft.Icons.SCHEDULE_OUTLINED, icon_color=ft.Colors.BLUE_900),
                                     ft.Text("Bem-vindo!", size=12, color=ft.Colors.BLUE_900),
-                                    ft.Text(self.page.session.get("admin_nome").upper() or "Administrador", size=12, weight="bold", color=ft.Colors.BLUE_900),
+                                    ft.Text(self.page.session.get("admin_nome") or "Administrador", size=12, weight="bold", color=ft.Colors.BLUE_900),
                                     ft.IconButton(ft.Icons.REFRESH, icon_color=ft.Colors.BLUE_900),
                                 ]
                             )
@@ -1015,17 +1024,19 @@ class TelaAdminDashboard:
                                                 shape=ft.RoundedRectangleBorder(radius=8),
                                             )
                                         ),
-                                        ft.IconButton(
-                                            icon=ft.Icons.EXIT_TO_APP,
-                                            icon_color=ft.Colors.BLUE_700,
-                                            tooltip="Confirmar Retirada",
-                                            icon_size=20,
-                                            on_click=lambda e, ag_id=a[0]: self.confirmar_retirada(ag_id),
-                                            style=ft.ButtonStyle(
-                                                padding=ft.padding.all(0),
-                                                shape=ft.RoundedRectangleBorder(radius=8),
+                                        *([
+                                            ft.IconButton(
+                                                icon=ft.Icons.EXIT_TO_APP,
+                                                icon_color=ft.Colors.BLUE_700,
+                                                tooltip="Confirmar Retirada",
+                                                icon_size=20,
+                                                on_click=lambda e, ag_id=a[0]: self.confirmar_retirada(ag_id),
+                                                style=ft.ButtonStyle(
+                                                    padding=ft.padding.all(0),
+                                                    shape=ft.RoundedRectangleBorder(radius=8),
+                                                )
                                             )
-                                        ),
+                                        ] if a[7] == "Confirmado" or a[7] == "Pendente" else []),
                                         ft.IconButton(
                                             icon=ft.Icons.CANCEL_OUTLINED,
                                             icon_color="#DC2626",
@@ -1048,7 +1059,6 @@ class TelaAdminDashboard:
             )
 
         return rows
-
 
     def renderizar_tabela_agendamentos(self, lista):
         self.tabela_agendamentos = ft.DataTable(
