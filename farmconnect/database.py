@@ -1,5 +1,6 @@
 import sqlite3
 from pathlib import Path
+from datetime import datetime
 
 DB_FILE = Path("farmconnect.db")
 
@@ -956,6 +957,48 @@ def atualizar_dados_usuario(email_antigo, nome, cpf, nasc, email_novo, telefone)
         return True
     except sqlite3.IntegrityError as e:
         print("Erro ao atualizar dados do usuário:", e)
+        return False
+    finally:
+        cursor.close()
+        conn.close()
+
+def confirmar_retirada_medicamento(agendamento_id):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    # Pega dados do agendamento
+    cursor.execute("""
+        SELECT usuario_id, medicamento_id
+        FROM agendamentos
+        WHERE id = ?
+    """, (agendamento_id,))
+    resultado = cursor.fetchone()
+
+    if not resultado:
+        conn.close()
+        return False
+
+    usuario_id, medicamento_id = resultado
+    data_retirada = datetime.now().strftime("%Y-%m-%d")
+
+    try:
+        # Atualiza status do agendamento
+        cursor.execute("""
+            UPDATE agendamentos
+            SET status = 'Concluído/Retirado'
+            WHERE id = ?
+        """, (agendamento_id,))
+
+        # Registra na tabela de medicamentos retirados
+        cursor.execute("""
+            INSERT INTO medicamentos_retirados (usuario_id, medicamento_id, data_retirada)
+            VALUES (?, ?, ?)
+        """, (usuario_id, medicamento_id, data_retirada))
+
+        conn.commit()
+        return True
+    except Exception as e:
+        print("Erro ao confirmar retirada:", e)
         return False
     finally:
         cursor.close()

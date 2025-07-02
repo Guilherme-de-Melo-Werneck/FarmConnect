@@ -1,5 +1,5 @@
 import flet as ft
-from database import listar_medicamentos, editar_medicamento, adicionar_medicamento, listar_categorias, listar_fabricantes, desativar_medicamento, adicionar_farmacia, listar_farmacias, deletar_farmacia, editar_farmacia, listar_usuarios, registrar_usuario, aprovar_usuario, recusar_usuario, listar_agendamentos, adicionar_agendamento, reativar_medicamento, adicionar_estoque, aprovar_agendamento, cancelar_agendamento
+from database import listar_medicamentos, editar_medicamento, adicionar_medicamento, listar_categorias, listar_fabricantes, desativar_medicamento, adicionar_farmacia, listar_farmacias, deletar_farmacia, editar_farmacia, listar_usuarios, registrar_usuario, aprovar_usuario, recusar_usuario, listar_agendamentos, adicionar_agendamento, reativar_medicamento, adicionar_estoque, aprovar_agendamento, cancelar_agendamento, confirmar_retirada_medicamento
 from datetime import datetime
 from collections import Counter
 import calendar
@@ -29,6 +29,12 @@ class TelaAdminDashboard:
         self.sidebar_open = not self.sidebar_open
         self.page.update()
 
+    def confirmar_retirada(self, agendamento_id):
+        confirmar_retirada_medicamento(agendamento_id)
+        self.page.snack_bar = ft.SnackBar(content=ft.Text("Retirada confirmada!"), bgcolor="green")
+        self.page.snack_bar.open = True
+        self.page.update()
+        self.load_agendamentos()
 
     def confirmar_agendamento(self, agendamento_id):
         aprovar_agendamento(agendamento_id)
@@ -962,7 +968,8 @@ class TelaAdminDashboard:
             "Pendente": ("#D97706", "#FEF3C7"),
             "Confirmado": ("#15803D", "#D1FAE5"),
             "Cancelado": ("#DC2626", "#FEE2E2"),
-            "Concluído": ("#047857", "#D1FAE5")
+            "Concluído": ("#047857", "#D1FAE5"),
+            "Medicamento Retirado": ("#047857", "#D1FAE5"),
         }
 
         def status_badge(status):
@@ -1004,6 +1011,17 @@ class TelaAdminDashboard:
                                             tooltip="Confirmar Agendamento",
                                             icon_size=20,
                                             on_click=lambda e, ag_id=a[0]: self.confirmar_agendamento(ag_id),
+                                            style=ft.ButtonStyle(
+                                                padding=ft.padding.all(0),
+                                                shape=ft.RoundedRectangleBorder(radius=8),
+                                            )
+                                        ),
+                                        ft.IconButton(
+                                            icon=ft.Icons.EXIT_TO_APP,
+                                            icon_color=ft.Colors.BLUE_700,
+                                            tooltip="Confirmar Retirada",
+                                            icon_size=20,
+                                            on_click=lambda e, ag_id=a[0]: self.confirmar_retirada(ag_id),
                                             style=ft.ButtonStyle(
                                                 padding=ft.padding.all(0),
                                                 shape=ft.RoundedRectangleBorder(radius=8),
