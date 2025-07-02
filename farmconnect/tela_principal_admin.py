@@ -1,9 +1,13 @@
 import flet as ft
-from database import listar_medicamentos, editar_medicamento, adicionar_medicamento, listar_categorias, listar_fabricantes, desativar_medicamento, adicionar_farmacia, listar_farmacias, deletar_farmacia, editar_farmacia, listar_usuarios, registrar_usuario, aprovar_usuario, recusar_usuario, listar_agendamentos, adicionar_agendamento, reativar_medicamento, adicionar_estoque, aprovar_agendamento, cancelar_agendamento, confirmar_retirada_medicamento
+from database import listar_medicamentos, medicamentos_mais_solicitados, editar_medicamento, adicionar_medicamento, listar_categorias, listar_fabricantes, desativar_medicamento, adicionar_farmacia, listar_farmacias, deletar_farmacia, editar_farmacia, listar_usuarios, registrar_usuario, aprovar_usuario, recusar_usuario, listar_agendamentos, adicionar_agendamento, reativar_medicamento, adicionar_estoque, aprovar_agendamento, cancelar_agendamento, confirmar_retirada_medicamento
 from datetime import datetime
 from collections import Counter
 import calendar
-from database import medicamentos_mais_solicitados 
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import cm
+from reportlab.lib.colors import HexColor, lightgrey, black
+from collections import Counter, defaultdict
 
 
 
@@ -119,7 +123,7 @@ class TelaAdminDashboard:
             content=ft.Column([
                 ft.Text("Estoque de Medicamentos", size=16, weight="bold", color="#111827"),
                 ft.Text(f"Total em estoque: {total_estoque} unidades", size=14, weight="bold", color="#1E3A8A"),
-                ft.Text("Medicamentos críticos (< 5 un.):", size=13, color="#6B7280"),
+                ft.Text("Medicamentos com unidades menores que 5:", size=13, color="#6B7280"),
                 lista_criticos
             ], spacing=10)
         )
@@ -265,11 +269,9 @@ class TelaAdminDashboard:
                                 wrap=True,
                                 spacing=10,
                                 controls=[
-                                    ft.IconButton(ft.Icons.DARK_MODE_OUTLINED, icon_color=ft.Colors.BLUE_900),
-                                    ft.IconButton(ft.Icons.SCHEDULE_OUTLINED, icon_color=ft.Colors.BLUE_900),
                                     ft.Text("Bem-vindo!", size=12, color=ft.Colors.BLUE_900),
                                     ft.Text(self.page.session.get("admin_nome") or "Administrador", size=12, weight="bold", color=ft.Colors.BLUE_900),
-                                    ft.IconButton(ft.Icons.REFRESH, icon_color=ft.Colors.BLUE_900),
+                                    
                                 ]
                             )
                         ])
@@ -595,13 +597,6 @@ class TelaAdminDashboard:
                         content=ft.Column([
                             ft.Row([
                                 ft.Text("📋 Lista de Medicamentos", size=20, weight="bold", color="#111827"),
-                                ft.Container(expand=True),
-                                ft.IconButton(
-                                    icon=ft.Icons.REFRESH,
-                                    tooltip="Atualizar",
-                                    icon_color=ft.Colors.BLUE_600,
-                                    on_click=self.load_medicamentos
-                                ),
                                 ft.IconButton(
                                     icon=ft.Icons.ADD,
                                     tooltip="Adicionar novo medicamento",
@@ -1115,13 +1110,6 @@ class TelaAdminDashboard:
                         content=ft.Column([
                             ft.Row([
                                 ft.Text("📋 Lista de Agendamentos", size=20, weight="bold", color="#111827"),
-                                ft.Container(expand=True),
-                                ft.IconButton(
-                                    icon=ft.Icons.REFRESH,
-                                    tooltip="Atualizar",
-                                    icon_color=ft.Colors.BLUE_600,
-                                    on_click=self.load_agendamentos
-                                ),
                                 ft.IconButton(
                                     icon=ft.Icons.ADD,
                                     tooltip="Adicionar novo agendamento",
@@ -1435,13 +1423,6 @@ class TelaAdminDashboard:
                         content=ft.Column([
                             ft.Row([
                                 ft.Text("📋 Lista de Farmácias", size=20, weight="bold", color="#111827"),
-                                ft.Container(expand=True),
-                                ft.IconButton(
-                                    icon=ft.Icons.REFRESH,
-                                    tooltip="Atualizar Lista",
-                                    icon_color=ft.Colors.BLUE_600,
-                                    on_click=self.load_farmacias
-                                ),
                                 ft.IconButton(
                                     icon=ft.Icons.ADD,
                                     tooltip="Adicionar nova farmácia",
@@ -1619,7 +1600,8 @@ class TelaAdminDashboard:
         status_cores = {
             "Pendente": ("#D97706", "#FEF3C7"),
             "Aprovado": ("#15803D", "#D1FAE5"),
-            "Recusado": ("#DC2626", "#FEE2E2"),
+            "Cancelado": ("#DC2626", "#FEE2E2"),
+            "Recusado": ("#DC2626", "#FEE2E2")
         }
 
         def status_badge(status):
@@ -1638,16 +1620,16 @@ class TelaAdminDashboard:
             rows.append(
                 ft.DataRow(
                     cells=[
-                        ft.DataCell(ft.Text(str(p[0]))),
-                        ft.DataCell(ft.Text(p[1])),
-                        ft.DataCell(ft.Text(p[3])),
-                        ft.DataCell(ft.Text(p[4])),
-                        ft.DataCell(ft.Text(p[5])),
-                        ft.DataCell(
+                        ft.DataCell(ft.Text(str(p[0]))),       # ID
+                        ft.DataCell(ft.Text(p[1])),            # Nome
+                        ft.DataCell(ft.Text(p[3])),            # CPF
+                        ft.DataCell(ft.Text(p[4])),            # Nascimento
+                        ft.DataCell(ft.Text(p[6])),            # Data de Criação (corrigido)
+                        ft.DataCell(                           # Status (corrigido)
                             ft.Container(
-                                content=status_badge(p[6]),
+                                content=status_badge(p[7]),
                                 padding=ft.padding.symmetric(horizontal=4, vertical=4),
-                                bgcolor=status_cores.get(p[6], "#E5E7EB")[1],
+                                bgcolor=status_cores.get(p[7], "#E5E7EB")[1],
                                 border_radius=20,
                             )
                         ),
@@ -1674,6 +1656,7 @@ class TelaAdminDashboard:
                 )
             )
         return rows
+
 
     def renderizar_tabela_pacientes(self, lista):
         self.tabela_pacientes = ft.DataTable(
@@ -1715,13 +1698,6 @@ class TelaAdminDashboard:
                         content=ft.Column([
                             ft.Row([
                                 ft.Text("📋 Lista de Pacientes", size=20, weight="bold", color="#111827"),
-                                ft.Container(expand=True),
-                                ft.IconButton(
-                                    icon=ft.Icons.REFRESH,
-                                    tooltip="Atualizar Lista",
-                                    icon_color=ft.Colors.BLUE_600,
-                                    on_click=self.load_pacientes
-                                ),
                                 ft.IconButton(
                                     icon=ft.Icons.ADD,
                                     tooltip="Adicionar novo paciente",
@@ -2086,15 +2062,6 @@ class TelaAdminDashboard:
 
 
     def gerar_relatorio_pdf(self):
-        from reportlab.lib.pagesizes import A4
-        from reportlab.pdfgen import canvas
-        from reportlab.lib.units import cm
-        from reportlab.lib.colors import HexColor, lightgrey, black
-        from datetime import datetime
-        from collections import Counter, defaultdict
-        import calendar
-        from database import listar_usuarios, listar_agendamentos, listar_medicamentos
-
         caminho = "relatorio_farmconnect.pdf"
         c = canvas.Canvas(caminho, pagesize=A4)
         largura, altura = A4
