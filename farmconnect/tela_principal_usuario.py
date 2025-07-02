@@ -1,6 +1,6 @@
 import flet as ft
 from functools import partial
-from database import listar_medicamentos, carregar_carrinho_usuario, adicionar_ao_carrinho_db, remover_do_carrinho_db, buscar_nome_usuario, diminuir_quantidade_db, aumentar_quantidade_db, buscar_dados_usuario, adicionar_agendamento, listar_agendamentos_usuario, reduzir_estoque_farmacia, consultar_estoque_farmacia, listar_farmacias, consultar_estoque_farmacia, adicionar_ao_carrinho_db
+from database import listar_medicamentos, carregar_carrinho_usuario, adicionar_ao_carrinho_db, remover_do_carrinho_db, buscar_nome_usuario, diminuir_quantidade_db, aumentar_quantidade_db, buscar_dados_usuario, adicionar_agendamento, listar_agendamentos_usuario, reduzir_estoque_farmacia, consultar_estoque_farmacia, listar_farmacias, consultar_estoque_farmacia, adicionar_ao_carrinho_db, atualizar_dados_usuario
 from flet import DatePicker
 
 class TelaUsuarioDashboard:
@@ -488,6 +488,7 @@ class TelaUsuarioDashboard:
             scroll=ft.ScrollMode.AUTO,
             bgcolor="#F0F9FF",
             controls=[
+                self.page.snack_bar,
                 ft.Container(
                     padding=40,
                     content=ft.Column([
@@ -532,6 +533,7 @@ class TelaUsuarioDashboard:
                             ft.ElevatedButton(
                                 "Baixar Documento de Autorização",
                                 icon=ft.Icons.FILE_DOWNLOAD,
+                                icon_color=ft.Colors.WHITE,
                                 bgcolor=ft.Colors.BLUE_900,
                                 color=ft.Colors.WHITE,
                                 width=260,
@@ -564,15 +566,6 @@ class TelaUsuarioDashboard:
     def tela_perfil_paciente(self):
         self.sincronizar_carrinho()
 
-        # Refs e dados
-        self.editando = {
-            "nome": ft.Ref[bool](),
-            "cpf": ft.Ref[bool](),
-            "nasc": ft.Ref[bool](),
-            "email": ft.Ref[bool](),
-            "tel": ft.Ref[bool](),
-        }
-
         self.campos = {
             "nome": ft.Ref[ft.TextField](),
             "cpf": ft.Ref[ft.TextField](),
@@ -580,9 +573,6 @@ class TelaUsuarioDashboard:
             "email": ft.Ref[ft.TextField](),
             "tel": ft.Ref[ft.TextField](),
         }
-
-        for ref in self.editando.values():
-            ref.current = False
 
         self.dados_usuario = buscar_dados_usuario(self.email_usuario) or {
             "nome": "Desconhecido",
@@ -592,32 +582,41 @@ class TelaUsuarioDashboard:
             "tel": "(00) 00000-0000"
         }
 
-        def iniciar_edicao(campo):
-            self.editando[campo].current = True
-            self.page.update()
-            self.campos[campo].current.focus()
+        def salvar_todos(e=None):
+            for campo in self.campos:
+                self.dados_usuario[campo] = self.campos[campo].current.value
 
-        def salvar(campo):
-            self.dados_usuario[campo] = self.campos[campo].current.value
-            self.editando[campo].current = False
-            self.page.snack_bar = ft.SnackBar(
-                content=ft.Text(f"{campo.capitalize()} atualizado com sucesso!"),
-                bgcolor=ft.Colors.GREEN_500
+            sucesso = atualizar_dados_usuario(
+                self.email_usuario,
+                self.dados_usuario["nome"],
+                self.dados_usuario["cpf"],
+                self.dados_usuario["nasc"],
+                self.dados_usuario["email"],
+                self.dados_usuario["tel"]
             )
+
+            if sucesso:
+                self.page.session.set("usuario_nome", self.dados_usuario["nome"])
+                self.page.session.set("usuario_email", self.dados_usuario["email"])
+                self.email_usuario = self.dados_usuario["email"]
+                self.page.snack_bar.content.value = "Dados atualizados com sucesso!"
+                self.page.snack_bar.bgcolor = ft.Colors.GREEN_500
+            else:
+                self.page.snack_bar.content.value = "Erro ao atualizar. Tente novamente."
+                self.page.snack_bar.bgcolor = ft.Colors.RED_400
+
             self.page.snack_bar.open = True
             self.page.update()
-
         def campo_editavel(label, campo, icone):
             return ft.Column([
                 ft.Row([
                     ft.Icon(icone, size=20, color=ft.Colors.BLUE_900),
                     ft.Text(label, size=14, weight="bold", color=ft.Colors.BLUE_900),
                     ft.Container(expand=True),
-                    ft.IconButton(
+                    ft.IconButton(  # apenas visual
                         icon=ft.Icons.EDIT,
                         icon_color=ft.Colors.BLUE_700,
-                        tooltip="Editar",
-                        on_click=lambda e: iniciar_edicao(campo)
+                        tooltip="Campo editável"
                     )
                 ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
                 ft.Row([
@@ -626,35 +625,26 @@ class TelaUsuarioDashboard:
                         content=ft.TextField(
                             ref=self.campos[campo],
                             value=self.dados_usuario[campo],
-                            read_only=not self.editando[campo].current,
                             border_radius=12,
                             filled=True,
                             bgcolor="#F3F4F6",
                             dense=True,
                             text_size=15,
                             content_padding=ft.padding.all(12),
-                            border_color=ft.Colors.BLUE_100 if self.editando[campo].current else ft.Colors.GREY_300,
-                            on_submit=lambda e: salvar(campo)
+                            border_color=ft.Colors.GREY_300,
+                            on_submit=salvar_todos
                         )
-                    ),
-                    ft.AnimatedSwitcher(
-                        transition=ft.Animation(300, "easeInOut"),
-                        content=ft.IconButton(
-                            icon=ft.Icons.SAVE,
-                            icon_color=ft.Colors.GREEN_700,
-                            tooltip="Salvar",
-                            visible=self.editando[campo].current,
-                            on_click=lambda e: salvar(campo)
-                        ) if self.editando[campo].current else ft.Container()
                     )
                 ])
             ], spacing=6)
+            
 
         return ft.View(
             route="/perfil",
             scroll=ft.ScrollMode.AUTO,
             bgcolor="#F0F9FF",
             controls=[
+                self.page.snack_bar,
                 ft.Container(
                     expand=True,
                     padding=30,
@@ -697,7 +687,26 @@ class TelaUsuarioDashboard:
                                         campo_editavel("Email", "email", ft.Icons.EMAIL),
                                         campo_editavel("Telefone", "tel", ft.Icons.PHONE)
                                     ], spacing=25)
-                        )
+                                )
+                            ]
+                        ),
+                        ft.Row(
+                            alignment=ft.MainAxisAlignment.CENTER,
+                            controls=[
+                                ft.ElevatedButton(
+                                    "Salvar",
+                                    icon=ft.Icons.SAVE,
+                                    icon_color = ft.Colors.WHITE,
+                                    bgcolor=ft.Colors.BLUE_900,
+                                    color=ft.Colors.WHITE,
+                                    width=160,
+                                    style=ft.ButtonStyle(
+                                        shape=ft.RoundedRectangleBorder(radius=16),
+                                        padding=ft.padding.symmetric(vertical=12),
+                                        elevation=4
+                                    ),
+                                    on_click=salvar_todos
+                                )
                             ]
                         ),
                         ft.Row(
@@ -723,6 +732,7 @@ class TelaUsuarioDashboard:
             ]
         )
 
+
     def tela_medicamentos_retirados(self):
         self.sincronizar_carrinho()
         self.medicamentos_retirados_mock = [
@@ -738,6 +748,7 @@ class TelaUsuarioDashboard:
             scroll=ft.ScrollMode.AUTO,
             bgcolor="#F0F9FF",
             controls=[
+                self.page.snack_bar,
                 ft.Container(
                     expand=True,
                     padding=40,
@@ -842,7 +853,8 @@ class TelaUsuarioDashboard:
         def confirmar_agendamento(e):
             # Valida data e horário
             if not self.data_escolhida or not self.horario_escolhido:
-                self.page.snack_bar = ft.SnackBar(ft.Text("Por favor, selecione data e horário."), bgcolor=ft.Colors.RED_400)
+                self.page.snack_bar.content.value = "Por favor, selecione data e horário." 
+                self.page.snack_bar.bgcolor=ft.Colors.RED_400
                 self.page.snack_bar.open = True
                 self.page.update()
                 return
@@ -850,7 +862,8 @@ class TelaUsuarioDashboard:
             # Valida medicamento
             medicamento = self.page.client_storage.get("medicamento_detalhe")
             if not medicamento:
-                self.page.snack_bar = ft.SnackBar(ft.Text("Erro: nenhum medicamento selecionado."), bgcolor=ft.Colors.RED_400)
+                self.page.snack_bar.content.value = "Erro: nenhum medicamento selecionado."  
+                self.page.snack_bar.bgcolor=ft.Colors.RED_400
                 self.page.snack_bar.open = True
                 self.page.update()
                 return
@@ -866,7 +879,7 @@ class TelaUsuarioDashboard:
             try:
                 farmacia_id = int(self.dropdown_farmacia.value)
             except (TypeError, ValueError):
-                self.page.snack_bar = "❗ Selecione uma farmácia para continuar."
+                self.page.snack_bar.content.value = "❗ Selecione uma farmácia para continuar."
                 self.page.snack_bar.bgcolor = ft.Colors.RED_400
                 self.page.snack_bar.open = True
                 self.page.update()
@@ -876,11 +889,11 @@ class TelaUsuarioDashboard:
             estoque_disponivel = consultar_estoque_farmacia(farmacia_id, medicamento_id)
             print(f"Estoque atual da farmácia: {estoque_disponivel}")
             if estoque_disponivel < 1:
-                self.page.snack_bar = ft.SnackBar(ft.Text("❌ Estoque insuficiente!"), bgcolor=ft.colors.RED_400)
+                self.page.snack_bar.content.value = "❌ Estoque insuficiente!"
+                self.page.snack_bar.bgcolor=ft.Colors.RED_400
                 self.page.snack_bar.open = True
                 self.page.update()
                 return
-
 
             # Desconta estoque
             reduzir_estoque_farmacia(farmacia_id, medicamento_id, quantidade=1)
@@ -893,7 +906,6 @@ class TelaUsuarioDashboard:
             self.page.snack_bar.bgcolor=ft.Colors.GREEN_500
             self.page.snack_bar.open = True
             self.page.update()
-            self.page.go("/agendamento_confirmado")
 
         def gerar_botoes_horarios():
             horarios = []
@@ -944,9 +956,13 @@ class TelaUsuarioDashboard:
                                         options=[ft.dropdown.Option(str(f[0]), f[1]) for f in farmacias],
                                         width=400)
 
+        if self.page.snack_bar not in self.page.overlay:
+            self.page.overlay.append(self.page.snack_bar)
+
         return ft.View(
             route="/agendamento",
             controls=[
+                self.page.snack_bar,
                 datepicker,
                 ft.Container(
                     expand=True,
@@ -1020,6 +1036,7 @@ class TelaUsuarioDashboard:
             return ft.View(
                 route="/detalhes_medicamento",
                 controls=[
+                    self.page.snack_bar,
                     ft.Container(
                         expand=True,
                         alignment=ft.alignment.center,
@@ -1154,6 +1171,7 @@ class TelaUsuarioDashboard:
             route="/detalhes_medicamento",
             scroll=ft.ScrollMode.AUTO,
             controls=[
+                self.page.snack_bar,
                 ft.Stack(
                     expand=True,
                     controls=[
@@ -1266,6 +1284,7 @@ class TelaUsuarioDashboard:
             scroll=ft.ScrollMode.AUTO,
             bgcolor="#F0F9FF",  # ✅ Scroll só aqui
             controls=[
+                self.page.snack_bar,
                 ft.Container(
                     padding=40,
                     gradient=ft.LinearGradient(
@@ -1338,6 +1357,7 @@ class TelaUsuarioDashboard:
             route="/agendamento_confirmado",
             scroll=ft.ScrollMode.AUTO,
             controls=[
+                self.page.snack_bar,
                 ft.Container(
                     expand=True,
                     alignment=ft.alignment.center,
