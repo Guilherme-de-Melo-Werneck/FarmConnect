@@ -384,17 +384,18 @@ class HomeApp:
                             ft.Container(
                                 col={"xs": 12, "md": 4},
                                 alignment=ft.alignment.center,
-                                content=ft.TextButton("Política de Privacidade", on_click=lambda e: None),
+                                content=ft.TextButton("Política de Privacidade", on_click=lambda e: self.page.go("/politica_privacidade")),
+
                             ),
                             ft.Container(
                                 col={"xs": 12, "md": 4},
                                 alignment=ft.alignment.center,
-                                content=ft.TextButton("Termos de Uso", on_click=lambda e: None),
+                                content=ft.TextButton("Termos de Uso", on_click=lambda e: self.page.go("/termos_uso")),
                             ),
                             ft.Container(
                                 col={"xs": 12, "md": 4},
                                 alignment=ft.alignment.center,
-                                content=ft.TextButton("Contato", on_click=lambda e: None),
+                                content=ft.TextButton("Contato", on_click=lambda e: self.page.go("/contato")),
                             ),
                         ]
                     ),
@@ -407,7 +408,261 @@ class HomeApp:
                 ],
             )
         )
+    
+    def politica_privacidade_view(self):
+        return ft.View(
+            route="/politica_privacidade",
+            scroll=ft.ScrollMode.AUTO,
+            controls=[
+                ft.Container(
+                    expand=True,
+                    bgcolor="#F0F9FF",
+                    padding=40,
+                    content=ft.Column([
+                        ft.Row([
+                            ft.Icon(ft.Icons.LOCK_OUTLINE, size=40, color=ft.Colors.BLUE_700),
+                            ft.Text("Política de Privacidade", size=34, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
+                        ], spacing=10),
+                        ft.Divider(height=30, color=ft.Colors.TRANSPARENT),
 
+                        ft.Container(
+                            padding=30,
+                            bgcolor=ft.Colors.WHITE,
+                            border_radius=20,
+                            shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK12, offset=ft.Offset(0, 10)),
+                            content=ft.Column([
+
+                                ft.Text("🔐 Coleta e Uso de Dados", size=22, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
+                                ft.Text(
+                                    "Seus dados pessoais (como nome, CPF, e-mail e telefone) são utilizados com responsabilidade para:\n"
+                                    "• Agendar retiradas de medicamentos\n"
+                                    "• Enviar notificações importantes\n"
+                                    "• Garantir a segurança e rastreabilidade do processo",
+                                    size=16,
+                                    color=ft.Colors.GREY_800
+                                ),
+                                ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
+
+                                ft.Text("📁 Compartilhamento", size=22, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
+                                ft.Text(
+                                    "Seus dados **nunca** são compartilhados com terceiros, salvo em casos de obrigação legal.",
+                                    size=16,
+                                    color=ft.Colors.GREY_800
+                                ),
+                                ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
+
+                                ft.Text("🔄 Atualização e Exclusão", size=22, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
+                                ft.Text(
+                                    "Você pode solicitar a atualização ou exclusão de seus dados a qualquer momento através da equipe responsável.",
+                                    size=16,
+                                    color=ft.Colors.GREY_800
+                                ),
+                                ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
+
+                                ft.Text("📆 Atualizações da Política", size=22, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
+                                ft.Text(
+                                    "Esta política pode ser atualizada sempre que necessário para refletir melhorias na segurança e privacidade.",
+                                    size=16,
+                                    color=ft.Colors.GREY_800
+                                ),
+                                ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
+
+                                ft.Text("📨 Dúvidas ou contato", size=22, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
+                                ft.Text(
+                                    "Em caso de dúvidas, utilize a opção 'Contato' no rodapé ou envie um e-mail para suporte@farmconnect.com",
+                                    size=16,
+                                    color=ft.Colors.GREY_800
+                                ),
+
+                                ft.Divider(height=30, color=ft.Colors.TRANSPARENT),
+
+                                ft.ElevatedButton(
+                                    "Voltar para a Página Inicial",
+                                    icon=ft.Icons.ARROW_BACK,
+                                    on_click=lambda e: self.page.go("/"),
+                                    style=ft.ButtonStyle(
+                                        bgcolor=ft.Colors.BLUE_900,
+                                        color=ft.Colors.WHITE,
+                                        padding=ft.padding.symmetric(vertical=14, horizontal=26),
+                                        shape=ft.RoundedRectangleBorder(radius=14),
+                                        elevation=4
+                                    )
+                                )
+                            ], spacing=18)
+                        )
+                    ], spacing=30)
+                )
+            ]
+        )
+
+    
+    def termos_uso_view(self):
+        return ft.View(
+            route="/termos_uso",
+            scroll=ft.ScrollMode.AUTO,
+            controls=[
+                ft.Container(
+                    expand=True,
+                    bgcolor="#F0F9FF",
+                    padding=40,
+                    content=ft.Column([
+                        ft.Row([
+                            ft.Icon(ft.Icons.DESCRIPTION_OUTLINED, size=40, color=ft.Colors.BLUE_700),
+                            ft.Text("Termos de Uso", size=34, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
+                        ], spacing=10),
+                        ft.Divider(height=30, color=ft.Colors.TRANSPARENT),
+
+                        ft.Container(
+                            padding=30,
+                            bgcolor=ft.Colors.WHITE,
+                            border_radius=20,
+                            shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK12, offset=ft.Offset(0, 10)),
+                            content=ft.Column([
+
+                                ft.Text("✅ Uso da Plataforma", size=22, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
+                                ft.Text(
+                                    "O FarmConnect é destinado a facilitar o agendamento e retirada de medicamentos especializados em farmácias públicas. "
+                                    "Ao utilizá-lo, você concorda em seguir todas as regras e diretrizes aqui descritas.",
+                                    size=16,
+                                    color=ft.Colors.GREY_800
+                                ),
+                                ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
+
+                                ft.Text("🔑 Cadastro de Usuário", size=22, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
+                                ft.Text(
+                                    "Para utilizar a plataforma, é necessário fornecer informações verdadeiras e atualizadas. "
+                                    "O uso de dados falsos poderá resultar na suspensão ou exclusão da conta.",
+                                    size=16,
+                                    color=ft.Colors.GREY_800
+                                ),
+                                ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
+
+                                ft.Text("🛡️ Segurança e Privacidade", size=22, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
+                                ft.Text(
+                                    "Seus dados são protegidos conforme nossa Política de Privacidade. "
+                                    "Você é responsável por manter a confidencialidade de sua senha e dados de acesso.",
+                                    size=16,
+                                    color=ft.Colors.GREY_800
+                                ),
+                                ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
+
+                                ft.Text("🚫 Condutas Proibidas", size=22, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
+                                ft.Text(
+                                    "É proibido utilizar a plataforma para atividades ilegais, fraudes, spam ou manipulação indevida de agendamentos. "
+                                    "Tais condutas podem resultar em bloqueio do acesso.",
+                                    size=16,
+                                    color=ft.Colors.GREY_800
+                                ),
+                                ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
+
+                                ft.Text("📆 Atualizações dos Termos", size=22, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
+                                ft.Text(
+                                    "Os termos podem ser modificados a qualquer momento, visando melhorar a experiência dos usuários. "
+                                    "Recomenda-se a leitura periódica desta página.",
+                                    size=16,
+                                    color=ft.Colors.GREY_800
+                                ),
+                                ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
+
+                                ft.Text("📩 Suporte e Contato", size=22, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
+                                ft.Text(
+                                    "Em caso de dúvidas, você pode entrar em contato com nossa equipe pelo e-mail: suporte@farmconnect.com.br "
+                                    "ou através do botão 'Contato' disponível no rodapé da página.",
+                                    size=16,
+                                    color=ft.Colors.GREY_800
+                                ),
+
+                                ft.Divider(height=30, color=ft.Colors.TRANSPARENT),
+
+                                ft.ElevatedButton(
+                                    "Voltar para a Página Inicial",
+                                    icon=ft.Icons.ARROW_BACK,
+                                    on_click=lambda e: self.page.go("/"),
+                                    style=ft.ButtonStyle(
+                                        bgcolor=ft.Colors.BLUE_900,
+                                        color=ft.Colors.WHITE,
+                                        padding=ft.padding.symmetric(vertical=14, horizontal=26),
+                                        shape=ft.RoundedRectangleBorder(radius=14),
+                                        elevation=4
+                                    )
+                                )
+                            ], spacing=18)
+                        )
+                    ], spacing=30)
+                )
+            ]
+        )
+
+    def contato_view(self):
+        return ft.View(
+            route="/contato",
+            scroll=ft.ScrollMode.AUTO,
+            controls=[
+                ft.Container(
+                    expand=True,
+                    bgcolor="#F0F9FF",
+                    padding=40,
+                    content=ft.Column([
+                        ft.Row([
+                            ft.Icon(ft.Icons.CONTACT_PAGE_OUTLINED, size=40, color=ft.Colors.BLUE_700),
+                            ft.Text("Fale Conosco", size=34, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
+                        ], spacing=10),
+                        ft.Divider(height=30, color=ft.Colors.TRANSPARENT),
+
+                        ft.Container(
+                            padding=30,
+                            bgcolor=ft.Colors.WHITE,
+                            border_radius=20,
+                            shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK12, offset=ft.Offset(0, 10)),
+                            content=ft.Column([
+
+                                ft.Text("📨 E-mail de Suporte", size=22, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
+                                ft.Text(
+                                    "Caso tenha dúvidas, sugestões ou precise de ajuda, envie um e-mail para:\n"
+                                    "✉️ suporte@farmconnect.com.br",
+                                    size=16,
+                                    color=ft.Colors.GREY_800
+                                ),
+                                ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
+
+                                ft.Text("📍 Localização", size=22, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
+                                ft.Text(
+                                    "FarmConnect - Central de Atendimento\n"
+                                    "Rua da Saúde, 123 - Centro\n"
+                                    "Rio de Janeiro - RJ, 20000-000",
+                                    size=16,
+                                    color=ft.Colors.GREY_800
+                                ),
+                                ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
+
+                                ft.Text("📞 Telefones", size=22, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
+                                ft.Text(
+                                    "Atendimento: Segunda a Sexta, das 08h às 17h\n"
+                                    "📱 (21) 99999-9999  |  ☎️ (21) 2222-2222",
+                                    size=16,
+                                    color=ft.Colors.GREY_800
+                                ),
+
+                                ft.Divider(height=30, color=ft.Colors.TRANSPARENT),
+
+                                ft.ElevatedButton(
+                                    "Voltar para a Página Inicial",
+                                    icon=ft.Icons.ARROW_BACK,
+                                    on_click=lambda e: self.page.go("/"),
+                                    style=ft.ButtonStyle(
+                                        bgcolor=ft.Colors.BLUE_900,
+                                        color=ft.Colors.WHITE,
+                                        padding=ft.padding.symmetric(vertical=14, horizontal=26),
+                                        shape=ft.RoundedRectangleBorder(radius=14),
+                                        elevation=4
+                                    )
+                                )
+                            ], spacing=18)
+                        )
+                    ], spacing=30)
+                )
+            ]
+        )
 
     def build(self):
         return ft.View(

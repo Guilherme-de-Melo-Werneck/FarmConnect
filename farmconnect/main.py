@@ -51,6 +51,13 @@ def main(page: ft.Page):
             page.views.append(TelaUsuarioDashboard(page).tela_meus_agendamentos())
         elif page.route == "/agendamento_confirmado":
             page.views.append(TelaUsuarioDashboard(page).tela_agendamento_confirmado())
+        elif page.route == "/politica_privacidade":
+             page.views.append(HomeApp(page).politica_privacidade_view())
+        elif page.route == "/termos_uso":
+            page.views.append(HomeApp(page).termos_uso_view())
+        elif page.route == "/contato":
+            page.views.append(HomeApp(page).contato_view())
+
         page.update()
 
     page.on_route_change = route_change

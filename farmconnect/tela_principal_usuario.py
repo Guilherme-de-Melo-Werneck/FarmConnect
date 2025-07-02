@@ -786,18 +786,6 @@ class TelaUsuarioDashboard:
                                                 ft.Divider(height=10, color=ft.Colors.TRANSPARENT),
                                                 ft.Text(f"📅 Data de Retirada: {med['data_retirada']}", size=14, color="#374151"),
                                                 ft.Text(f"📦 Quantidade: {med['quantidade']} unidades", size=14, color="#374151"),
-                                                ft.ElevatedButton(
-                                                    "Ver Detalhes",
-                                                    icon=ft.Icons.INFO_OUTLINE,
-                                                    bgcolor=ft.Colors.BLUE_900,
-                                                    color=ft.Colors.WHITE,
-                                                    width=200,
-                                                    style=ft.ButtonStyle(
-                                                        shape=ft.RoundedRectangleBorder(radius=12),
-                                                        padding=ft.padding.symmetric(vertical=10)
-                                                    ),
-                                                    on_click=lambda e, med=med: print(f"Detalhes de {med['nome']}")
-                                                )
                                             ], spacing=10, alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
                                         )
                                         for med in self.medicamentos_retirados_mock
