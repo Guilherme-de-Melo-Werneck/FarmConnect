@@ -943,6 +943,23 @@ def buscar_nome_adm(email):
 
     return resultado[0] if resultado else "Administrador"
 
+def atualizar_dados_usuario(email_antigo, nome, cpf, nasc, email_novo, telefone):
+    conn = conectar()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("""
+            UPDATE usuarios
+            SET nome = ?, cpf = ?, nascimento = ?, email = ?, telefone = ?
+            WHERE email = ?
+        """, (nome, cpf, nasc, email_novo, telefone, email_antigo))
+        conn.commit()
+        return True
+    except sqlite3.IntegrityError as e:
+        print("Erro ao atualizar dados do usuário:", e)
+        return False
+    finally:
+        cursor.close()
+        conn.close()
 
 
 
