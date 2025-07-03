@@ -748,8 +748,18 @@ class TelaUsuarioDashboard:
         self.sincronizar_carrinho()
         dados_retirados = listar_medicamentos_retirados(self.usuario_id)
 
+        self.resultados_filtrados = dados_retirados
+
+        def filtrar_medicamentos(e):
+            termo = e.control.value.lower()
+            self.resultados_filtrados = [
+                item for item in dados_retirados
+                if termo in item[0].lower()  # item[0] = nome do medicamento
+            ]
+            self.page.go("/medicamentos_retirados")
+
         medicamentos_exibidos = []
-        for nome, data, horario, farmacia, quantidade in dados_retirados:
+        for nome, data, horario, farmacia, quantidade in self.resultados_filtrados:
             data_formatada = datetime.datetime.strptime(data, "%Y-%m-%d").strftime("%d/%m/%Y") if data else "-"
             medicamentos_exibidos.append(
                 ft.Container(
@@ -794,8 +804,17 @@ class TelaUsuarioDashboard:
                             shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26, offset=ft.Offset(0, 15)),
                             content=ft.Column([
                                 ft.Row([
-                                    ft.TextField(label="🔍 Buscar Medicamento", expand=True, border_radius=30, on_change=lambda e: print(e.control.value)),
-                                    ft.IconButton(icon=ft.Icons.SEARCH, icon_color=ft.Colors.BLUE_900, on_click=lambda e: print("Buscar"))
+                                    ft.TextField(
+                                        label="🔍 Buscar Medicamento",
+                                        expand=True,
+                                        border_radius=30,
+                                        on_change=filtrar_medicamentos
+                                    ),
+                                    ft.IconButton(
+                                        icon=ft.Icons.SEARCH,
+                                        icon_color=ft.Colors.BLUE_900,
+                                        on_click=lambda e: None
+                                    )
                                 ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
                                 ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
                                 ft.ListView(
