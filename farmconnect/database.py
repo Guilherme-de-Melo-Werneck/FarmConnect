@@ -1045,6 +1045,15 @@ def listar_medicamentos_retirados(usuario_id):
     conn.close()
     return resultado
 
+def verificar_status_usuario(email):
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("SELECT status FROM usuarios WHERE email = ?", (email,))
+    resultado = cursor.fetchone()
+    cursor.close()
+    conn.close()
+    return resultado[0] if resultado else None
+
 
 
 

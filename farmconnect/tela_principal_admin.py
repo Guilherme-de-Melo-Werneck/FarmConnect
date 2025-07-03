@@ -2129,7 +2129,10 @@ class TelaAdminDashboard:
             try:
                 mes = calendar.month_name[datetime.strptime(data_cad, "%Y-%m-%d %H:%M:%S").month]
                 pacientes_mes[mes] += 1
-                status_pacientes[mes][u[7]] += 1
+                status = u[7]
+                if status == "Recusado":
+                    status = "Cancelado"
+                status_pacientes[mes][status] += 1
             except:
                 pass
             divider()

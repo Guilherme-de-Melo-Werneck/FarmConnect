@@ -76,10 +76,19 @@ class TelaLoginAdmin:
                         self.page.snack_bar.content.value = "Cadastro realizado com sucesso!"
                         self.page.snack_bar.bgcolor = ft.Colors.GREEN
                         self.page.snack_bar.open = True
+
+                        # 🔹 Limpa os campos de cadastro do admin
+                        self.cadastro_nome.value = ""
+                        self.cadastro_email.value = ""
+                        self.cadastro_senha.value = ""
+                        self.cadastro_confirmar_senha.value = ""
+
                         self.page.update()
                         self.page.go("/login_admin")
+
                     else:
                         self.page.snack_bar.content.value = "Erro: Email já cadastrado."
+                        self.page.snack_bar.bgcolor = ft.Colors.RED
                         self.page.snack_bar.open = True
                         self.page.update()
             else:

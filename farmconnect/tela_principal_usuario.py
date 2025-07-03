@@ -2,6 +2,13 @@ import flet as ft
 from functools import partial
 from database import listar_medicamentos, carregar_carrinho_usuario, adicionar_ao_carrinho_db, remover_do_carrinho_db, buscar_nome_usuario, diminuir_quantidade_db, aumentar_quantidade_db, buscar_dados_usuario, adicionar_agendamento, listar_agendamentos_usuario, reduzir_estoque_farmacia, consultar_estoque_farmacia, listar_farmacias, consultar_estoque_farmacia, adicionar_ao_carrinho_db, atualizar_dados_usuario, listar_medicamentos_retirados
 from flet import DatePicker
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import cm
+from reportlab.lib.colors import HexColor, black, grey
+from datetime import datetime
+from textwrap import wrap
+
 
 class TelaUsuarioDashboard:
     def __init__(self, page: ft.Page):
@@ -551,8 +558,7 @@ class TelaUsuarioDashboard:
                                     shape=ft.RoundedRectangleBorder(radius=12),
                                     padding=ft.padding.symmetric(vertical=12)
                                 ),
-                                url="inserir_o_link_do_documento_aqui.pdf",  # substitua pelo link do documento
-                                url_target=ft.UrlTarget.BLANK  # abre em nova aba e inicia download
+                                on_click=lambda e: self.gerar_documento_autorizacao()
                             ),
                             ft.ElevatedButton(
                                 "Voltar",
@@ -1396,6 +1402,104 @@ class TelaUsuarioDashboard:
                 )
             ]
         )
+    
+    def gerar_documento_autorizacao(self):
+        caminho = "documento_autorizacao.pdf"
+        c = canvas.Canvas(caminho, pagesize=A4)
+        largura, altura = A4
+        margem = 2.5 * cm
+        y = altura - margem
+
+        azul_escuro = HexColor("#1E3A8A")
+        cinza_suave = HexColor("#6B7280")
+
+        def centralizado(texto, tamanho=12, bold=False, desloca=0.8 * cm, cor=black):
+            nonlocal y
+            c.setFont("Helvetica-Bold" if bold else "Helvetica", tamanho)
+            c.setFillColor(cor)
+            c.drawCentredString(largura / 2, y, texto)
+            y -= desloca
+
+        def campo_rotulado(rotulo, largura_linha=15.5 * cm):
+            nonlocal y
+            c.setFont("Helvetica", 11)
+            c.setFillColor(black)
+            c.drawString(margem, y, rotulo)
+            y -= 0.5 * cm
+            c.setStrokeColor(grey)
+            c.setLineWidth(0.5)
+            c.line(margem, y, margem + largura_linha, y)
+            y -= 1.0 * cm
+
+        def desenhar_texto_quebrado(texto, largura_max=95):
+            nonlocal y
+            linhas = wrap(texto, width=largura_max)
+            for linha in linhas:
+                c.drawString(margem + 0.5 * cm, y, linha)
+                y -= 0.5 * cm
+
+        # Cabeçalho
+        centralizado("FarmConnect", tamanho=16, bold=True, cor=azul_escuro, desloca=1.2 * cm)
+        centralizado("Autorização para Retirada de Medicamentos por Terceiros", tamanho=13, bold=True)
+        centralizado("Documento obrigatório para retirada por pessoa diferente do paciente.", tamanho=10, cor=cinza_suave, desloca=1.2 * cm)
+
+        # Campos
+        campo_rotulado("Nome do Paciente (Titular):")
+        campo_rotulado("CPF do Paciente:")
+        campo_rotulado("RG do Paciente:")
+        campo_rotulado("Nome do Responsável pela Retirada:")
+        campo_rotulado("CPF do Responsável:")
+        campo_rotulado("RG do Responsável:")
+
+        # Declaração
+        c.setFont("Helvetica", 11)
+        c.drawString(margem, y, "Declaração:")
+        y -= 0.6 * cm
+
+        declaracao_1 = (
+            "Declaro estar ciente de que o(a) responsável acima está autorizado(a) a retirar meus medicamentos, "
+        )
+        declaracao_2 = (
+            "Esta autorização é válida somente para a data especificada no agendamento."
+        )
+
+        desenhar_texto_quebrado(f"- {declaracao_1}")
+        y -= 0.3 * cm
+        desenhar_texto_quebrado(f"- {declaracao_2}")
+
+        # Assinatura
+        y -= 1.5 * cm
+        c.setStrokeColor(grey)
+        c.line(margem, y, largura - margem, y)
+        y -= 0.5 * cm
+        centralizado("Assinatura do Paciente ou Responsável Legal", tamanho=11, cor=cinza_suave)
+
+        # Data
+        data_atual = datetime.now().strftime("%d/%m/%Y")
+        y -= 1.5 * cm
+        c.setFont("Helvetica", 11)
+        c.drawString(margem, y, f"Data: {data_atual}")
+
+        # Rodapé
+        c.setFont("Helvetica-Oblique", 9)
+        c.setFillColor(cinza_suave)
+        c.drawCentredString(largura / 2, 1.5 * cm, "Documento gerado automaticamente via FarmConnect")
+
+        # Marca d'água
+        c.setFont("Helvetica", 50)
+        c.setFillColor(HexColor("#F3F4F6"))
+        c.saveState()
+        c.translate(largura / 4, altura / 2)
+        c.rotate(30)
+        c.drawString(0, 0, "FARMCONECT")
+        c.restoreState()
+
+        c.save()
+        self.page.launch_url(caminho)
+
+
+
+
 
 if __name__ == "__main__":
     def main(page: ft.Page):

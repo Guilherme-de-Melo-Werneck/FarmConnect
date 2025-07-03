@@ -1,6 +1,6 @@
 import flet as ft
 import asyncio
-from database import registrar_usuario, verificar_login, buscar_nome_usuario
+from database import registrar_usuario, verificar_login, buscar_nome_usuario, verificar_status_usuario
 
 class TelaLoginUsuario:
     def __init__(self, page: ft.Page):
@@ -121,49 +121,115 @@ class TelaLoginUsuario:
         self.cadastro_confirmar_senha = ft.TextField(label="Confirmar Senha", password=True, can_reveal_password=True, prefix_icon=ft.Icons.LOCK_OUTLINE, border_radius=10, filled=True, bgcolor=ft.Colors.GREY_50)
 
         def login_click(e):
-            if self.login_email.value.strip() and self.login_senha.value.strip():
-                valido = verificar_login(self.login_email.value.strip(), self.login_senha.value.strip())
-                if valido:
-                    nome_usuario = buscar_nome_usuario(self.login_email.value.strip())
-                    self.page.session.set("usuario_email", self.login_email.value.strip())
-                    self.page.session.set("usuario_nome", nome_usuario)
-                    self.page.go("/usuario")
+            email = self.login_email.value.strip()
+            senha = self.login_senha.value.strip()
+
+            if email and senha:
+                if verificar_login(email, senha):
+                    status = verificar_status_usuario(email)
+
+                    if status == "Aprovado":
+                        nome_usuario = buscar_nome_usuario(email)
+                        self.page.session.set("usuario_email", email)
+                        self.page.session.set("usuario_nome", nome_usuario)
+                        self.page.go("/usuario")
+                    elif status == "Pendente":
+                        self.page.snack_bar.content.value = "⚠️ Seu cadastro ainda está em análise. Aguarde a aprovação."
+                        self.page.snack_bar.bgcolor = ft.Colors.AMBER_400
+                        self.page.snack_bar.open = True
+                        self.page.update()
+                    elif status == "Recusado":
+                        self.page.snack_bar.content.value = "❌ Seu cadastro foi recusado. Entre em contato com a administração."
+                        self.page.snack_bar.bgcolor = ft.Colors.RED_400
+                        self.page.snack_bar.open = True
+                        self.page.update()
+                    else:
+                        self.page.snack_bar.content.value = "❗ Erro ao verificar status. Tente novamente mais tarde."
+                        self.page.snack_bar.bgcolor = ft.Colors.RED_400
+                        self.page.snack_bar.open = True
+                        self.page.update()
                 else:
                     self.page.snack_bar.content.value = "Email ou senha incorretos."
+                    self.page.snack_bar.bgcolor = ft.Colors.RED_400
                     self.page.snack_bar.open = True
                     self.page.update()
             else:
                 self.page.snack_bar.content.value = "Preencha todos os campos."
+                self.page.snack_bar.bgcolor = ft.Colors.RED_400
                 self.page.snack_bar.open = True
                 self.page.update()
 
         def registrar_click(e):
-            if (self.cadastro_nome.value.strip() and self.cadastro_email.value.strip() and self.cadastro_senha.value.strip() and self.cadastro_confirmar_senha.value.strip()):
-                if self.cadastro_senha.value.strip() != self.cadastro_confirmar_senha.value.strip():
-                    self.page.snack_bar.content.value = "As senhas não coincidem."
+            nome = self.cadastro_nome.value.strip()
+            email = self.cadastro_email.value.strip()
+            cpf = self.cadastro_cpf.value.strip()
+            nascimento = self.cadastro_nascimento.value.strip()
+            telefone = self.cadastro_telefone.value.strip()
+            senha = self.cadastro_senha.value.strip()
+            confirmar_senha = self.cadastro_confirmar_senha.value.strip()
+
+            if not all([nome, email, cpf, nascimento, telefone, senha, confirmar_senha]):
+                self.page.snack_bar.content.value = "Preencha todos os campos."
+                self.page.snack_bar.bgcolor = ft.Colors.RED_400
+                self.page.snack_bar.open = True
+                self.page.update()
+                return
+
+            if senha != confirmar_senha:
+                self.page.snack_bar.content.value = "As senhas não coincidem."
+                self.page.snack_bar.bgcolor = ft.Colors.RED_400
+                self.page.snack_bar.open = True
+                self.page.update()
+                return
+
+            # 🔍 Verifica duplicatas
+            import sqlite3
+            conn = sqlite3.connect("farmconnect.db")
+            cursor = conn.cursor()
+            cursor.execute("SELECT email, cpf, telefone FROM usuarios")
+            usuarios = cursor.fetchall()
+            conn.close()
+
+            for u in usuarios:
+                if email == u[0]:
+                    self.page.snack_bar.content.value = "Email já cadastrado."
+                    self.page.snack_bar.bgcolor = ft.Colors.RED_400
                     self.page.snack_bar.open = True
                     self.page.update()
-                else:
-                    sucesso = registrar_usuario(
-                        self.cadastro_nome.value.strip(),
-                        self.cadastro_email.value.strip(),
-                        self.cadastro_cpf.value.strip(),
-                        self.cadastro_nascimento.value.strip(),
-                        self.cadastro_telefone.value.strip(),
-                        self.cadastro_senha.value.strip()
-                    )
-                    if sucesso:
-                        self.page.snack_bar.content.value = "Cadastro realizado com sucesso!"
-                        self.page.snack_bar.bgcolor = ft.Colors.GREEN
-                        self.page.snack_bar.open = True
-                        self.page.update()
-                        self.page.go("/login_usuario")
-                    else:
-                        self.page.snack_bar.content.value = "Erro: Email já cadastrado."
-                        self.page.snack_bar.open = True
-                        self.page.update()
+                    return
+                if cpf == u[1]:
+                    self.page.snack_bar.content.value = "CPF já cadastrado."
+                    self.page.snack_bar.bgcolor = ft.Colors.RED_400
+                    self.page.snack_bar.open = True
+                    self.page.update()
+                    return
+                if telefone == u[2]:
+                    self.page.snack_bar.content.value = "Telefone já cadastrado."
+                    self.page.snack_bar.bgcolor = ft.Colors.RED_400
+                    self.page.snack_bar.open = True
+                    self.page.update()
+                    return
+
+            # ✅ Cadastro
+            sucesso = registrar_usuario(nome, email, cpf, nascimento, telefone, senha)
+            if sucesso:
+                self.page.snack_bar.content.value = "Cadastro realizado com sucesso!"
+                self.page.snack_bar.bgcolor = ft.Colors.GREEN
+                self.page.snack_bar.open = True
+
+                self.cadastro_nome.value = ""
+                self.cadastro_email.value = ""
+                self.cadastro_cpf.value = ""
+                self.cadastro_nascimento.value = ""
+                self.cadastro_telefone.value = ""
+                self.cadastro_senha.value = ""
+                self.cadastro_confirmar_senha.value = ""
+                self.page.update()
+
+                self.page.go("/login_usuario")
             else:
-                self.page.snack_bar.content.value = "Preencha todos os campos."
+                self.page.snack_bar.content.value = "Erro ao cadastrar. Tente novamente."
+                self.page.snack_bar.bgcolor = ft.Colors.RED_400
                 self.page.snack_bar.open = True
                 self.page.update()
 
