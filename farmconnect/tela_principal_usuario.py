@@ -1,6 +1,6 @@
 import flet as ft
 from functools import partial
-from database import listar_medicamentos, carregar_carrinho_usuario, adicionar_ao_carrinho_db, remover_do_carrinho_db, buscar_nome_usuario, diminuir_quantidade_db, aumentar_quantidade_db, buscar_dados_usuario, adicionar_agendamento, listar_agendamentos_usuario, reduzir_estoque_farmacia, consultar_estoque_farmacia, listar_farmacias, consultar_estoque_farmacia, adicionar_ao_carrinho_db, atualizar_dados_usuario
+from database import listar_medicamentos, carregar_carrinho_usuario, adicionar_ao_carrinho_db, remover_do_carrinho_db, buscar_nome_usuario, diminuir_quantidade_db, aumentar_quantidade_db, buscar_dados_usuario, adicionar_agendamento, listar_agendamentos_usuario, reduzir_estoque_farmacia, consultar_estoque_farmacia, listar_farmacias, consultar_estoque_farmacia, adicionar_ao_carrinho_db, atualizar_dados_usuario, listar_medicamentos_retirados
 from flet import DatePicker
 
 class TelaUsuarioDashboard:
@@ -10,7 +10,6 @@ class TelaUsuarioDashboard:
         self.pagina_atual = 1
         self.busca_ref = ft.Ref[ft.TextField]()
         self.date_picker_ref = ft.Ref[ft.DatePicker]()
-        self.data_escolhida_label = ft.Text("📅 Nenhuma data selecionada", size=16, color=ft.Colors.GREY_700)
         self.data_escolhida = None
         self.botoes_paginacao = ft.Row(alignment=ft.MainAxisAlignment.CENTER, spacing=10)
         self.page.theme_mode = ft.ThemeMode.LIGHT
@@ -191,6 +190,17 @@ class TelaUsuarioDashboard:
         self.page.client_storage.set("medicamento_detalhe", med)
         self.page.go("/detalhes_medicamento")
 
+    def abrir_calendario(med_id):
+        def handler(self, e):
+            self.date_pickers[med_id].open = True
+            self.page.update()
+        return handler
+    
+    def abrir_calendario_handler(self, med_id):
+        return lambda e: (
+            setattr(self.date_pickers[med_id], "open", True),
+            self.page.update()
+        )
 
     def abrir_carrinho(self, e=None):
         itens_coluna = self.carrinho_drawer.content.controls[2]
@@ -664,7 +674,7 @@ class TelaUsuarioDashboard:
                                     padding=30,
                                     bgcolor=ft.Colors.WHITE,
                                     border_radius=20,
-                                    shadow=ft.BoxShadow(blur_radius=24, color=ft.Colors.BLACK12, offset=ft.Offset(0, 12)),
+                                    shadow=ft.BoxShadow(blur_radius=24, color=ft.Colors.BLACK26, offset=ft.Offset(0, 12)),
                                     content=ft.Column([
                                         ft.Row(
                                             alignment=ft.MainAxisAlignment.CENTER,
@@ -734,14 +744,30 @@ class TelaUsuarioDashboard:
 
 
     def tela_medicamentos_retirados(self):
+        import datetime
         self.sincronizar_carrinho()
-        self.medicamentos_retirados_mock = [
-            {"nome": "Interferon Alfa", "data_retirada": "10/05/2025", "quantidade": 2},
-            {"nome": "Rituximabe", "data_retirada": "08/05/2025", "quantidade": 1},
-            {"nome": "Adalimumabe", "data_retirada": "01/05/2025", "quantidade": 3},
-            {"nome": "Trastuzumabe", "data_retirada": "28/04/2025", "quantidade": 1},
-            {"nome": "Lenalidomida", "data_retirada": "25/04/2025", "quantidade": 2},
-        ]
+        dados_retirados = listar_medicamentos_retirados(self.usuario_id)
+
+        medicamentos_exibidos = []
+        for nome, data, horario, farmacia, quantidade in dados_retirados:
+            data_formatada = datetime.datetime.strptime(data, "%Y-%m-%d").strftime("%d/%m/%Y") if data else "-"
+            medicamentos_exibidos.append(
+                ft.Container(
+                    padding=20,
+                    bgcolor="#F8FAFC",
+                    border_radius=16,
+                    margin=ft.margin.only(bottom=20),
+                    shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26, offset=ft.Offset(0, 10)),
+                    content=ft.Column([
+                        ft.Text(nome, size=20, weight=ft.FontWeight.BOLD, color="#111827"),
+                        ft.Divider(height=10, color=ft.Colors.TRANSPARENT),
+                        ft.Text(f"\U0001F4CD Farmácia: {farmacia or 'Não disponível'}", size=14, color="#374151"),
+                        ft.Text(f"\U0001F4C5 Data de Retirada: {data_formatada}", size=14, color="#374151"),
+                        ft.Text(f"⏰ Horário: {horario or 'Não informado'}", size=14, color="#374151"),
+                        ft.Text(f"\U0001F4E6 Quantidade: {quantidade} unidades", size=14, color="#374151"),
+                    ], spacing=10, alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
+                )
+            )
 
         return ft.View(
             route="/medicamentos_retirados",
@@ -774,22 +800,7 @@ class TelaUsuarioDashboard:
                                 ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
                                 ft.ListView(
                                     expand=True,
-                                    controls=[
-                                        ft.Container(
-                                            padding=20,
-                                            bgcolor="#F8FAFC",
-                                            border_radius=16,
-                                            margin=ft.margin.only(bottom=20),
-                                            shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK12, offset=ft.Offset(0, 10)),
-                                            content=ft.Column([
-                                                ft.Text(med["nome"], size=20, weight=ft.FontWeight.BOLD, color="#111827"),
-                                                ft.Divider(height=10, color=ft.Colors.TRANSPARENT),
-                                                ft.Text(f"📅 Data de Retirada: {med['data_retirada']}", size=14, color="#374151"),
-                                                ft.Text(f"📦 Quantidade: {med['quantidade']} unidades", size=14, color="#374151"),
-                                            ], spacing=10, alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
-                                        )
-                                        for med in self.medicamentos_retirados_mock
-                                    ]
+                                    controls=medicamentos_exibidos
                                 )
                             ], spacing=20)
                         ),
@@ -810,146 +821,117 @@ class TelaUsuarioDashboard:
                 )
             ]
         )
-    
+        
 
     def tela_agendamento(self):
         import datetime
         self.sincronizar_carrinho()
 
-        self.data_escolhida = None
-        self.horario_escolhido = None
-        self.date_picker_ref = ft.Ref[ft.DatePicker]()
-        self.data_escolhida_label = ft.Text("📅 Nenhuma data selecionada", size=16, color=ft.Colors.GREY_700)
-        self.hora_selecionada = ft.Text("⏰ Nenhum horário selecionado", size=16, color=ft.Colors.GREY_700)
-        self.botao_data_ref = ft.Ref[ft.ElevatedButton]()
+        farmacias = listar_farmacias()
+        opcoes_farmacia = [ft.dropdown.Option(str(f[0]), f[1]) for f in farmacias]
+        horas_disponiveis = [f"{h:02d}:{m:02d}" for h in range(8, 18) for m in (0, 30)]
 
-        def abrir_datepicker():
-            self.date_picker_ref.current.open = True
-            self.page.update()
-        def on_data_selecionada(e):
-            self.data_escolhida = e.control.value
-            data_formatada = self.data_escolhida.strftime('%d/%m/%Y')
-            self.data_escolhida_label.value = f"📅 Data: {data_formatada}"
-            self.botao_data_ref.current.text = data_formatada
-            self.page.update()
+        self.dropdown_farmacias_por_med = {}
+        self.horarios_por_med = {}
+        self.datas_escolhidas = {}
+        self.datas_label_por_med = {}
+        self.date_pickers = {}
 
-        def selecionar_hora_manual(hora):
-            self.horario_escolhido = hora
-            self.hora_selecionada.value = f"⏰ Horário escolhido: {hora}"
-            self.page.update()
+        medicamento_inputs = []
+        for item in self.carrinho:
+            med_id = item["id"]
+
+            self.dropdown_farmacias_por_med[med_id] = ft.Dropdown(
+                label="🏥 Selecione a Farmácia",
+                options=opcoes_farmacia,
+                width=400
+            )
+
+            self.horarios_por_med[med_id] = ft.Dropdown(
+                label="⏰ Horário",
+                options=[ft.dropdown.Option(h) for h in horas_disponiveis],
+                width=400
+            )
+
+            self.datas_escolhidas[med_id] = None
+            self.datas_label_por_med[med_id] = ft.Text("Nenhuma data selecionada", size=14, color=ft.Colors.GREY_700)
+
+            def gerar_on_data(med_id):
+                def on_data(e):
+                    self.datas_escolhidas[med_id] = e.control.value
+                    data_formatada = e.control.value.strftime('%d/%m/%Y')
+                    self.datas_label_por_med[med_id].value = f"Data: {data_formatada}"
+                    self.page.update()
+                return on_data
+
+            self.date_pickers[med_id] = ft.DatePicker(
+                first_date=datetime.date.today(),
+                last_date=datetime.date.today() + datetime.timedelta(days=365),
+                on_change=gerar_on_data(med_id)
+            )
+
+            self.page.overlay.append(self.date_pickers[med_id])
+
+            medicamento_inputs.append(
+                ft.Container(
+                    width=550,
+                    bgcolor="#F0F9FF",
+                    padding=16,
+                    border_radius=16,
+                    content=ft.Column([
+                        ft.Text(f"{item['nome']} ({item['quantidade']} un.)", size=15, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
+                        self.dropdown_farmacias_por_med[med_id],
+                        self.horarios_por_med[med_id],
+                        ft.Row([
+                            self.datas_label_por_med[med_id],
+                            ft.IconButton(icon=ft.Icons.CALENDAR_MONTH, icon_color=ft.Colors.BLUE_900, on_click=self.abrir_calendario_handler(med_id)
+                            )
+                        ])
+                    ], spacing=10)
+                )
+            )
 
         def confirmar_agendamento(e):
-            # Valida data e horário
-            if not self.data_escolhida or not self.horario_escolhido:
-                self.page.snack_bar.content.value = "Por favor, selecione data e horário." 
-                self.page.snack_bar.bgcolor=ft.Colors.RED_400
-                self.page.snack_bar.open = True
-                self.page.update()
-                return
+            for item in self.carrinho:
+                med_id = item["id"]
+                codigo = item["codigo"]
 
-            # Valida medicamento
-            medicamento = self.page.client_storage.get("medicamento_detalhe")
-            if not medicamento:
-                self.page.snack_bar.content.value = "Erro: nenhum medicamento selecionado."  
-                self.page.snack_bar.bgcolor=ft.Colors.RED_400
-                self.page.snack_bar.open = True
-                self.page.update()
-                return
+                farmacia_dd = self.dropdown_farmacias_por_med.get(med_id)
+                horario_dd = self.horarios_por_med.get(med_id)
+                data_obj = self.datas_escolhidas.get(med_id)
 
-            medicamento_id = medicamento["id"]
-            codigo = f"{medicamento['codigo']}"
-            usuario_id = self.usuario_id
-            data = self.data_escolhida.strftime('%Y-%m-%d')
-            horario = self.horario_escolhido
-            status = "Pendente"
+                if not farmacia_dd or not horario_dd or not data_obj:
+                    self.page.snack_bar.content.value = f"❗ Preencha todos os campos para {item['nome']}."
+                    self.page.snack_bar.bgcolor = ft.Colors.RED_400
+                    self.page.snack_bar.open = True
+                    self.page.update()
+                    return
 
-            # Valida farmácia
-            try:
-                farmacia_id = int(self.dropdown_farmacia.value)
-            except (TypeError, ValueError):
-                self.page.snack_bar.content.value = "❗ Selecione uma farmácia para continuar."
-                self.page.snack_bar.bgcolor = ft.Colors.RED_400
-                self.page.snack_bar.open = True
-                self.page.update()
-                return
+                farmacia_id = int(farmacia_dd.value)
+                horario = horario_dd.value
+                data = data_obj.strftime('%Y-%m-%d')
 
-            # Verifica estoque
-            estoque_disponivel = consultar_estoque_farmacia(farmacia_id, medicamento_id)
-            print(f"Estoque atual da farmácia: {estoque_disponivel}")
-            if estoque_disponivel < 1:
-                self.page.snack_bar.content.value = "❌ Estoque insuficiente!"
-                self.page.snack_bar.bgcolor=ft.Colors.RED_400
-                self.page.snack_bar.open = True
-                self.page.update()
-                return
+                estoque = consultar_estoque_farmacia(farmacia_id, med_id)
+                if estoque < item["quantidade"]:
+                    self.page.snack_bar.content.value = f"❌ Estoque insuficiente para {item['nome']}!"
+                    self.page.snack_bar.bgcolor = ft.Colors.RED_400
+                    self.page.snack_bar.open = True
+                    self.page.update()
+                    return
 
-            # Desconta estoque
-            reduzir_estoque_farmacia(farmacia_id, medicamento_id, quantidade=1)
-
-            # Adiciona agendamento
-            adicionar_agendamento(usuario_id, medicamento_id, farmacia_id, codigo, data, horario, status)
-
-            # Confirmação final
-            self.page.snack_bar.content.value = "✅ Agendamento realizado com sucesso!"
-            self.page.snack_bar.bgcolor=ft.Colors.GREEN_500
-            self.page.snack_bar.open = True
-            self.page.update()
+                reduzir_estoque_farmacia(farmacia_id, med_id, item["quantidade"])
+                adicionar_agendamento(self.usuario_id, med_id, farmacia_id, codigo, data, horario, "Pendente")
 
             for item in self.carrinho:
                 remover_do_carrinho_db(self.usuario_id, item["id"])
             self.carrinho.clear()
             self.atualizar_contador()
 
+            self.page.snack_bar.content.value = "✅ Agendamentos realizados com sucesso!"
+            self.page.snack_bar.bgcolor = ft.Colors.GREEN_500
+            self.page.snack_bar.open = True
+            self.page.update()
             self.page.go("/agendamento_confirmado")
-
-        def gerar_botoes_horarios():
-            horarios = []
-            hora = 8
-            minuto = 0
-            while hora < 18:
-                texto = f"{hora:02d}:{minuto:02d}"
-                btn = ft.ElevatedButton(
-                    text=texto,
-                    width=60,
-                    height=32,
-                    style=ft.ButtonStyle(
-                        text_style=ft.TextStyle(size=12),
-                        shape=ft.RoundedRectangleBorder(radius=8),
-                        bgcolor=ft.Colors.BLUE_100 if texto == self.horario_escolhido else ft.Colors.WHITE,
-                        color=ft.Colors.BLUE_900,
-                    ),
-                    on_click=lambda e, h=texto: selecionar_hora_manual(h)
-                )
-                horarios.append(btn)
-                minuto += 30
-                if minuto == 60:
-                    minuto = 0
-                    hora += 1
-            linhas = []
-            for i in range(0, len(horarios), 4):
-                linhas.append(ft.Row(horarios[i:i+4], spacing=10, alignment=ft.MainAxisAlignment.CENTER))
-            return linhas
-
-        # DatePicker e botão para abrir
-        datepicker = ft.DatePicker(
-            ref=self.date_picker_ref,
-            on_change=on_data_selecionada,
-            first_date=datetime.date.today(),
-            last_date=datetime.date.today() + datetime.timedelta(days=365)
-        )
-
-        botao_abrir_calendario = ft.ElevatedButton(
-            ref=self.botao_data_ref,
-            text="Selecionar Data",
-            icon=ft.Icons.CALENDAR_MONTH,
-            on_click=lambda _: abrir_datepicker()
-        )
-
-        farmacias = listar_farmacias()
-        self.dropdown_farmacia = ft.Dropdown(
-                                        label="Selecione a Farmácia",
-                                        options=[ft.dropdown.Option(str(f[0]), f[1]) for f in farmacias],
-                                        width=400)
 
         if self.page.snack_bar not in self.page.overlay:
             self.page.overlay.append(self.page.snack_bar)
@@ -958,7 +940,7 @@ class TelaUsuarioDashboard:
             route="/agendamento",
             controls=[
                 self.page.snack_bar,
-                datepicker,
+                *self.date_pickers.values(),
                 ft.Container(
                     expand=True,
                     bgcolor=ft.Colors.WHITE,
@@ -973,23 +955,22 @@ class TelaUsuarioDashboard:
                             ft.Text("🗓️ Agendamento de Retirada", size=32, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
                             ft.Container(
                                 width=700,
+                                alignment=ft.alignment.center,
                                 padding=30,
                                 border_radius=24,
                                 bgcolor="#F0F9FF",
-                                shadow=ft.BoxShadow(blur_radius=25, color=ft.Colors.BLACK12, offset=ft.Offset(0, 10)),
+                                shadow=ft.BoxShadow(blur_radius=25, color=ft.Colors.BLACK26, offset=ft.Offset(0, 10)),
                                 content=ft.Column(
                                     spacing=25,
                                     alignment=ft.MainAxisAlignment.CENTER,
                                     horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                                     controls=[
                                         ft.Text("Escolha a data e o horário desejado:", size=18, color=ft.Colors.BLUE_900, text_align=ft.TextAlign.CENTER),
-                                        self.dropdown_farmacia,
-                                        ft.Text("⏰ Selecione o Horário:", size=16, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
-                                        ft.Column(gerar_botoes_horarios(), spacing=10),
-                                        self.hora_selecionada,
-                                        ft.Text("📅 Selecione a Data:", size=16, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
-                                        botao_abrir_calendario,
-                                        self.data_escolhida_label,
+                                        ft.Column(
+                                            controls=medicamento_inputs,
+                                            spacing=20,
+                                            horizontal_alignment=ft.CrossAxisAlignment.CENTER
+                                        ),
                                         ft.ElevatedButton(
                                             "Confirmar Agendamento",
                                             icon=ft.Icons.CHECK_CIRCLE,
@@ -1021,6 +1002,7 @@ class TelaUsuarioDashboard:
                 )
             ]
         )
+
 
 
     def tela_detalhes_medicamento(self):
@@ -1078,7 +1060,7 @@ class TelaUsuarioDashboard:
                             padding=20,
                             bgcolor="white",
                             border_radius=20,
-                            shadow=ft.BoxShadow(blur_radius=15, color=ft.Colors.BLACK12, offset=ft.Offset(0, 10)),
+                            shadow=ft.BoxShadow(blur_radius=15, color=ft.Colors.BLACK26, offset=ft.Offset(0, 10)),
                             content=ft.Column([
                                 ft.Image(ref=self.imagem_principal, src=medicamento["imagem"], width=300, height=300),
                                 ft.Row([
@@ -1131,7 +1113,7 @@ class TelaUsuarioDashboard:
                             padding=20,
                             bgcolor="white",
                             border_radius=16,
-                            shadow=ft.BoxShadow(blur_radius=10, color=ft.Colors.BLACK12, offset=ft.Offset(0, 8)),
+                            shadow=ft.BoxShadow(blur_radius=10, color=ft.Colors.BLACK26, offset=ft.Offset(0, 8)),
                             content=ft.Column([
                                 ft.Text("📘 Descrição", size=20, weight=ft.FontWeight.BOLD),
                                 ft.Text("Medicamento de uso controlado, indicado conforme prescrição médica. Para garantir sua eficácia e segurança, utilize conforme orientação profissional.", size=14),
@@ -1148,7 +1130,7 @@ class TelaUsuarioDashboard:
                             padding=20,
                             bgcolor="white",
                             border_radius=16,
-                            shadow=ft.BoxShadow(blur_radius=10, color=ft.Colors.BLACK12, offset=ft.Offset(0, 8)),
+                            shadow=ft.BoxShadow(blur_radius=10, color=ft.Colors.BLACK26, offset=ft.Offset(0, 8)),
                             content=ft.Column([
                                 ft.Text("📦 Características", size=20, weight=ft.FontWeight.BOLD),
                                 ft.Divider(),
@@ -1244,7 +1226,7 @@ class TelaUsuarioDashboard:
                     margin=10,
                     border_radius=12,
                     bgcolor=ft.Colors.WHITE,
-                    shadow=ft.BoxShadow(blur_radius=8, color=ft.Colors.BLACK12),
+                    shadow=ft.BoxShadow(blur_radius=8, color=ft.Colors.BLACK26),
                     content=ft.Column([
                         ft.Text(f"💊 Medicamento: {agendamento['medicamento']}", size=16, weight="bold"),
                         ft.Text(f"🏥 Farmácia: {agendamento['farmacia']}"),

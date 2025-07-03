@@ -429,7 +429,7 @@ class HomeApp:
                             padding=30,
                             bgcolor=ft.Colors.WHITE,
                             border_radius=20,
-                            shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK12, offset=ft.Offset(0, 10)),
+                            shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26, offset=ft.Offset(0, 10)),
                             content=ft.Column([
 
                                 ft.Text("🔐 Coleta e Uso de Dados", size=22, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
@@ -516,7 +516,7 @@ class HomeApp:
                             padding=30,
                             bgcolor=ft.Colors.WHITE,
                             border_radius=20,
-                            shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK12, offset=ft.Offset(0, 10)),
+                            shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26, offset=ft.Offset(0, 10)),
                             content=ft.Column([
 
                                 ft.Text("✅ Uso da Plataforma", size=22, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
@@ -613,7 +613,7 @@ class HomeApp:
                             padding=30,
                             bgcolor=ft.Colors.WHITE,
                             border_radius=20,
-                            shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK12, offset=ft.Offset(0, 10)),
+                            shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26, offset=ft.Offset(0, 10)),
                             content=ft.Column([
 
                                 ft.Text("📨 E-mail de Suporte", size=22, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),

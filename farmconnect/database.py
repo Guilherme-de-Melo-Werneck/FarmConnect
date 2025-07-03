@@ -1020,6 +1020,30 @@ def confirmar_retirada_medicamento(agendamento_id):
         cursor.close()
         conn.close()
 
+def listar_medicamentos_retirados(usuario_id):
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT 
+            m.nome,
+            a.data,
+            a.horario,
+            f.nome AS farmacia,
+            COUNT(r.id) AS quantidade
+        FROM medicamentos_retirados r
+        JOIN medicamentos m ON r.medicamento_id = m.id
+        LEFT JOIN agendamentos a ON a.usuario_id = r.usuario_id AND a.medicamento_id = r.medicamento_id AND a.status = 'Concluído/Retirado'
+        LEFT JOIN farmacias f ON a.farmacia_id = f.id
+        WHERE r.usuario_id = ?
+        GROUP BY m.nome, a.data, a.horario, f.nome
+        ORDER BY a.data DESC
+    """, (usuario_id,))
+
+    resultado = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return resultado
 
 
 
