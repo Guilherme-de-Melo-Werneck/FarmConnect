@@ -406,29 +406,48 @@ class TelaAdminDashboard:
                     self.metric_cards(),
                     ft.Container(height=40),
 
-                    # Botão no final da página
+                    # Botões centralizados para baixar relatórios
                     ft.Container(
                         alignment=ft.alignment.center,
                         padding=20,
-                        content=ft.ElevatedButton(
-                            text="Baixar Relatório",
-                            icon=ft.Icons.DOWNLOAD,
-                            bgcolor=ft.Colors.BLUE_300,
-                            color=ft.Colors.WHITE,
-                            height=55,
-                            width=260,
-                            style=ft.ButtonStyle(
-                                shape=ft.RoundedRectangleBorder(radius=14),
-                                padding=ft.padding.symmetric(vertical=12),
-                                elevation=6
-                            ),
-                            on_click=lambda e: self.gerar_relatorio_pdf()
+                        content=ft.Row(
+                            alignment=ft.MainAxisAlignment.CENTER,
+                            spacing=30,
+                            controls=[
+                                ft.ElevatedButton(
+                                    text=" Baixar Relatório (PDF) ",
+                                    icon=ft.Icons.PICTURE_AS_PDF,
+                                    bgcolor=ft.Colors.BLUE_700,
+                                    color=ft.Colors.WHITE,
+                                    height=55,
+                                    style=ft.ButtonStyle(
+                                        shape=ft.RoundedRectangleBorder(radius=14),
+                                        padding=ft.padding.symmetric(vertical=12),
+                                        elevation=6
+                                    ),
+                                    on_click=lambda e: self.gerar_relatorio_pdf()
+                                ),
+                                ft.ElevatedButton(
+                                    text=" Baixar Relatório (Excel) ",
+                                    icon=ft.Icons.TABLE_VIEW,
+                                    bgcolor=ft.Colors.GREEN_700,
+                                    color=ft.Colors.WHITE,
+                                    height=55,
+                                    style=ft.ButtonStyle(
+                                        shape=ft.RoundedRectangleBorder(radius=14),
+                                        padding=ft.padding.symmetric(vertical=12),
+                                        elevation=6
+                                    ),
+                                    on_click=lambda e: self.gerar_relatorio_excel()
+                                )
+                            ]
                         )
                     )
                 ], spacing=20)
             )
         ]
         self.page.update()
+
 
     def gerar_rows_medicamentos(self, lista):
         rows = []
@@ -2062,6 +2081,15 @@ class TelaAdminDashboard:
 
 
     def gerar_relatorio_pdf(self):
+        from reportlab.lib.pagesizes import A4
+        from reportlab.pdfgen import canvas
+        from reportlab.lib.units import cm
+        from reportlab.lib.colors import HexColor, lightgrey, black
+        from datetime import datetime
+        from collections import Counter, defaultdict
+        import calendar
+        from database import listar_usuarios, listar_agendamentos, listar_medicamentos
+
         caminho = "relatorio_farmconnect.pdf"
         c = canvas.Canvas(caminho, pagesize=A4)
         largura, altura = A4
@@ -2088,23 +2116,6 @@ class TelaAdminDashboard:
             y -= 0.6 * cm
             c.setFillColor(black)
 
-        def linha(campo, valor):
-            nonlocal y
-            if y < 3 * cm:
-                nova_pagina()
-            c.setFont("Helvetica-Bold", 10)
-            c.drawString(2.2 * cm, y, f"{campo}:")
-            c.setFont("Helvetica", 10)
-            c.drawRightString(18 * cm, y, valor)
-            y -= 0.5 * cm
-
-        def divider():
-            nonlocal y
-            y -= 0.3 * cm
-            c.setStrokeColor(lightgrey)
-            c.line(2 * cm, y, largura - 2 * cm, y)
-            y -= 0.5 * cm
-
         def rodape():
             c.setFont("Helvetica-Oblique", 9)
             c.setFillColor(HexColor("#6B7280"))
@@ -2114,47 +2125,81 @@ class TelaAdminDashboard:
         # ░░░ PACIENTES
         pacientes = listar_usuarios()
         header("📋 Pacientes Cadastrados", f"Total: {len(pacientes)}")
+        c.setFont("Helvetica-Bold", 10)
+        c.drawString(2 * cm, y, "ID")
+        c.drawString(3.5 * cm, y, "Nome")
+        c.drawString(9 * cm, y, "Email")
+        c.drawString(14.5 * cm, y, "Status")
+        y -= 0.4 * cm
+        c.line(2 * cm, y, largura - 2 * cm, y)
+        y -= 0.4 * cm
+        c.setFont("Helvetica", 9)
         pacientes_mes = Counter()
         status_pacientes = defaultdict(Counter)
         for u in pacientes:
-            linha("ID", str(u[0]))
-            linha("Nome", u[1])
-            linha("Email", u[2])
-            linha("CPF", u[3])
-            linha("Nascimento", u[4])
-            linha("Telefone", u[5])
-            linha("Status", u[7])
-            data_cad = u[6] if len(u) >= 8 else "-"
-            linha("Data de Cadastro", data_cad)
+            if y < 3 * cm:
+                nova_pagina()
+                c.setFont("Helvetica-Bold", 10)
+                c.drawString(2 * cm, y, "ID")
+                c.drawString(3.5 * cm, y, "Nome")
+                c.drawString(9 * cm, y, "Email")
+                c.drawString(14.5 * cm, y, "Status")
+                y -= 0.4 * cm
+                c.line(2 * cm, y, largura - 2 * cm, y)
+                y -= 0.4 * cm
+                c.setFont("Helvetica", 9)
+            c.drawString(2 * cm, y, str(u[0]))
+            c.drawString(3.5 * cm, y, u[1][:30])
+            c.drawString(9 * cm, y, u[2][:35])
+            c.drawString(14.5 * cm, y, u[7])
+            y -= 0.4 * cm
             try:
-                mes = calendar.month_name[datetime.strptime(data_cad, "%Y-%m-%d %H:%M:%S").month]
+                mes = calendar.month_name[datetime.strptime(u[6], "%Y-%m-%d %H:%M:%S").month]
                 pacientes_mes[mes] += 1
-                status = u[7]
-                if status == "Recusado":
-                    status = "Cancelado"
-                status_pacientes[mes][status] += 1
+                status_pacientes[mes][u[7]] += 1
             except:
                 pass
-            divider()
 
         # ░░░ AGENDAMENTOS
         nova_pagina()
         agendamentos = listar_agendamentos()
         header("📅 Agendamentos Realizados", f"Total: {len(agendamentos)}")
+        c.setFont("Helvetica-Bold", 10)
+        c.drawString(2 * cm, y, "ID")
+        c.drawString(3.5 * cm, y, "Paciente")
+        c.drawString(8 * cm, y, "Medicamento")
+        c.drawString(12.5 * cm, y, "Data")
+        c.drawString(15 * cm, y, "Hora")
+        c.drawString(17 * cm, y, "Status")
+        y -= 0.4 * cm
+        c.line(2 * cm, y, largura - 2 * cm, y)
+        y -= 0.4 * cm
+        c.setFont("Helvetica", 9)
         agendamentos_mes = Counter()
         status_agendamento = defaultdict(Counter)
         medicamentos_mes = defaultdict(Counter)
         farmacias_mes = defaultdict(Counter)
         for a in agendamentos:
-            linha("ID", str(a[0]))
-            linha("Paciente", a[1])
-            linha("Medicamento", a[2])
-            linha("Farmácia", a[3])
-            linha("Código", a[4])
-            linha("Data", a[5])
-            linha("Horário", a[6])
-            linha("Status", a[7])
-            linha("Criado em", a[8])
+            if y < 3 * cm:
+                nova_pagina()
+                c.setFont("Helvetica-Bold", 10)
+                c.drawString(2 * cm, y, "ID")
+                c.drawString(3.5 * cm, y, "Paciente")
+                c.drawString(8 * cm, y, "Medicamento")
+                c.drawString(12.5 * cm, y, "Data")
+                c.drawString(15 * cm, y, "Hora")
+                c.drawString(17 * cm, y, "Status")
+                y -= 0.4 * cm
+                c.line(2 * cm, y, largura - 2 * cm, y)
+                y -= 0.4 * cm
+                c.setFont("Helvetica", 9)
+            c.drawString(2 * cm, y, str(a[0]))
+            c.drawString(3.5 * cm, y, a[1][:25])
+            c.drawString(8 * cm, y, a[2][:25])
+            c.drawString(12.5 * cm, y, a[5])
+            c.drawString(15 * cm, y, a[6])
+            c.drawString(17 * cm, y, a[7])
+            y -= 0.4 * cm
             try:
                 mes = calendar.month_name[datetime.strptime(a[8], "%Y-%m-%d %H:%M:%S").month]
                 agendamentos_mes[mes] += 1
@@ -2163,106 +2208,147 @@ class TelaAdminDashboard:
                 farmacias_mes[mes][a[3]] += 1
             except:
                 pass
-            divider()
 
         # ░░░ COMPARATIVO MENSAL
         nova_pagina()
         header("📊 Comparativo Mensal")
+        meses_todos = sorted(set(pacientes_mes.keys() | agendamentos_mes.keys()), key=lambda m: list(calendar.month_name).index(m))
 
-        meses_todos = sorted(set(list(pacientes_mes.keys()) + list(agendamentos_mes.keys())),
-                            key=lambda m: list(calendar.month_name).index(m))
+        c.setFont("Helvetica-Bold", 10)
+        c.drawString(2 * cm, y, "Mês")
+        c.drawString(6 * cm, y, "Pacientes")
+        c.drawString(9 * cm, y, "Medicamentos")
+        c.drawString(13 * cm, y, "Agendamentos")
+        c.drawString(17 * cm, y, "Farmácias")
+        y -= 0.4 * cm
+        c.line(2 * cm, y, largura - 2 * cm, y)
+        y -= 0.4 * cm
+        c.setFont("Helvetica", 9)
 
         for mes in meses_todos:
-            linha(f"Mês: {mes}", "")
-            linha("  • Pacientes cadastrados", str(pacientes_mes.get(mes, 0)))
-            linha("     - Aprovados", str(status_pacientes[mes].get("Aprovado", 0)))
-            linha("     - Cancelados", str(status_pacientes[mes].get("Cancelado", 0)))
-            linha("     - Pendentes", str(status_pacientes[mes].get("Pendente", 0)))
+            if y < 3 * cm:
+                nova_pagina()
+                c.setFont("Helvetica-Bold", 10)
+                c.drawString(2 * cm, y, "Mês")
+                c.drawString(6 * cm, y, "Pacientes")
+                c.drawString(9 * cm, y, "Medicamentos")
+                c.drawString(13 * cm, y, "Agendamentos")
+                c.drawString(17 * cm, y, "Farmácias")
+                y -= 0.4 * cm
+                c.line(2 * cm, y, largura - 2 * cm, y)
+                y -= 0.4 * cm
+                c.setFont("Helvetica", 9)
 
-            linha("  • Agendamentos realizados", str(agendamentos_mes.get(mes, 0)))
-            linha("     - Confirmados", str(status_agendamento[mes].get("Confirmado", 0)))
-            linha("     - Pendentes", str(status_agendamento[mes].get("Pendente", 0)))
-            linha("     - Cancelados", str(status_agendamento[mes].get("Cancelado", 0)))
+            total_pac = pacientes_mes.get(mes, 0)
+            total_ag = agendamentos_mes.get(mes, 0)
+            total_med = sum(medicamentos_mes[mes].values())
+            total_farms = len(farmacias_mes[mes])
 
-            if medicamentos_mes[mes]:
-                mais_medicamento = medicamentos_mes[mes].most_common(1)[0]
-                linha("     - Medicamento mais agendado", f"{mais_medicamento[0]} ({mais_medicamento[1]} vezes)")
-
-            if farmacias_mes[mes]:
-                mais_farmacia = farmacias_mes[mes].most_common(1)[0]
-                linha("     - Farmácia mais utilizada", f"{mais_farmacia[0]} ({mais_farmacia[1]} agendamentos)")
-
-            divider()
-
-        # ░░░ MEDICAMENTOS
-        nova_pagina()
-        medicamentos = listar_medicamentos()
-        header("💊 Medicamentos Cadastrados", f"Total: {len(medicamentos)}")
-        total_estoque_medicamentos = 0  # ← acumulador
-        for m in medicamentos:
-            estoque_valor = m[5] or 0
-            total_estoque_medicamentos += estoque_valor
-            linha("ID", str(m[0]))
-            linha("Nome", m[1])
-            linha("Código", m[2])
-            linha("Descrição", m[3] or "Não informado")
-            linha("Estoque", str(estoque_valor))
-            linha("Categoria", m[6] or "-")
-            linha("Fabricante", m[7] or "-")
-            linha("Farmácia", m[8] or "-")
-            linha("Ativo", "Sim" if m[9] else "Não")
-            divider()
-
-        # ░░░ RESUMO FINAL
-        nova_pagina()
-        header("📌 Resumo Final")
-
-        total_pac = len(pacientes)
-        total_ag = len(agendamentos)
-        total_med = len(medicamentos)
-
-        total_aprovados = sum(v.get("Aprovado", 0) for v in status_pacientes.values())
-        total_cancelados_pac = sum(v.get("Cancelado", 0) for v in status_pacientes.values())
-        total_pendentes_pac = sum(v.get("Pendente", 0) for v in status_pacientes.values())
-
-        total_conf = sum(v.get("Confirmado", 0) for v in status_agendamento.values())
-        total_pend = sum(v.get("Pendente", 0) for v in status_agendamento.values())
-        total_cancelados_ag = sum(v.get("Cancelado", 0) for v in status_agendamento.values())
-
-        linha("Total de pacientes cadastrados", str(total_pac))
-        linha("  - Aprovados", str(total_aprovados))
-        linha("  - Cancelados", str(total_cancelados_pac))
-        linha("  - Pendentes", str(total_pendentes_pac))
-        divider()
-        linha("Total de agendamentos", str(total_ag))
-        linha("  - Confirmados", str(total_conf))
-        linha("  - Pendentes", str(total_pend))
-        linha("  - Cancelados", str(total_cancelados_ag))
-        divider()
-        linha("Total de medicamentos cadastrados", str(total_med))
-        linha("Quantidade total em estoque", str(total_estoque_medicamentos))  # ← Adicionado aqui
-
-        todos_meds = Counter()
-        for meds in medicamentos_mes.values():
-            todos_meds.update(meds)
-        if todos_meds:
-            med_top = todos_meds.most_common(1)[0]
-            linha("Medicamento mais agendado (geral)", f"{med_top[0]} ({med_top[1]} vezes)")
-
-        todas_farms = Counter()
-        for f in farmacias_mes.values():
-            todas_farms.update(f)
-        if todas_farms:
-            farm_top = todas_farms.most_common(1)[0]
-            linha("Farmácia mais utilizada (geral)", f"{farm_top[0]} ({farm_top[1]} agendamentos)")
-
-        if agendamentos_mes:
-            mes_top = max(agendamentos_mes, key=agendamentos_mes.get)
-            linha("Mês com mais agendamentos", f"{mes_top} ({agendamentos_mes[mes_top]})")
+            c.drawString(2 * cm, y, mes[:10])
+            c.drawString(6 * cm, y, str(total_pac))
+            c.drawString(9 * cm, y, str(total_med))
+            c.drawString(13 * cm, y, str(total_ag))
+            c.drawString(17 * cm, y, str(total_farms))
+            y -= 0.4 * cm
 
         rodape()
         c.save()
         self.page.launch_url(caminho)
+
+
+    
+    def gerar_relatorio_excel(self):
+        import openpyxl
+        from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
+        from openpyxl.utils import get_column_letter
+        from datetime import datetime
+        from database import listar_usuarios, listar_agendamentos, listar_medicamentos
+
+        wb = openpyxl.Workbook()
+        del wb["Sheet"]
+
+        # Estilos
+        header_font = Font(bold=True, color="FFFFFF")
+        header_fill = PatternFill(start_color="1E3A8A", end_color="1E3A8A", fill_type="solid")
+        align_left = Alignment(horizontal="left", vertical="center")
+        title_font = Font(size=14, bold=True, color="FFFFFF")
+        border_preta = Border(
+            left=Side(style="thin", color="000000"),
+            right=Side(style="thin", color="000000"),
+            top=Side(style="thin", color="000000"),
+            bottom=Side(style="thin", color="000000")
+        )
+
+        def autoajustar_colunas(ws):
+            for column_cells in ws.columns:
+                max_length = max(len(str(cell.value or "")) for cell in column_cells)
+                col_letter = get_column_letter(column_cells[0].column)
+                ws.column_dimensions[col_letter].width = max(max_length + 2, 12)
+
+        def formatar_titulo(ws, texto, total_cols):
+            ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=total_cols)
+            cell = ws.cell(row=1, column=1)
+            cell.value = texto
+            cell.font = title_font
+            cell.alignment = Alignment(horizontal="center", vertical="center")
+            cell.fill = PatternFill(start_color="1E40AF", end_color="1E40AF", fill_type="solid")
+
+        def escrever_cabecalho(ws, headers, linha=2):
+            for i, cab in enumerate(headers, start=1):
+                cell = ws.cell(row=linha, column=i, value=cab)
+                cell.font = header_font
+                cell.fill = header_fill
+                cell.alignment = align_left
+                cell.border = border_preta
+
+        def formatar_corpo(ws, linha_inicial):
+            for row in ws.iter_rows(min_row=linha_inicial, max_row=ws.max_row):
+                for cell in row:
+                    cell.alignment = align_left
+                    cell.border = border_preta
+
+        # ░░░ Pacientes
+        pacientes = listar_usuarios()
+        ws1 = wb.create_sheet("Pacientes")
+        headers_pac = ["ID", "Nome", "Email", "CPF", "Nascimento", "Telefone", "Criado em", "Status"]
+        formatar_titulo(ws1, "Pacientes Cadastrados", len(headers_pac))
+        escrever_cabecalho(ws1, headers_pac)
+        for u in pacientes:
+            ws1.append([u[0], u[1], u[2], u[3], u[4], u[5], u[6], u[7]])
+        formatar_corpo(ws1, linha_inicial=3)
+        autoajustar_colunas(ws1)
+
+        # ░░░ Agendamentos
+        agendamentos = listar_agendamentos()
+        ws2 = wb.create_sheet("Agendamentos")
+        headers_ag = ["ID", "Paciente", "Medicamento", "Farmácia", "Código", "Data", "Horário", "Status", "Criado em"]
+        formatar_titulo(ws2, "Agendamentos Realizados", len(headers_ag))
+        escrever_cabecalho(ws2, headers_ag)
+        for a in agendamentos:
+            ws2.append([a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8]])
+        formatar_corpo(ws2, linha_inicial=3)
+        autoajustar_colunas(ws2)
+
+        # ░░░ Medicamentos
+        medicamentos = listar_medicamentos()
+        ws3 = wb.create_sheet("Medicamentos")
+        headers_med = ["ID", "Nome", "Código", "Descrição", "Estoque", "Categoria", "Fabricante", "Farmácia", "Ativo"]
+        formatar_titulo(ws3, "Medicamentos Cadastrados", len(headers_med))
+        escrever_cabecalho(ws3, headers_med)
+        for m in medicamentos:
+            ws3.append([
+                m[0], m[1], m[2], m[3], m[5] or 0, m[6] or "-", m[7] or "-", m[8] or "-", "Sim" if m[9] else "Não"
+            ])
+        formatar_corpo(ws3, linha_inicial=3)
+        autoajustar_colunas(ws3)
+
+        # ░░░ Salvar
+        nome_arquivo = f"relatorio_farmconnect_{datetime.now().strftime('%Y%m%d_%H%M')}.xlsx"
+        wb.save(nome_arquivo)
+        self.page.launch_url(nome_arquivo)
+
+
+
 
 
 

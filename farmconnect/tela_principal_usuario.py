@@ -926,7 +926,7 @@ class TelaUsuarioDashboard:
                 data_obj = self.datas_escolhidas.get(med_id)
 
                 if not farmacia_dd or not horario_dd or not data_obj:
-                    self.page.snack_bar.content.value = f"❗ Preencha todos os campos para {item['nome']}."
+                    self.page.snack_bar.content.value = f"❗ Preencha todos os campos para o agendamento."
                     self.page.snack_bar.bgcolor = ft.Colors.RED_400
                     self.page.snack_bar.open = True
                     self.page.update()
@@ -1242,6 +1242,16 @@ class TelaUsuarioDashboard:
                         color=ft.Colors.INDIGO_900
                     ),
                     on_click=lambda e, med=agendamento["medicamento"]: print(f"Reagendando: {med}")
+                ),
+                ft.ElevatedButton(
+                    "📥 Comprovante",
+                    style=ft.ButtonStyle(
+                        padding=ft.padding.symmetric(horizontal=12, vertical=8),
+                        shape=ft.RoundedRectangleBorder(radius=12),
+                        bgcolor=ft.Colors.BLUE_800,
+                        color=ft.Colors.WHITE
+                    ),
+                    on_click=lambda e, dados=ag: self.gerar_pdf_comprovante(dados)
                 )
             ], spacing=10)
 
@@ -1354,7 +1364,13 @@ class TelaUsuarioDashboard:
         )
     
     def tela_agendamento_confirmado(self):
+        from database import listar_agendamentos_usuario
         self.sincronizar_carrinho()
+
+        # Último agendamento do usuário
+        agendamentos = listar_agendamentos_usuario(self.usuario_id)
+        ultimo = agendamentos[0] if agendamentos else None
+
         return ft.View(
             route="/agendamento_confirmado",
             scroll=ft.ScrollMode.AUTO,
@@ -1370,32 +1386,92 @@ class TelaUsuarioDashboard:
                         horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                         spacing=30,
                         controls=[
-                            ft.Icon(ft.Icons.CHECK_CIRCLE, size=80, color=ft.Colors.GREEN_600),
-                            ft.Text("Agendamento Confirmado!", size=30, weight=ft.FontWeight.BOLD, color="#1E3A8A"),
-                            ft.Text(
-                                "Você tem até 10 dias para retirar seu medicamento na farmácia selecionada.",
-                                size=18,
-                                color=ft.Colors.GREY_800,
-                                text_align=ft.TextAlign.CENTER
-                            ),
-                            ft.ElevatedButton(
-                                "Ver Meus Agendamentos",
-                                icon=ft.Icons.CALENDAR_MONTH,
-                                on_click=lambda e: self.page.go("/agendamentos"),
-                                style=ft.ButtonStyle(
-                                    bgcolor=ft.Colors.BLUE_700,
-                                    color=ft.Colors.WHITE,
-                                    padding=ft.padding.symmetric(horizontal=24, vertical=14),
-                                    shape=ft.RoundedRectangleBorder(radius=12)
-                                )
-                            ),
-                            ft.TextButton(
-                                "Voltar para a Página Inicial",
-                                on_click=lambda e: self.page.go("/usuario"),
-                                style=ft.ButtonStyle(
-                                    color=ft.Colors.BLUE_700,
-                                    padding=ft.padding.symmetric(horizontal=24, vertical=10)
-                                )
+                            ft.Container(
+                                padding=30,
+                                bgcolor=ft.Colors.WHITE,
+                                border_radius=20,
+                                shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK12, offset=ft.Offset(0, 10)),
+                                content=ft.Column([
+                                    ft.Icon(name=ft.Icons.HOURGLASS_TOP, size=80, color=ft.Colors.AMBER_700),
+                                    ft.Text(
+                                        "Agendamento Recebido!",
+                                        size=30,
+                                        weight=ft.FontWeight.BOLD,
+                                        color=ft.Colors.BLUE_900,
+                                        text_align=ft.TextAlign.CENTER
+                                    ),
+                                    ft.Text(
+                                        "Seu agendamento foi registrado com sucesso e está aguardando aprovação do administrador.",
+                                        size=18,
+                                        text_align=ft.TextAlign.CENTER,
+                                        color=ft.Colors.GREY_800
+                                    ),
+                                    ft.Text(
+                                        "Você poderá acompanhar o status na aba 'Meus Agendamentos'.",
+                                        size=16,
+                                        text_align=ft.TextAlign.CENTER,
+                                        color=ft.Colors.GREY_700
+                                    ),
+                                    ft.Container(height=20),
+                                    ft.Container(
+                                        bgcolor=ft.Colors.AMBER_100,
+                                        padding=16,
+                                        border_radius=12,
+                                        content=ft.Column([
+                                            ft.Row([
+                                                ft.Icon(name=ft.Icons.INFO_OUTLINE, color=ft.Colors.AMBER_700),
+                                                ft.Text(
+                                                    "Importante!",
+                                                    color=ft.Colors.AMBER_900,
+                                                    weight=ft.FontWeight.BOLD,
+                                                    size=16
+                                                )
+                                            ], spacing=8),
+                                            ft.Text(
+                                                "• Verifique em 'Meus Agendamentos' se o status mudou para CONFIRMADO.\n"
+                                                "• Leve o comprovante de agendamento impresso no dia da retirada.",
+                                                size=14,
+                                                color=ft.Colors.AMBER_900
+                                            )
+                                        ], spacing=10)
+                                    ),
+                                    ft.Container(height=25),
+                                    ft.Row([
+                                        ft.ElevatedButton(
+                                            "Ver Meus Agendamentos",
+                                            icon=ft.Icons.CALENDAR_MONTH,
+                                            style=ft.ButtonStyle(
+                                                bgcolor=ft.Colors.INDIGO_700,
+                                                color=ft.Colors.WHITE,
+                                                padding=ft.padding.symmetric(horizontal=24, vertical=14),
+                                                shape=ft.RoundedRectangleBorder(radius=12)
+                                            ),
+                                            on_click=lambda e: self.page.go("/agendamentos")
+                                        ),
+                                        ft.ElevatedButton(
+                                            text="📥 Baixar Comprovante",
+                                            bgcolor="#1E40AF",
+                                            color=ft.Colors.WHITE,
+                                            style=ft.ButtonStyle(
+                                                shape=ft.RoundedRectangleBorder(radius=14),
+                                                padding=ft.padding.symmetric(horizontal=24, vertical=14),
+                                                elevation=8,
+                                                overlay_color="#3B82F6"
+                                            ),
+                                            on_click=lambda e: self.gerar_pdf_comprovante(ultimo)
+                                        ),
+                                        ft.OutlinedButton(
+                                            "Voltar à Página Inicial",
+                                            icon=ft.Icons.HOME_OUTLINED,
+                                            style=ft.ButtonStyle(
+                                                padding=ft.padding.symmetric(horizontal=24, vertical=14),
+                                                shape=ft.RoundedRectangleBorder(radius=12),
+                                                color=ft.Colors.BLUE_800,
+                                            ),
+                                            on_click=lambda e: self.page.go("/usuario")
+                                        )
+                                    ], spacing=20, alignment=ft.MainAxisAlignment.CENTER)
+                                ], spacing=20)
                             )
                         ]
                     )
@@ -1403,6 +1479,65 @@ class TelaUsuarioDashboard:
             ]
         )
     
+    def gerar_pdf_comprovante(self, agendamento):
+        from reportlab.pdfgen import canvas
+        from reportlab.lib.pagesizes import A4
+        from reportlab.lib.units import cm
+        from reportlab.lib.colors import HexColor
+        from datetime import datetime
+
+        if not agendamento:
+            self.page.snack_bar.content.value = "❌ Nenhum agendamento encontrado."
+            self.page.snack_bar.bgcolor = "red"
+            self.page.snack_bar.open = True
+            self.page.update()
+            return
+
+        caminho = "comprovante_agendamento.pdf"
+        c = canvas.Canvas(caminho, pagesize=A4)
+        largura, altura = A4
+
+        c.setFont("Helvetica-Bold", 18)
+        c.setFillColor(HexColor("#1E3A8A"))
+        c.drawCentredString(largura / 2, altura - 2 * cm, "Comprovante de Agendamento")
+
+        y = altura - 3.5 * cm
+        c.setFont("Helvetica", 12)
+        c.setFillColor("black")
+
+        c.drawString(2 * cm, y, f"Nome do Paciente: {self.nome_usuario}")
+        y -= 1 * cm
+        c.drawString(2 * cm, y, f"E-mail: {self.email_usuario}")
+
+        y -= 1.5 * cm
+        c.setFont("Helvetica-Bold", 12)
+        c.drawString(2 * cm, y, "📅 Detalhes do Agendamento")
+        c.setFont("Helvetica", 11)
+        y -= 0.8 * cm
+        c.drawString(2 * cm, y, f"Medicamento: {agendamento[1]}")
+        y -= 0.6 * cm
+        c.drawString(2 * cm, y, f"Farmácia: {agendamento[2]}")
+        y -= 0.6 * cm
+        c.drawString(2 * cm, y, f"Código do Agendamento: {agendamento[3]}")
+        y -= 0.6 * cm
+        c.drawString(2 * cm, y, f"Data: {agendamento[4]}")
+        y -= 0.6 * cm
+        c.drawString(2 * cm, y, f"Horário: {agendamento[5]}")
+        y -= 0.6 * cm
+        c.drawString(2 * cm, y, f"Status atual: {agendamento[6]}")
+
+        y -= 2 * cm
+        c.setFont("Helvetica-Oblique", 10)
+        c.setFillColor(HexColor("#6B7280"))
+        c.drawString(2 * cm, y, "Leve este comprovante impresso no dia da retirada.")
+        y -= 0.6 * cm
+        c.drawString(2 * cm, y, f"Emitido em: {datetime.now().strftime('%d/%m/%Y %H:%M')}")
+
+        c.save()
+        self.page.launch_url(caminho)
+
+
+
     def gerar_documento_autorizacao(self):
         caminho = "documento_autorizacao.pdf"
         c = canvas.Canvas(caminho, pagesize=A4)
