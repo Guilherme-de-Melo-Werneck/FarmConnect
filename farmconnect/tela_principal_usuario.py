@@ -857,7 +857,6 @@ class TelaUsuarioDashboard:
         opcoes_farmacia = [ft.dropdown.Option(str(f[0]), f[1]) for f in farmacias]
         horas_disponiveis = [f"{h:02d}:{m:02d}" for h in range(8, 18) for m in (0, 30)]
 
-        self.dropdown_farmacias_por_med = {}
         self.horarios_por_med = {}
         self.datas_escolhidas = {}
         self.datas_label_por_med = {}
@@ -867,12 +866,6 @@ class TelaUsuarioDashboard:
         for item in self.carrinho:
             med_id = item["id"]
 
-            self.dropdown_farmacias_por_med[med_id] = ft.Dropdown(
-                label="🏥 Selecione a Farmácia",
-                options=opcoes_farmacia,
-                width=400
-            )
-
             self.horarios_por_med[med_id] = ft.Dropdown(
                 label="⏰ Horário",
                 options=[ft.dropdown.Option(h) for h in horas_disponiveis],
@@ -880,7 +873,7 @@ class TelaUsuarioDashboard:
             )
 
             self.datas_escolhidas[med_id] = None
-            self.datas_label_por_med[med_id] = ft.Text("Nenhuma data selecionada", size=14, color=ft.Colors.GREY_700)
+            self.datas_label_por_med[med_id] = ft.Text("Nenhuma data selecionada ➡️", size=14, color=ft.Colors.GREY_700)
 
             def gerar_on_data(med_id):
                 def on_data(e):
@@ -898,6 +891,10 @@ class TelaUsuarioDashboard:
 
             self.page.overlay.append(self.date_pickers[med_id])
 
+            med_info = next((m for m in listar_medicamentos() if m[0] == med_id), None)
+            farmacia_nome = med_info[8] if med_info else "Não disponível"
+            farmacia_endereco = med_info[9] if med_info else "Endereço não encontrado" 
+
             medicamento_inputs.append(
                 ft.Container(
                     width=550,
@@ -906,7 +903,8 @@ class TelaUsuarioDashboard:
                     border_radius=16,
                     content=ft.Column([
                         ft.Text(f"{item['nome']} ({item['quantidade']} un.)", size=15, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
-                        self.dropdown_farmacias_por_med[med_id],
+                        ft.Text(f"🏥 Farmácia: {farmacia_nome}", size=14, color=ft.Colors.BLUE_900),
+                        ft.Text(f"📍 Endereço: {farmacia_endereco}", size=14, color=ft.Colors.BLUE_900),
                         self.horarios_por_med[med_id],
                         ft.Row([
                             self.datas_label_por_med[med_id],
@@ -923,18 +921,26 @@ class TelaUsuarioDashboard:
                 codigo = item["codigo"]
                 quantidade = item["quantidade"]
 
-                farmacia_dd = self.dropdown_farmacias_por_med.get(med_id)
+                med_info = next((m for m in listar_medicamentos() if m[0] == med_id), None)
                 horario_dd = self.horarios_por_med.get(med_id)
                 data_obj = self.datas_escolhidas.get(med_id)
 
-                if not farmacia_dd or not horario_dd or not data_obj:
+                if not horario_dd or not data_obj:
                     self.page.snack_bar.content.value = f"❗ Preencha todos os campos para o agendamento."
                     self.page.snack_bar.bgcolor = ft.Colors.RED_400
                     self.page.snack_bar.open = True
                     self.page.update()
                     return
+                
+                if not med_info or not med_info[8]:
+                    self.page.snack_bar.content.value = f"❗ Não foi possível identificar a farmácia do medicamento {item['nome']}."
+                    self.page.snack_bar.bgcolor = ft.Colors.RED_400
+                    self.page.snack_bar.open = True
+                    self.page.update()
+                    return
 
-                farmacia_id = int(farmacia_dd.value)
+                farmacia_id = med_info[10] 
+
                 horario = horario_dd.value
                 data = data_obj.strftime('%Y-%m-%d')
 
@@ -1408,6 +1414,13 @@ class TelaUsuarioDashboard:
                                         size=18,
                                         text_align=ft.TextAlign.CENTER,
                                         color=ft.Colors.GREY_800
+                                    ),
+                                    ft.Text(
+                                        f"🏥 Farmácia de retirada: {ultimo[2]}" if ultimo else "🏥 Farmácia: Não disponível",
+                                        size=16,
+                                        text_align=ft.TextAlign.CENTER,
+                                        color=ft.Colors.BLUE_700,
+                                        weight=ft.FontWeight.BOLD
                                     ),
                                     ft.Text(
                                         "Você poderá acompanhar o status na aba 'Meus Agendamentos'.",
