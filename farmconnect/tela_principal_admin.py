@@ -452,7 +452,7 @@ class TelaAdminDashboard:
     def gerar_rows_medicamentos(self, lista):
         rows = []
         for med in lista:
-            inativo = med[9] == 0  # Índice 9 é o campo 'ativo' na tabela
+            inativo = med[11] == 0  # Índice 9 é o campo 'ativo' na tabela
             estilo_riscado = ft.TextStyle(
                 decoration=ft.TextDecoration.LINE_THROUGH,
                 color=ft.Colors.RED
@@ -475,7 +475,7 @@ class TelaAdminDashboard:
                                 tooltip="Reativar" if inativo else "Desativar",
                                 icon_size=22,
                                 style=ft.ButtonStyle(padding=0),
-                                on_click=(lambda e, id=med[0], inativo=med[9]:
+                                on_click=(lambda e, id=med[0], inativo=med[11]:
                                     self.reativar_medicamento(id) if inativo == 0 else self.desativar_medicamento(id)
                                 )
                             )
