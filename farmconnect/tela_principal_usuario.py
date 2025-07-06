@@ -91,6 +91,8 @@ class TelaUsuarioDashboard:
                 "estoque": m[5],
                 "categoria": m[6],
                 "fabricante": m[7],
+                "farmacia": m[8],
+                "endereco": m[9]
             } for m in dados
         ]
 
@@ -766,7 +768,7 @@ class TelaUsuarioDashboard:
             self.page.go("/medicamentos_retirados")
 
         medicamentos_exibidos = []
-        for nome, data, horario, farmacia, quantidade in self.resultados_filtrados:
+        for nome, data, horario, farmacia, endereco, quantidade in self.resultados_filtrados:
             data_formatada = datetime.datetime.strptime(data, "%Y-%m-%d").strftime("%d/%m/%Y") if data else "-"
             medicamentos_exibidos.append(
                 ft.Container(
@@ -778,7 +780,8 @@ class TelaUsuarioDashboard:
                     content=ft.Column([
                         ft.Text(nome, size=20, weight=ft.FontWeight.BOLD, color="#111827"),
                         ft.Divider(height=10, color=ft.Colors.TRANSPARENT),
-                        ft.Text(f"\U0001F4CD Farmácia: {farmacia or 'Não disponível'}", size=14, color="#374151"),
+                        ft.Text(f"\U0001F3E5 Farmácia: {farmacia or 'Não disponível'}", size=14, color="#374151"),
+                        ft.Text(f"📍 Endereço: {endereco or 'Não disponível'}", size=14, color="#374151"),
                         ft.Text(f"\U0001F4C5 Data de Retirada: {data_formatada}", size=14, color="#374151"),
                         ft.Text(f"⏰ Horário: {horario or 'Não informado'}", size=14, color="#374151"),
                         ft.Text(f"\U0001F4E6 Quantidade: {quantidade} unidades", size=14, color="#374151"),
@@ -797,7 +800,7 @@ class TelaUsuarioDashboard:
                     padding=40,
                     content=ft.Column([
                         ft.Text(
-                            "💊 MEDICAMENTOS RETIRADOS", 
+                            "MEDICAMENTOS RETIRADOS", 
                             size=32, 
                             weight=ft.FontWeight.BOLD, 
                             color=ft.Colors.BLUE_900,
@@ -1110,9 +1113,11 @@ class TelaUsuarioDashboard:
                             padding=20,
                             content=ft.Column([
                                 ft.Text(medicamento["nome"], size=26, weight=ft.FontWeight.BOLD, color="#1E3A8A"),
-                                ft.Text("Tipo: Uso controlado", size=14, color=ft.Colors.GREY_700),
-                                ft.Text("Marca: " + medicamento["fabricante"], size=14, color=ft.Colors.GREY_700),
-                                ft.Text("Quantidade: 1 unidade", size=14, color=ft.Colors.GREY_700),
+                                ft.Text("Tipo: Uso controlado", size=14),
+                                ft.Text("Marca: " + medicamento["fabricante"], size=14),
+                                ft.Text(f"Quantidade: {medicamento["estoque"]}", size=14),
+                                ft.Text(f"Farmácia: {medicamento.get('farmacia', 'Não disponível')}", size=14),
+                                ft.Text(f"Endereço: {medicamento.get('endereco', 'Não disponível')}", size=14),
                                 ft.Divider(height=20),
                                 ft.Row([
                                     ft.TextField(
@@ -1127,6 +1132,7 @@ class TelaUsuarioDashboard:
                                     ft.ElevatedButton(
                                         "Adicionar ao Carrinho",
                                         icon=ft.Icons.ADD_SHOPPING_CART,
+                                        icon_color=ft.Colors.WHITE,
                                         style=ft.ButtonStyle(
                                             bgcolor="#1E3A8A",
                                             color=ft.Colors.WHITE,
@@ -1231,10 +1237,11 @@ class TelaUsuarioDashboard:
             agendamento = {
                 "medicamento": ag[1],
                 "farmacia": ag[2],
-                "codigo": ag[3],
-                "data": ag[4],
-                "horario": ag[5],
-                "status": ag[6],
+                "endereco": ag[3],
+                "codigo": ag[4],
+                "data": ag[5],
+                "horario": ag[6],
+                "status": ag[7],
             }
 
             badge = status_badge(agendamento["status"])
@@ -1274,6 +1281,7 @@ class TelaUsuarioDashboard:
                     content=ft.Column([
                         ft.Text(f"💊 Medicamento: {agendamento['medicamento']}", size=16, weight="bold"),
                         ft.Text(f"🏥 Farmácia: {agendamento['farmacia']}"),
+                        ft.Text(f"📍Endereço: {agendamento['endereco']} "),
                         ft.Text(f"🆔 Código: {agendamento['codigo']}"),
                         ft.Text(f"📅 Data: {agendamento['data']}"),
                         ft.Text(f"⏰ Horário: {agendamento['horario']}"),
@@ -1413,20 +1421,25 @@ class TelaUsuarioDashboard:
                                         "Seu agendamento foi registrado com sucesso e está aguardando aprovação do administrador.",
                                         size=18,
                                         text_align=ft.TextAlign.CENTER,
-                                        color=ft.Colors.GREY_800
                                     ),
                                     ft.Text(
-                                        f"🏥 Farmácia de retirada: {ultimo[2]}" if ultimo else "🏥 Farmácia: Não disponível",
+                                        f"🏥 Farmácia: {ultimo[2]}" if ultimo else "🏥 Farmácia: Não disponível",
                                         size=16,
                                         text_align=ft.TextAlign.CENTER,
-                                        color=ft.Colors.BLUE_700,
+                                        color=ft.Colors.BLUE_600,
+                                        weight=ft.FontWeight.BOLD
+                                    ),
+                                    ft.Text(
+                                        f"📍 Endereço da Farmácia: {ultimo[3]}" if ultimo else "📍 Endereço da Farmácia: Não disponível",
+                                        size=16,
+                                        text_align=ft.TextAlign.CENTER,
+                                        color=ft.Colors.BLUE_600,
                                         weight=ft.FontWeight.BOLD
                                     ),
                                     ft.Text(
                                         "Você poderá acompanhar o status na aba 'Meus Agendamentos'.",
                                         size=16,
                                         text_align=ft.TextAlign.CENTER,
-                                        color=ft.Colors.GREY_700
                                     ),
                                     ft.Container(height=20),
                                     ft.Container(
@@ -1457,7 +1470,8 @@ class TelaUsuarioDashboard:
                                             "Ver Meus Agendamentos",
                                             icon=ft.Icons.CALENDAR_MONTH,
                                             style=ft.ButtonStyle(
-                                                bgcolor=ft.Colors.INDIGO_700,
+                                                bgcolor=ft.Colors.BLUE_900,
+                                                icon_color=ft.Colors.WHITE,
                                                 color=ft.Colors.WHITE,
                                                 padding=ft.padding.symmetric(horizontal=24, vertical=14),
                                                 shape=ft.RoundedRectangleBorder(radius=12)
@@ -1466,7 +1480,7 @@ class TelaUsuarioDashboard:
                                         ),
                                         ft.ElevatedButton(
                                             text="📥 Baixar Comprovante",
-                                            bgcolor="#1E40AF",
+                                            bgcolor=ft.Colors.BLUE_600,
                                             color=ft.Colors.WHITE,
                                             style=ft.ButtonStyle(
                                                 shape=ft.RoundedRectangleBorder(radius=14),
