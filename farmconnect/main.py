@@ -6,10 +6,11 @@ from admin import TelaLoginAdmin
 from tela_principal_admin import TelaAdminDashboard
 from tela_principal_usuario import TelaUsuarioDashboard
 from usuario import TelaLoginUsuario
-from database import criar_tabelas
+from database import criar_tabelas, add_qtd_agendamentos
 
 # Arquivo PRINCIPAL para criação das rotas
 criar_tabelas()
+add_qtd_agendamentos()
 def main(page: ft.Page):
     page.title = "FarmConnect"
     page.padding = 0
