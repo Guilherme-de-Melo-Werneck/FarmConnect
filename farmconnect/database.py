@@ -748,7 +748,8 @@ def listar_agendamentos_usuario(usuario_id):
         SELECT 
             a.id, 
             m.nome AS medicamento,
-            f.nome AS farmacia, 
+            f.nome AS farmacia,
+            f.endereco as endereco, 
             a.codigo,
             a.data, 
             a.horario, 
@@ -1041,6 +1042,7 @@ def listar_medicamentos_retirados(usuario_id):
             a.data,
             a.horario,
             f.nome AS farmacia,
+            f.endereco as endereco,
             COUNT(r.id) AS quantidade
         FROM medicamentos_retirados r
         JOIN medicamentos m ON r.medicamento_id = m.id
