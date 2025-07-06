@@ -1,6 +1,6 @@
 import flet as ft
 from functools import partial
-from database import listar_medicamentos, carregar_carrinho_usuario, adicionar_ao_carrinho_db, remover_do_carrinho_db, buscar_nome_usuario, diminuir_quantidade_db, aumentar_quantidade_db, buscar_dados_usuario, adicionar_agendamento, listar_agendamentos_usuario, reduzir_estoque_farmacia, consultar_estoque_farmacia, listar_farmacias, consultar_estoque_farmacia, adicionar_ao_carrinho_db, atualizar_dados_usuario, listar_medicamentos_retirados
+from database import listar_medicamentos, carregar_carrinho_usuario, adicionar_ao_carrinho_db, remover_do_carrinho_db, buscar_nome_usuario, diminuir_quantidade_db, aumentar_quantidade_db, buscar_dados_usuario, adicionar_agendamento, listar_agendamentos_usuario, reduzir_estoque_farmacia, consultar_estoque_farmacia, listar_farmacias, consultar_estoque_farmacia, adicionar_ao_carrinho_db, atualizar_dados_usuario, listar_medicamentos_retirados, verificar_agendamentos_vencidos, registrar_medicamento_reservado
 from flet import DatePicker
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
@@ -34,6 +34,7 @@ class TelaUsuarioDashboard:
         self.contador = {"valor": 0}
         self.carrinho_count = ft.Ref[ft.Text]()
         self.sincronizar_carrinho()
+        verificar_agendamentos_vencidos()
 
         # Cria o drawer do carrinho
         self.carrinho_drawer = self.criar_carrinho_drawer()
@@ -920,6 +921,7 @@ class TelaUsuarioDashboard:
             for item in self.carrinho:
                 med_id = item["id"]
                 codigo = item["codigo"]
+                quantidade = item["quantidade"]
 
                 farmacia_dd = self.dropdown_farmacias_por_med.get(med_id)
                 horario_dd = self.horarios_por_med.get(med_id)
@@ -937,15 +939,16 @@ class TelaUsuarioDashboard:
                 data = data_obj.strftime('%Y-%m-%d')
 
                 estoque = consultar_estoque_farmacia(farmacia_id, med_id)
-                if estoque < item["quantidade"]:
+                if estoque < quantidade:
                     self.page.snack_bar.content.value = f"❌ Estoque insuficiente para {item['nome']}!"
                     self.page.snack_bar.bgcolor = ft.Colors.RED_400
                     self.page.snack_bar.open = True
                     self.page.update()
                     return
 
-                reduzir_estoque_farmacia(farmacia_id, med_id, item["quantidade"])
-                adicionar_agendamento(self.usuario_id, med_id, farmacia_id, codigo, data, horario, "Pendente")
+                reduzir_estoque_farmacia(farmacia_id, med_id, quantidade)
+                adicionar_agendamento(self.usuario_id, med_id, farmacia_id, codigo, data, horario, "Pendente", quantidade)
+                registrar_medicamento_reservado(self.usuario_id, med_id, quantidade)
 
             for item in self.carrinho:
                 remover_do_carrinho_db(self.usuario_id, item["id"])
