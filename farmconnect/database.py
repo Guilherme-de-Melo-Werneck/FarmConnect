@@ -1,6 +1,6 @@
 import sqlite3
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timedelta
 
 DB_FILE = Path("farmconnect.db")
 
@@ -544,23 +544,21 @@ def reduzir_estoque_medicamento(medicamento_id):
     cursor.close()
     conn.close()
 
-def registrar_medicamento_reservado(usuario_email, medicamento_id):
+def registrar_medicamento_reservado(usuario_id, medicamento_id, quantidade):
+    from datetime import datetime, timedelta
     conn = conectar()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT id FROM usuarios WHERE email = ?", (usuario_email,))
-    user = cursor.fetchone()
+    data_reserva = datetime.now().strftime("%Y-%m-%d")
+    validade = (datetime.now() + timedelta(days=15)).strftime("%Y-%m-%d")
 
-    if user:
-        usuario_id = user[0]
-
+    for _ in range(quantidade):
         cursor.execute("""
-            INSERT INTO medicamentos_reservados (usuario_id, medicamento_id, data_reserva)
-            VALUES (?, ?, DATE('now'))
-        """, (usuario_id, medicamento_id))
+            INSERT INTO medicamentos_reservados (usuario_id, medicamento_id, data_reserva, validade)
+            VALUES (?, ?, ?, ?)
+        """, (usuario_id, medicamento_id, data_reserva, validade))
 
-        conn.commit()
-
+    conn.commit()
     cursor.close()
     conn.close()
 
@@ -765,16 +763,14 @@ def listar_agendamentos_usuario(usuario_id):
     conn.close()
     return resultado
 
-def adicionar_agendamento(usuario_id, medicamento_id, farmacia_id, codigo, data, horario, status="Pendente"):
+def adicionar_agendamento(usuario_id, medicamento_id, farmacia_id, codigo, data, horario, status="Pendente", quantidade=1):
     conn = conectar()
     cursor = conn.cursor()
-
     try:
         cursor.execute("""
-            INSERT INTO agendamentos (usuario_id, medicamento_id, farmacia_id, codigo, data, horario, status)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        """, (usuario_id, medicamento_id, farmacia_id, codigo, data, horario, status))
-
+            INSERT INTO agendamentos (usuario_id, medicamento_id, farmacia_id, codigo, data, horario, status, quantidade)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """, (usuario_id, medicamento_id, farmacia_id, codigo, data, horario, status, quantidade))
         conn.commit()
         return True
     except sqlite3.IntegrityError as e:
@@ -783,6 +779,7 @@ def adicionar_agendamento(usuario_id, medicamento_id, farmacia_id, codigo, data,
     finally:
         cursor.close()
         conn.close()
+
 
 def adicionar_ao_carrinho_db(usuario_id, medicamento_id):
     conn = conectar()
@@ -979,12 +976,13 @@ def medicamentos_mais_solicitados(limit=5):
 
 
 def confirmar_retirada_medicamento(agendamento_id):
+    from datetime import datetime
     conn = conectar()
     cursor = conn.cursor()
 
     # Pega dados do agendamento
     cursor.execute("""
-        SELECT usuario_id, medicamento_id
+        SELECT usuario_id, medicamento_id, quantidade
         FROM agendamentos
         WHERE id = ?
     """, (agendamento_id,))
@@ -994,7 +992,7 @@ def confirmar_retirada_medicamento(agendamento_id):
         conn.close()
         return False
 
-    usuario_id, medicamento_id = resultado
+    usuario_id, medicamento_id, quantidade = resultado
     data_retirada = datetime.now().strftime("%Y-%m-%d")
 
     try:
@@ -1011,6 +1009,16 @@ def confirmar_retirada_medicamento(agendamento_id):
             VALUES (?, ?, ?)
         """, (usuario_id, medicamento_id, data_retirada))
 
+        # Remove a quantidade correspondente da tabela de reservas
+        cursor.execute("""
+            DELETE FROM medicamentos_reservados
+            WHERE rowid IN (
+                SELECT rowid FROM medicamentos_reservados
+                WHERE usuario_id = ? AND medicamento_id = ?
+                LIMIT ?
+            )
+        """, (usuario_id, medicamento_id, quantidade))
+
         conn.commit()
         return True
     except Exception as e:
@@ -1019,6 +1027,7 @@ def confirmar_retirada_medicamento(agendamento_id):
     finally:
         cursor.close()
         conn.close()
+
 
 def listar_medicamentos_retirados(usuario_id):
     conn = conectar()
@@ -1053,6 +1062,54 @@ def verificar_status_usuario(email):
     cursor.close()
     conn.close()
     return resultado[0] if resultado else None
+
+
+def verificar_agendamentos_vencidos():
+    conn = conectar()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT id, farmacia_id, medicamento_id, quantidade
+        FROM agendamentos
+        WHERE status IN ('Pendente', 'Confirmado')
+        AND julianday('now') - julianday(data_criacao) > 15
+    """)
+    vencidos = cursor.fetchall()
+
+    for ag in vencidos:
+        agendamento_id, farmacia_id, medicamento_id, quantidade = ag
+
+        # Devolve corretamente a quantidade reservada
+        cursor.execute("""
+            UPDATE estoque
+            SET quantidade = quantidade + ?
+            WHERE farmacia_id = ? AND medicamento_id = ?
+        """, (quantidade, farmacia_id, medicamento_id))
+
+        cursor.execute("""
+            UPDATE agendamentos
+            SET status = 'Cancelado'
+            WHERE id = ?
+        """, (agendamento_id,))
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+
+    # Adicionar coluna de quantidade
+def add_qtd_agendamentos():
+    conn = conectar()
+    cursor = conn.cursor()
+    try:
+        cursor.execute("ALTER TABLE agendamentos ADD COLUMN quantidade INTEGER DEFAULT 1")
+        conn.commit()
+    except sqlite3.OperationalError:
+        # Já existe a coluna
+        pass
+    finally:
+        cursor.close()
+        conn.close()
 
 
 
