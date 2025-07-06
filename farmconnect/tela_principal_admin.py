@@ -417,7 +417,7 @@ class TelaAdminDashboard:
                                 ft.ElevatedButton(
                                     text=" Baixar Relatório (PDF) ",
                                     icon=ft.Icons.PICTURE_AS_PDF,
-                                    bgcolor=ft.Colors.BLUE_700,
+                                    bgcolor=ft.Colors.BLUE_900,
                                     color=ft.Colors.WHITE,
                                     height=55,
                                     style=ft.ButtonStyle(
@@ -1031,7 +1031,7 @@ class TelaAdminDashboard:
             if a[7] in ["Confirmado", "Pendente"]:
                 acoes.append(ft.IconButton(
                     icon=ft.Icons.EXIT_TO_APP,
-                    icon_color=ft.Colors.BLUE_700,
+                    icon_color=ft.Colors.BLUE_900,
                     tooltip="Confirmar Retirada",
                     icon_size=20,
                     on_click=lambda e, ag_id=a[0]: self.confirmar_retirada(ag_id),
