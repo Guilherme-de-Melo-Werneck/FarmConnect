@@ -343,6 +343,8 @@ def listar_medicamentos(include_inativos=True):
             c.nome AS categoria, 
             f.nome AS fabricante,
             fa.nome AS farmacia,
+            fa.endereco AS farmacia_endereco,
+            fa.id AS farmacia_id,
             m.ativo
         FROM medicamentos m
         LEFT JOIN categorias c ON m.categoria_id = c.id
