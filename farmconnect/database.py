@@ -191,484 +191,116 @@ def criar_tabelas():
         cursor.execute("SELECT COUNT(*) FROM farmacias")
         if cursor.fetchone()[0] == 0:
             farmacias = [
-            {
-                "nome": "A M DO NASCIMENTO - ME",
-                "endereco": "Avenida Glória Roussimm Guedes, 360",
-                "bairro": "ACUDE",
-                "cnpj": "00.000.001/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33467211"
-            },
-            {
-                "nome": "G & G DROGARIA LTDA - ME",
-                "endereco": "Rua Rio Negro, 198",
-                "bairro": "AGUA LIMPA",
-                "cnpj": "00.000.002/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33452200"
-            },
-            {
-                "nome": "PHN DROGARIA LTDA - ME",
-                "endereco": "R Abdo Felipe, 298",
-                "bairro": "ANO BOM",
-                "cnpj": "00.000.003/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33242371"
-            },
-            {
-                "nome": "OFS RJ LTDA",
-                "endereco": "Av. Lucas Evangelista O. Franco, 786",
-                "bairro": "ATERRADO",
-                "cnpj": "00.000.004/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33475863"
-            },
-            {
-                "nome": "OFS RJ LTDA",
-                "endereco": "Av. Paulo de Frontin, 135",
-                "bairro": "ATERRADO",
-                "cnpj": "00.000.005/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33410113"
-            },
-            {
-                "nome": "OFS RJ LTDA",
-                "endereco": "Av. Paulo de Frontin, 699",
-                "bairro": "ATERRADO",
-                "cnpj": "00.000.006/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33473799"
-            },
-            {
-                "nome": "GOMES & OLIVEIRA FARMÁCIA LTDA - ME",
-                "endereco": "Rua 24 de Agosto, 100",
-                "bairro": "ATERRADO",
-                "cnpj": "00.000.007/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33452200"
-            },
-            {
-                "nome": "OFS RJ LTDA",
-                "endereco": "Rua Bernardo Ferraz, 230",
-                "bairro": "ATERRADO",
-                "cnpj": "00.000.008/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33540000"
-            },
-            {
-                "nome": "DROGARIA HONESTA LTDA - ME",
-                "endereco": "Avenida dos Mineiros, 660",
-                "bairro": "BELMONTE",
-                "cnpj": "00.000.009/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33457157"
-            },
-            {
-                "nome": "OFS RJ LTDA",
-                "endereco": "Av Santa Edwiges 600",
-                "bairro": "CASA DE PEDRA",
-                "cnpj": "00.000.010/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33489740"
-            },
-            {
-                "nome": "DROGARIA JOAO PAULO LTDA - ME",
-                "endereco": "R 852 31",
-                "bairro": "CASA DE PEDRA",
-                "cnpj": "00.000.011/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33483899"
-            },
-            {
-                "nome": "DROGARIAS PACHECO S/A",
-                "endereco": "Av Amaral Peixoto 279 283 Andar 1 e 2",
-                "bairro": "CENTRO",
-                "cnpj": "00.000.012/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(21) 24071525"
-            },
-            {
-                "nome": "DROGARIA ROTATIVA DE BARRA MANSA LTDA - ME",
-                "endereco": "Av Joaquim Leite, 303",
-                "bairro": "CENTRO",
-                "cnpj": "00.000.013/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33230654"
-            },
-            {
-                "nome": "EMPREENDIMENTOS PAGUE MENOS S/A",
-                "endereco": "Av. Amaral Peixoto, 232",
-                "bairro": "CENTRO",
-                "cnpj": "00.000.014/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33466400"
-            },
-            {
-                "nome": "JOSI DROGARIA LTDA - ME",
-                "endereco": "Avenida Amaral Peixoto 491",
-                "bairro": "CENTRO",
-                "cnpj": "00.000.015/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33821127"
-            },
-            {
-                "nome": "RAIA DROGASIL S/A",
-                "endereco": "Avenida Amaral Peixoto, 330",
-                "bairro": "CENTRO",
-                "cnpj": "00.000.016/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(11) 37695736"
-            },
-            {
-                "nome": "APG DROGARIA LTDA - ME",
-                "endereco": "Rua 207, 52",
-                "bairro": "CONFORTO",
-                "cnpj": "00.000.017/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33413773"
-            },
-            {
-                "nome": "DROGARIA NOVA ALIANÇA 2005 LTDA - ME",
-                "endereco": "AV ALMIRANTE ADALBERTO NUNES, 4141",
-                "bairro": "JARDIM BELMONTE",
-                "cnpj": "00.000.018/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33384626"
-            },
-            {
-                "nome": "OFS RJ LTDA",
-                "endereco": "AVENIDA DOS METALÚRGICOS, 2510",
-                "bairro": "JARDIM BELVEDERE",
-                "cnpj": "00.000.019/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33454000"
-            },
-            {
-                "nome": "FMS DROGARIAS LTDA - ME",
-                "endereco": "AV NOSSA SENHORA DO AMPARO 125",
-                "bairro": "NITERÓI",
-                "cnpj": "00.000.020/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33468899"
-            },
-            {
-                "nome": "OFS RJ LTDA",
-                "endereco": "AV ANTONIO DE ALMEIDA 66/62",
-                "bairro": "RETIRO",
-                "cnpj": "00.000.021/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33461000"
-            },
-            {
-                "nome": "DROGARIA VIEIRA E PRADO LTDA - ME",
-                "endereco": "AV ANTONIO DE ALMEIDA 911",
-                "bairro": "RETIRO",
-                "cnpj": "00.000.022/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33468215"
-            },
-            {
-                "nome": "FARMÁCIA NOVA BRASÍLIA LTDA ME",
-                "endereco": "AV ANTONIO DE ALMEIDA, 1407",
-                "bairro": "RETIRO",
-                "cnpj": "00.000.023/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33468316"
-            },
-            {
-                "nome": "FARMÁCIA ESSENCIAL DO RETIRO LTDA ME",
-                "endereco": "AV ANTONIO DE ALMEIDA, 259, COND. E",
-                "bairro": "RETIRO",
-                "cnpj": "00.000.024/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33372243"
-            },
-            {
-                "nome": "OFS RJ LTDA",
-                "endereco": "AV WALDIR SOBREIRA PIRES, 712",
-                "bairro": "RETIRO",
-                "cnpj": "00.000.025/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33464276"
-            },
-            {
-                "nome": "DROGARIA VIEIRA E PRADO LTDA - ME",
-                "endereco": "AV SÁVIO COTA DE ALMEIDA GAMA, Nº 1501",
-                "bairro": "RETIRO",
-                "cnpj": "00.000.026/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33452200"
-            },
-            {
-                "nome": "OFS RJ LTDA",
-                "endereco": "AV ANTONIO DE ALMEIDA, 4121",
-                "bairro": "RETIRO",
-                "cnpj": "00.000.027/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33388110"
-            },
-            {
-                "nome": "FA & A DROGARIA LTDA - ME",
-                "endereco": "AVENIDA SÁVIO COTA DE ALMEIDA GAMA",
-                "bairro": "RETIRO",
-                "cnpj": "00.000.028/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33464737"
-            },
-            {
-                "nome": "DROGARIA DROGRATI LTDA - ME",
-                "endereco": "AVENIDA SÁVIO COTA DE ALMEIDA GAMA, 1806",
-                "bairro": "RETIRO",
-                "cnpj": "00.000.029/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33471522"
-            },
-            {
-                "nome": "DROGARIA DROGRATI LTDA - ME",
-                "endereco": "R SÁVIO GAMA, 1674",
-                "bairro": "RETIRO",
-                "cnpj": "00.000.030/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33464805"
-            },
-            {
-                "nome": "OFS RJ LTDA",
-                "endereco": "RUA FERNANDO FERRARI, 09/11",
-                "bairro": "RETIRO",
-                "cnpj": "00.000.031/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33464996"
-            },
-            {
-                "nome": "F D V B DROGARIA LTDA ME",
-                "endereco": "WALDIR SOBREIRA PIRES, Nº 763",
-                "bairro": "RETIRO",
-                "cnpj": "00.000.032/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33475049"
-            },
-            {
-                "nome": "DROGARIA SAÚDE 2001 LTDA ME",
-                "endereco": "AVENIDA EX-COMBATENTES, 291",
-                "bairro": "SANTA CRUZ",
-                "cnpj": "00.000.033/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33460664"
-            },
-            {
-                "nome": "DUTRAFARMA COMÉRCIO DE MEDICAMENTOS LTDA ME",
-                "endereco": "RUA EX-COMBATENTES, 30",
-                "bairro": "SANTA CRUZ",
-                "cnpj": "00.000.034/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33375551"
-            },
-            {
-                "nome": "OFS RJ LTDA",
-                "endereco": "RUA DOM JOÃO VI, 57",
-                "bairro": "SANTO AGOSTINHO",
-                "cnpj": "00.000.035/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33504780"
-            },
-            {
-                "nome": "NEVES E OLIVEIRA DROGARIA LTDA - ME",
-                "endereco": "RUA SOLDADO FRANCISCO ALVES DA ROCHA 150",
-                "bairro": "SANTO AGOSTINHO",
-                "cnpj": "00.000.036/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33452200"
-            },
-            {
-                "nome": "ACN DROGARIA LTDA - ME",
-                "endereco": "AVENIDA AMARAL PEIXOTO, 172",
-                "bairro": "SÃO JOÃO",
-                "cnpj": "00.000.037/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(21) 21089600"
-            },
-            {
-                "nome": "OFS RJ LTDA",
-                "endereco": "AVENIDA AMARAL PEIXOTO, 705",
-                "bairro": "SÃO JOÃO",
-                "cnpj": "00.000.038/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33454000"
-            },
-            {
-                "nome": "OFS RJ LTDA",
-                "endereco": "AV. AMARAL PEIXOTO, 91 - LOJA 03",
-                "bairro": "SÃO JOÃO",
-                "cnpj": "00.000.039/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33821127"
-            },
-            {
-                "nome": "OFS RJ LTDA",
-                "endereco": "RUA SÃO JOÃO 68",
-                "bairro": "SÃO JOÃO",
-                "cnpj": "00.000.040/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33480708"
-            },
-            {
-                "nome": "JPA SANTOS FARMÁCIA LTDA - ME",
-                "endereco": "AVENIDA SÃO LUCAS, 420",
-                "bairro": "SAO LUCAS",
-                "cnpj": "00.000.041/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) "
-            },
-            {
-                "nome": "DROGARIA SAÚDE 2001 LTDA - EPP",
-                "endereco": "AV FRANCISCO CHRISOSTOMOS TORRES, 270",
-                "bairro": "SAO LUIZ",
-                "cnpj": "00.000.042/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33470000"
-            },
-            {
-                "nome": "DROGARIA SENA LTDA - ME",
-                "endereco": "AVENIDA FRANCISCO TORRES, 378",
-                "bairro": "SAO LUIZ",
-                "cnpj": "00.000.043/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33467504"
-            },
-            {
-                "nome": "OFS RJ LTDA",
-                "endereco": "RUA 328, 02",
-                "bairro": "SESSENTA",
-                "cnpj": "00.000.044/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33432728"
-            },
-            {
-                "nome": "DROGARIAS DESCONTAO DE VOLTA REDONDA LTDA - ME",
-                "endereco": "RUA VILA RICA 438",
-                "bairro": "VILA RICA",
-                "cnpj": "00.000.045/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33438504"
-            },
-            {
-                "nome": "P DE OLIVEIRA SANTOS FARMÁCIA - ME",
-                "endereco": "R 23, 181",
-                "bairro": "VILA SANTA CECILIA",
-                "cnpj": "00.000.046/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33430264"
-            },
-            {
-                "nome": "DROGARIA CERTA DE VOLTA REDONDA LTDA",
-                "endereco": "RUA 14, Nº 26 LOJA 214",
-                "bairro": "VILA SANTA CECILIA",
-                "cnpj": "00.000.047/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33433788"
-            },
-            {
-                "nome": "DROGARIA GALANTI DE NOVA IGUAÇU LTDA",
-                "endereco": "RUA 16, 79",
-                "bairro": "VILA SANTA CECILIA",
-                "cnpj": "00.000.048/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33438116"
-            },
-            {
-                "nome": "NTC DROGARIA LTDA - ME",
-                "endereco": "RUA 33 Nº 55 LOJA 13 COND 59",
-                "bairro": "VILA SANTA CECILIA",
-                "cnpj": "00.000.049/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33439890"
-            },
-            {
-                "nome": "FIRMINO NETTO DROGARIA LTDA - ME",
-                "endereco": "RUA ALBERTO PASQUALINE, 79, EX RUA 33 LOJA 3",
-                "bairro": "VILA SANTA CECILIA",
-                "cnpj": "00.000.050/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33431579"
-            },
-            {
-                "nome": "OFS RJ LTDA",
-                "endereco": "RUA DEZESSEIS, 290",
-                "bairro": "VILA SANTA CECILIA",
-                "cnpj": "00.000.051/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33481000"
-            },
-            {
-                "nome": "OFS RJ LTDA",
-                "endereco": "RUA DOZE, 300 LOJAS 101/102",
-                "bairro": "VILA SANTA CECILIA",
-                "cnpj": "00.000.052/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33481044"
-            },
-            {
-                "nome": "OFS RJ LTDA",
-                "endereco": "RUA QUATORZE, Nº 133",
-                "bairro": "VILA SANTA CECILIA",
-                "cnpj": "00.000.053/0001-91",
-                "cidade": "Volta Redonda",
-                "estado": "RJ",
-                "telefone": "(24) 33481012"
-            }
-        ]
+                {
+                    "nome": "Fusar",
+                    "endereco": "Praça General Osório, 37 - Centro",
+                    "bairro": "Centro",
+                    "cnpj": "00.000.001/0001-00",
+                    "cidade": "Angra dos Reis",
+                    "estado": "RJ",
+                    "telefone": "(24) 3368-7300"
+                },
+                {
+                    "nome": "Farmácia Central",
+                    "endereco": "Rua Moreira dos Santos, 768 - Centro",
+                    "bairro": "Centro",
+                    "cnpj": "00.000.002/0001-00",
+                    "cidade": "Barra do Piraí",
+                    "estado": "RJ",
+                    "telefone": "(24) 2444-4594"
+                },
+                {
+                    "nome": "Farmácia Municipal de Barra Mansa",
+                    "endereco": "Rua Domingos Mariana, 1102 - Centro",
+                    "bairro": "Centro",
+                    "cnpj": "00.000.003/0001-00",
+                    "cidade": "Barra Mansa",
+                    "estado": "RJ",
+                    "telefone": "(24) 3323-7130"
+                },
+                {
+                    "nome": "Farmácia e Almoxarifado Central",
+                    "endereco": "Rua Gonçalves da Silva, 141 - Centro (ao lado do CAPS)",
+                    "bairro": "Centro",
+                    "cnpj": "00.000.004/0001-00",
+                    "cidade": "Bom Jesus do Itabapoana",
+                    "estado": "RJ",
+                    "telefone": "(22) 3831-1196"
+                },
+                {
+                    "nome": "Farmácia de Medicamentos Excepcionais",
+                    "endereco": "Av. Teixeira e Souza, 2.104 - São Cristóvão",
+                    "bairro": "São Cristóvão",
+                    "cnpj": "00.000.005/0001-00",
+                    "cidade": "Cabo Frio",
+                    "estado": "RJ",
+                    "telefone": "(22) 2646-2506"
+                },
+                {
+                    "nome": "Secretaria Municipal de Saúde",
+                    "endereco": "Rua Voluntários da Pátria, 161-185 - Centro",
+                    "bairro": "Centro",
+                    "cnpj": "00.000.006/0001-00",
+                    "cidade": "Campos dos Goytacazes",
+                    "estado": "RJ",
+                    "telefone": "-"
+                },
+                {
+                    "nome": "Secretaria de Saúde de Cordeiro",
+                    "endereco": "Rua Nacib Simão, 1325 - Rodolfo Gonçalves",
+                    "bairro": "Rodolfo Gonçalves",
+                    "cnpj": "00.000.007/0001-00",
+                    "cidade": "Cordeiro",
+                    "estado": "RJ",
+                    "telefone": "-"
+                },
+                {
+                    "nome": "Riofarmes Duque de Caxias",
+                    "endereco": "Rua Marechal Floriano, 586 A - Bairro 25 de Agosto",
+                    "bairro": "25 de Agosto",
+                    "cnpj": "00.000.008/0001-00",
+                    "cidade": "Duque de Caxias",
+                    "estado": "RJ",
+                    "telefone": "(21) 98235-0066"
+                },
+                {
+                    "nome": "Secretaria Municipal de Saúde - Farmácia Básica",
+                    "endereco": "Rua Desembargador Ferreira Pinto, 09 Fds. - Centro",
+                    "bairro": "Centro",
+                    "cnpj": "00.000.009/0001-00",
+                    "cidade": "Itaboraí",
+                    "estado": "RJ",
+                    "telefone": "(21) 2645-1802"
+                },
+                {
+                    "nome": "Famácia de Medicamentos Excepcionais",
+                    "endereco": "Rua 10 de Maio nº 893 - Centro",
+                    "bairro": "Centro",
+                    "cnpj": "00.000.010/0001-00",
+                    "cidade": "Itaperuna",
+                    "estado": "RJ",
+                    "telefone": "(22) 3822-6752"
+                },
+                {
+                    "nome": "Secretaria de Saúde",
+                    "endereco": "Rua Darcílio Possati 134 - Visconde de Araújo",
+                    "bairro": "Visconde de Araújo",
+                    "cnpj": "00.000.011/0001-00",
+                    "cidade": "Macaé",
+                    "estado": "RJ",
+                    "telefone": "(22) 2763-6330"
+                },
+                {
+                    "nome": "Farmácia Municipal de Volta Redonda",
+                    "endereco": "Rua 545 nº 616 - Jardim Paraíba - Estádio da Cidadania, 2º andar",
+                    "bairro": "Jardim Paraíba",
+                    "cnpj": "00.000.012/0001-00",
+                    "cidade": "Volta Redonda",
+                    "estado": "RJ",
+                    "telefone": "(24) 3339-9465"
+                }
+            ]
+
             for f in farmacias:
                 cursor.execute("""
                     INSERT INTO farmacias (nome, endereco, bairro, cnpj, cidade, estado, telefone)

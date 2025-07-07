@@ -1114,8 +1114,8 @@ class TelaUsuarioDashboard:
                             content=ft.Column([
                                 ft.Text(medicamento["nome"], size=26, weight=ft.FontWeight.BOLD, color="#1E3A8A"),
                                 ft.Text("Tipo: Uso controlado", size=14),
-                                ft.Text("Marca: " + medicamento["fabricante"], size=14),
-                                ft.Text(f"Quantidade: {medicamento["estoque"]}", size=14),
+                                ft.Text("Marca: " + medicamento['fabricante'], size=14),
+                                ft.Text(f"Quantidade: {medicamento['estoque']}", size=14),
                                 ft.Text(f"Farmácia: {medicamento.get('farmacia', 'Não disponível')}", size=14),
                                 ft.Text(f"Endereço: {medicamento.get('endereco', 'Não disponível')}", size=14),
                                 ft.Divider(height=20),
@@ -1541,18 +1541,20 @@ class TelaUsuarioDashboard:
 
         y -= 1.5 * cm
         c.setFont("Helvetica-Bold", 12)
-        c.drawString(2 * cm, y, "📅 Detalhes do Agendamento")
+        c.drawString(2 * cm, y, "■ Detalhes do Agendamento")
         c.setFont("Helvetica", 11)
         y -= 0.8 * cm
         c.drawString(2 * cm, y, f"Medicamento: {agendamento[1]}")
         y -= 0.6 * cm
         c.drawString(2 * cm, y, f"Farmácia: {agendamento[2]}")
         y -= 0.6 * cm
-        c.drawString(2 * cm, y, f"Código do Agendamento: {agendamento[3]}")
+        c.drawString(2 * cm, y, f"Endereço: {agendamento[7]}")
         y -= 0.6 * cm
         c.drawString(2 * cm, y, f"Data: {agendamento[4]}")
         y -= 0.6 * cm
         c.drawString(2 * cm, y, f"Horário: {agendamento[5]}")
+        y -= 0.6 * cm
+        c.drawString(2 * cm, y, f"Código do Agendamento: {agendamento[3]}")
         y -= 0.6 * cm
         c.drawString(2 * cm, y, f"Status atual: {agendamento[6]}")
 
@@ -1565,6 +1567,7 @@ class TelaUsuarioDashboard:
 
         c.save()
         self.page.launch_url(caminho)
+
 
 
 
