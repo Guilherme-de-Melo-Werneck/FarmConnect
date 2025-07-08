@@ -1947,10 +1947,11 @@ class TelaAdminDashboard:
             self.page.update()
 
     def load_cadastro_agendamento(self, e=None):
-        # Carregar dados do banco
+        from datetime import datetime
+        from database import listar_usuarios, listar_medicamentos
+
         pacientes = listar_usuarios()
         medicamentos = listar_medicamentos()
-        farmacias = listar_farmacias()
 
         self.dropdown_paciente = ft.Dropdown(
             label="Paciente",
@@ -1965,22 +1966,33 @@ class TelaAdminDashboard:
             options=[ft.dropdown.Option(str(m[0]), m[1]) for m in medicamentos],
             border_radius=10,
             bgcolor="#F9FAFB",
-            expand=True
+            expand=True,
+            on_change=self.atualizar_farmacia_automatica
         )
 
-        self.dropdown_farmacia = ft.Dropdown(
-            label="Farmácia",
-            options=[ft.dropdown.Option(str(f[0]), f[1]) for f in farmacias],
-            border_radius=10,
-            bgcolor="#F9FAFB",
-            expand=True
+        self.texto_farmacia = ft.Text("Selecione um medicamento...", size=14, weight="bold", color=ft.Colors.BLUE_900)
+
+        # DatePicker
+        self.data_escolhida = None
+        self.date_picker = ft.DatePicker(
+            on_change=self.selecionar_data,
+            first_date=datetime(2024, 1, 1),
+            last_date=datetime(2026, 12, 31),
         )
 
-        self.campo_codigo = ft.TextField(label="Código do Medicamento", border_radius=10, bgcolor="#F9FAFB")
-        self.campo_data = ft.TextField(label="Data (AAAA-MM-DD)", border_radius=10, bgcolor="#F9FAFB")
+        if self.date_picker not in self.page.overlay:
+            self.page.overlay.append(self.date_picker)
+
+        self.botao_calendario = ft.ElevatedButton(
+            "📅 Escolher Data",
+            on_click=lambda _: self.abrir_date_picker(),
+            style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10)),
+        )
+
+        self.texto_data = ft.Text("Nenhuma data selecionada", size=14, italic=True)
+
         self.campo_horario = ft.TextField(label="Horário (HH:MM)", border_radius=10, bgcolor="#F9FAFB")
 
-        # Estrutura do formulário
         self.current_view.controls.clear()
         self.current_view.controls.append(
             ft.Container(
@@ -1998,12 +2010,10 @@ class TelaAdminDashboard:
                                 [
                                     self.dropdown_paciente,
                                     self.dropdown_medicamento,
-                                    self.dropdown_farmacia,
-                                    self.campo_codigo,
-                                    self.campo_data,
+                                    self.texto_farmacia,
+                                    ft.Column([self.botao_calendario, self.texto_data]),
                                     self.campo_horario,
                                     ft.Container(height=20),
-
                                     ft.Row(
                                         [
                                             ft.ElevatedButton(
@@ -2036,8 +2046,14 @@ class TelaAdminDashboard:
                 ),
             )
         )
-
         self.page.update()
+
+
+    def abrir_date_picker(self):
+        self.date_picker.open = True
+        self.page.update()
+
+
 
     def filtrar_agendamentos(self, e):
         termo = self.campo_busca_agendamentos.value.strip().lower()
@@ -2051,33 +2067,55 @@ class TelaAdminDashboard:
         self.tabela_agendamentos_ref.current.rows = self.gerar_rows_agendamentos(resultado)
         self.tabela_agendamentos_ref.current.update()
 
+
+    def selecionar_data(self, e):
+        if self.date_picker.value:
+            self.data_escolhida = self.date_picker.value
+            self.texto_data.value = f"Data selecionada: {self.data_escolhida.strftime('%d/%m/%Y')}"
+            self.texto_data.update()
+
+
     def salvar_agendamento(self, e=None):
+        from datetime import datetime
         paciente_id = self.dropdown_paciente.value
         medicamento_id = self.dropdown_medicamento.value
-        farmacia_id = self.dropdown_farmacia.value
-        codigo_medicamento = self.campo_codigo.value.strip()
-        data = self.campo_data.value.strip()
+        farmacia_id = self.farmacia_automatica["id"] if hasattr(self, "farmacia_automatica") else None
+        codigo_medicamento = "AG" + datetime.now().strftime("%Y%m%d%H%M%S")
+        if self.data_escolhida:
+            data = self.data_escolhida.strftime('%Y-%m-%d')
+        else:
+            data = ""
         horario = self.campo_horario.value.strip()
 
-        # Validação básica
-        if not all([paciente_id, medicamento_id, farmacia_id, codigo_medicamento, data, horario]):
+        if not all([paciente_id, medicamento_id, farmacia_id, data, horario]):
             self.page.snack_bar = ft.SnackBar(content=ft.Text("Todos os campos são obrigatórios."), bgcolor="red")
             self.page.snack_bar.open = True
             self.page.update()
             return
 
-        # Salva no banco de dados
-        from database import adicionar_agendamento
         adicionar_agendamento(int(paciente_id), int(medicamento_id), int(farmacia_id), codigo_medicamento, data, horario, status="Pendente")
 
-        # Mensagem de sucesso
         self.page.snack_bar = ft.SnackBar(content=ft.Text("Agendamento cadastrado com sucesso."), bgcolor="green")
         self.page.snack_bar.open = True
         self.page.update()
-
-        # Voltar para a lista de agendamentos
         self.load_agendamentos()
-       
+
+
+    def atualizar_farmacia_automatica(self, e):
+        from database import listar_medicamentos
+        med_id = int(self.dropdown_medicamento.value)
+        med_info = next((m for m in listar_medicamentos() if m[0] == med_id), None)
+
+        if med_info:
+            self.farmacia_automatica = {
+                "id": med_info[10],
+                "nome": med_info[8],
+                "endereco": med_info[9],
+            }
+            self.texto_farmacia.value = f"🏥 {self.farmacia_automatica['nome']}\n📍 {self.farmacia_automatica['endereco']}"
+            self.texto_farmacia.update()
+
+
 
 
     def gerar_relatorio_pdf(self):
