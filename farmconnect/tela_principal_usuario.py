@@ -1527,37 +1527,39 @@ class TelaUsuarioDashboard:
         c = canvas.Canvas(caminho, pagesize=A4)
         largura, altura = A4
 
+        # Título
         c.setFont("Helvetica-Bold", 18)
         c.setFillColor(HexColor("#1E3A8A"))
         c.drawCentredString(largura / 2, altura - 2 * cm, "Comprovante de Agendamento")
 
+        # Dados do paciente
         y = altura - 3.5 * cm
         c.setFont("Helvetica", 12)
         c.setFillColor("black")
-
         c.drawString(2 * cm, y, f"Nome do Paciente: {self.nome_usuario}")
         y -= 1 * cm
         c.drawString(2 * cm, y, f"E-mail: {self.email_usuario}")
 
+        # Detalhes do agendamento
         y -= 1.5 * cm
         c.setFont("Helvetica-Bold", 12)
         c.drawString(2 * cm, y, "■ Detalhes do Agendamento")
         c.setFont("Helvetica", 11)
-        y -= 0.8 * cm
-        c.drawString(2 * cm, y, f"Medicamento: {agendamento[1]}")
-        y -= 0.6 * cm
-        c.drawString(2 * cm, y, f"Farmácia: {agendamento[2]}")
-        y -= 0.6 * cm
-        c.drawString(2 * cm, y, f"Endereço: {agendamento[7]}")
-        y -= 0.6 * cm
-        c.drawString(2 * cm, y, f"Data: {agendamento[4]}")
-        y -= 0.6 * cm
-        c.drawString(2 * cm, y, f"Horário: {agendamento[5]}")
-        y -= 0.6 * cm
-        c.drawString(2 * cm, y, f"Código do Agendamento: {agendamento[3]}")
-        y -= 0.6 * cm
-        c.drawString(2 * cm, y, f"Status atual: {agendamento[6]}")
 
+        y -= 0.8 * cm
+        c.drawString(2 * cm, y, f"Medicamento: {agendamento[1]}")         # Nome do medicamento
+        y -= 0.6 * cm
+        c.drawString(2 * cm, y, f"Farmácia: {agendamento[2]}")            # Nome da farmácia
+        y -= 0.6 * cm
+        c.drawString(2 * cm, y, f"Endereço: {agendamento[3]}")            # Endereço
+        y -= 0.6 * cm
+        c.drawString(2 * cm, y, f"Data: {agendamento[5]}")                # Data do agendamento
+        y -= 0.6 * cm
+        c.drawString(2 * cm, y, f"Horário: {agendamento[6]}")             # Horário
+        y -= 0.6 * cm
+        c.drawString(2 * cm, y, f"Status atual: {agendamento[7]}")        # Status do agendamento
+
+        # Rodapé
         y -= 2 * cm
         c.setFont("Helvetica-Oblique", 10)
         c.setFillColor(HexColor("#6B7280"))
@@ -1567,7 +1569,6 @@ class TelaUsuarioDashboard:
 
         c.save()
         self.page.launch_url(caminho)
-
 
 
 

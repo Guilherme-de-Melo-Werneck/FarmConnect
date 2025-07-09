@@ -680,7 +680,7 @@ class TelaAdminDashboard:
         nome = self.campo_nome.value.strip()
         codigo = self.campo_codigo.value.strip()
         descricao = self.campo_descricao.value.strip()
-        imagem = self.campo_imagem.value.strip()
+        imagem = self.imagem_escolhida
         estoque_str = self.campo_estoque.value.strip()
         
         categoria_id = int(self.dropdown_categoria.value) if self.dropdown_categoria.value else None
@@ -778,7 +778,34 @@ class TelaAdminDashboard:
         self.campo_codigo = ft.TextField(label="Código do Medicamento", border_radius=10, bgcolor="#F9FAFB")
         self.campo_estoque = ft.TextField(label="Quantidade em Estoque", keyboard_type=ft.KeyboardType.NUMBER, border_radius=10, bgcolor="#F9FAFB")
         self.campo_descricao = ft.TextField(label="Descrição do Medicamento", border_radius=10, bgcolor="#F9FAFB")
-        self.campo_imagem = ft.TextField(label="URL da Imagem", border_radius=10, bgcolor="#F9FAFB")
+        self.imagem_selecionada = ft.Ref[ft.Image]()
+        self.imagem_escolhida = "usuario/img_user/seringa.png"  # valor inicial padrão
+
+        def selecionar_imagem(imagem_path):
+            def handler(e):
+                self.imagem_escolhida = imagem_path
+                self.imagem_selecionada.current.src = imagem_path
+                self.imagem_selecionada.current.update()
+            return handler
+
+        self.container_selecao_imagem = ft.Container(
+            content=ft.Column([
+                ft.Text("Escolha a imagem do medicamento:", size=14),
+                ft.Row([
+                    ft.GestureDetector(
+                        content=ft.Image(src="usuario/img_user/seringa.png", width=100, height=100),
+                        on_tap=selecionar_imagem("usuario/img_user/seringa.png")
+                    ),
+                    ft.GestureDetector(
+                        content=ft.Image(src="usuario/img_user/comprimido.png", width=100, height=100),
+                        on_tap=selecionar_imagem("usuario/img_user/comprimido.png")
+                    ),
+                ], spacing=20),
+                ft.Text("Imagem selecionada:"),
+                ft.Image(ref=self.imagem_selecionada, src=self.imagem_escolhida, width=80, height=80)
+            ], spacing=10)
+        )
+
         self.campo_observacoes = ft.TextField(label="Observações", multiline=True, min_lines=3, max_lines=5, border_radius=10, bgcolor="#F9FAFB")
 
         self.current_view.controls.append(
@@ -819,6 +846,8 @@ class TelaAdminDashboard:
                                     ], spacing=10),
                                     self.dropdown_farmacia,
                                     self.campo_estoque,
+                                    self.container_selecao_imagem,
+                                    self.campo_observacoes, 
                                     self.campo_imagem,
                                     self.campo_observacoes,
                                     ft.Container(height=20),
@@ -1991,7 +2020,23 @@ class TelaAdminDashboard:
 
         self.texto_data = ft.Text("Nenhuma data selecionada", size=14, italic=True)
 
-        self.campo_horario = ft.TextField(label="Horário (HH:MM)", border_radius=10, bgcolor="#F9FAFB")
+        # Substituição: Dropdown com horários fixos
+        horas_disponiveis = [f"{h:02d}:{m:02d}" for h in range(8, 18) for m in (0, 30)]
+        self.campo_horario = ft.Dropdown(
+            label="⏰ Horário de Retirada",
+            hint_text="Selecione o horário desejado",
+            options=[ft.dropdown.Option(h) for h in horas_disponiveis],
+            width=400,  # 👈 aumenta o botão
+            border_radius=12,
+            bgcolor=ft.Colors.WHITE,
+            filled=True,
+            focused_border_color=ft.Colors.BLUE_900,
+            border_color="#CBD5E1",
+            text_style=ft.TextStyle(size=14, weight="bold", color="#1E3A8A"),
+            label_style=ft.TextStyle(size=14, weight="bold", color="#1E3A8A"),
+            icon=ft.icons.ACCESS_TIME
+        )
+
 
         self.current_view.controls.clear()
         self.current_view.controls.append(
@@ -2047,6 +2092,7 @@ class TelaAdminDashboard:
             )
         )
         self.page.update()
+
 
 
     def abrir_date_picker(self):
