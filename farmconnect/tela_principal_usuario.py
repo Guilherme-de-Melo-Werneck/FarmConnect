@@ -1346,19 +1346,6 @@ class TelaUsuarioDashboard:
                         ft.Divider(height=30, color=ft.Colors.TRANSPARENT),
 
                         ft.ElevatedButton(
-                            "Exportar",
-                            icon=ft.Icons.PICTURE_AS_PDF,
-                            icon_color=ft.Colors.WHITE,
-                            style=ft.ButtonStyle(
-                                padding=ft.padding.symmetric(horizontal=20, vertical=14),
-                                shape=ft.RoundedRectangleBorder(radius=12),
-                                bgcolor=ft.Colors.BLUE_700,
-                                color=ft.Colors.WHITE
-                            ),
-                            on_click=lambda e: print("Exportar todos os agendamentos")
-                        ),
-
-                        ft.ElevatedButton(
                             "Voltar",
                             icon=ft.Icons.ARROW_BACK_IOS_NEW,
                             bgcolor=ft.Colors.GREY_50,
@@ -1458,7 +1445,8 @@ class TelaUsuarioDashboard:
                                             ], spacing=8),
                                             ft.Text(
                                                 "• Verifique em 'Meus Agendamentos' se o status mudou para CONFIRMADO.\n"
-                                                "• Leve o comprovante de agendamento impresso no dia da retirada.",
+                                                "• Leve o comprovante de agendamento impresso no dia da retirada.\n"
+                                                "• Você tem até 20 dias para realizar a retirada.\n",
                                                 size=14,
                                                 color=ft.Colors.AMBER_900
                                             )
@@ -1558,6 +1546,12 @@ class TelaUsuarioDashboard:
         c.drawString(2 * cm, y, f"Horário: {agendamento[6]}")             # Horário
         y -= 0.6 * cm
         c.drawString(2 * cm, y, f"Status atual: {agendamento[7]}")        # Status do agendamento
+
+        from datetime import datetime, timedelta
+        validade_limite = datetime.strptime(agendamento[5], "%Y-%m-%d") + timedelta(days=20)
+        c.drawString(2 * cm, y - 0.8 * cm, f" Validade: até {validade_limite.strftime('%d/%m/%Y')}")
+        y -= 1.5 * cm
+
 
         # Rodapé
         y -= 2 * cm

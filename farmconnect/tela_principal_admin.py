@@ -744,12 +744,11 @@ class TelaAdminDashboard:
         self.editando_medicamento = False
         self.current_view.controls.clear()
 
-        # Carregar categorias e fabricantes do banco
+        # Carregar categorias, fabricantes e farmácias
         categorias = listar_categorias()
         fabricantes = listar_fabricantes()
         farmacias = listar_farmacias()
 
-        # Dropdowns salvos como atributos para uso posterior
         self.dropdown_categoria = ft.Dropdown(
             label="Categoria",
             border_radius=10,
@@ -779,7 +778,7 @@ class TelaAdminDashboard:
         self.campo_estoque = ft.TextField(label="Quantidade em Estoque", keyboard_type=ft.KeyboardType.NUMBER, border_radius=10, bgcolor="#F9FAFB")
         self.campo_descricao = ft.TextField(label="Descrição do Medicamento", border_radius=10, bgcolor="#F9FAFB")
         self.imagem_selecionada = ft.Ref[ft.Image]()
-        self.imagem_escolhida = "usuario/img_user/seringa.png"  # valor inicial padrão
+        self.imagem_escolhida = "usuario/img_user/seringa.png"  # valor inicial
 
         def selecionar_imagem(imagem_path):
             def handler(e):
@@ -834,7 +833,6 @@ class TelaAdminDashboard:
                                             on_click=self.load_cadastro_categoria
                                         )
                                     ], spacing=10),
-
                                     ft.Row([
                                         self.dropdown_fabricante,
                                         ft.IconButton(
@@ -847,11 +845,8 @@ class TelaAdminDashboard:
                                     self.dropdown_farmacia,
                                     self.campo_estoque,
                                     self.container_selecao_imagem,
-                                    self.campo_observacoes, 
-                                    self.campo_imagem,
                                     self.campo_observacoes,
                                     ft.Container(height=20),
-
                                     ft.Row(
                                         [
                                             ft.ElevatedButton(
@@ -861,7 +856,7 @@ class TelaAdminDashboard:
                                                 height=50,
                                                 style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12)),
                                                 expand=True,
-                                                on_click=self.salvar_medicamento  # deve usar a função real
+                                                on_click=self.salvar_medicamento
                                             ),
                                             ft.OutlinedButton(
                                                 "Cancelar",
@@ -886,6 +881,7 @@ class TelaAdminDashboard:
         )
 
         self.page.update()
+
 
     def load_cadastro_categoria(self, e=None):
         from database import adicionar_categoria
