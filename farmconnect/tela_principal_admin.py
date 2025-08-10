@@ -63,10 +63,15 @@ class TelaAdminDashboard:
         self.page.snack_bar.open = True
         self.page.update()
         self.load_agendamentos()
+
     def count_agendamentos_do_dia(self):
-        hoje = datetime.now().date()
+        hoje_str = datetime.now().strftime("%Y-%m-%d")
         agendamentos = listar_agendamentos()
-        total_hoje = sum(1 for a in agendamentos if a[5] == hoje.strftime("%Y-%m-%d"))
+        total_hoje = 0
+        for a in agendamentos:
+            # a[8] = data_criacao, ex: "2025-08-10 14:22:31"
+            if a[8] and a[8].startswith(hoje_str):
+                total_hoje += 1
         return total_hoje
     
     def count_agendamentos_pendentes(self):
@@ -366,7 +371,7 @@ class TelaAdminDashboard:
                     shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26),
                     padding=20,
                     content=ft.Column([
-                        ft.Text("Agendamentos Hoje", size=14, weight="bold"),
+                        ft.Text("Agendamentos Feitos Hoje", size=14, weight="bold"),
                         ft.Text(str(self.count_agendamentos_do_dia()), size=34, weight="bold", color="#111827"),
                         ft.Text("Valor dinâmico", size=12, color="#6B7280"),
                         ft.OutlinedButton(
