@@ -2157,9 +2157,6 @@ class TelaAdminDashboard:
             self.texto_farmacia.value = f"🏥 {self.farmacia_automatica['nome']}\n📍 {self.farmacia_automatica['endereco']}"
             self.texto_farmacia.update()
 
-
-
-
     def gerar_relatorio_pdf(self):
         from reportlab.lib.pagesizes import A4
         from reportlab.pdfgen import canvas
@@ -2426,11 +2423,6 @@ class TelaAdminDashboard:
         nome_arquivo = f"relatorio_farmconnect_{datetime.now().strftime('%Y%m%d_%H%M')}.xlsx"
         wb.save(nome_arquivo)
         self.page.launch_url(nome_arquivo)
-
-
-
-
-
 
     def build_tela(self):
         return ft.View(

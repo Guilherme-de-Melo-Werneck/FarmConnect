@@ -1654,7 +1654,7 @@ class TelaUsuarioDashboard:
         c.saveState()
         c.translate(largura / 4, altura / 2)
         c.rotate(30)
-        c.drawString(0, 0, "FARMCONECT")
+        c.drawString(0, 0, "FARMCONNECT")
         c.restoreState()
 
         c.save()
