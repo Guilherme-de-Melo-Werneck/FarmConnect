@@ -39,6 +39,240 @@ class TelaUsuarioDashboard:
         # Cria o drawer do carrinho
         self.carrinho_drawer = self.criar_carrinho_drawer()
 
+    def abrir_tela_reagendamento(self, registro):
+        # registro é a tupla retornada por listar_agendamentos_usuario para um agendamento
+        # guardamos no client_storage e vamos para a tela
+        self.page.client_storage.set("agendamento_para_reagendar", registro)
+        self.page.go("/reagendamento")
+
+    def _resolver_agendamento_id(self, registro):
+        """Tenta obter o ID do agendamento.
+        registro[0] costuma ser o id. Se não for um int, buscamos por código + usuário."""
+        try:
+            ag_id = int(registro[0])
+            return ag_id
+        except Exception:
+            pass
+        try:
+            import sqlite3
+            codigo = registro[4]  # código do agendamento presente na listagem
+            conn = sqlite3.connect("farmconnect.db")
+            cur = conn.cursor()
+            cur.execute("""
+                SELECT id FROM agendamentos
+                WHERE codigo = ? AND usuario_id = ?
+                ORDER BY id DESC LIMIT 1
+            """, (codigo, self.usuario_id))
+            row = cur.fetchone()
+            cur.close()
+            conn.close()
+            return row[0] if row else None
+        except Exception:
+            return None
+
+    def reagendar_agendamento_db(self, agendamento_id, nova_data, novo_horario):
+        """Atualiza data/horário e seta status para Pendente.
+        Não mexe em estoque nem em medicamento/farmácia."""
+        import sqlite3
+        conn = sqlite3.connect("farmconnect.db")
+        cur = conn.cursor()
+        cur.execute("""
+            UPDATE agendamentos
+            SET data = ?, horario = ?, status = 'Pendente'
+            WHERE id = ? AND usuario_id = ?
+        """, (nova_data, novo_horario, agendamento_id, self.usuario_id))
+        conn.commit()
+        linhas = cur.rowcount
+        cur.close()
+        conn.close()
+        return linhas > 0
+
+    def tela_reagendamento(self):
+        import datetime
+        self.sincronizar_carrinho()
+
+        registro = self.page.client_storage.get("agendamento_para_reagendar")
+        if not registro:
+            return ft.View(
+                route="/reagendamento",
+                controls=[
+                    self.page.snack_bar,
+                    ft.Container(expand=True, alignment=ft.alignment.center,
+                                 content=ft.Text("❌ Nenhum agendamento selecionado.", size=18, color=ft.Colors.RED))
+                ]
+            )
+
+        # Mapeamento do registro conforme listar_agendamentos_usuario
+        # [0]=id, [1]=medicamento, [2]=farmacia, [3]=endereco, [4]=codigo, [5]=data, [6]=horario, [7]=status
+        med_nome = registro[1]
+        farmacia_nome = registro[2]
+        endereco = registro[3]
+        codigo = registro[4]
+        data_atual_str = registro[5]
+        horario_atual = registro[6]
+        status_atual = registro[7]
+
+        # DatePicker e Dropdown (pré-selecionados)
+        horas_disponiveis = [f"{h:02d}:{m:02d}" for h in range(8, 18) for m in (0, 30)]
+
+        # Estado local
+        self._reag_data_escolhida = None
+        self._reag_data_label = ft.Text("Nenhuma data selecionada ➡️", size=14, color=ft.Colors.GREY_700)
+        self._reag_horario_dd = ft.Dropdown(
+            label="⏰ Novo horário",
+            options=[ft.dropdown.Option(h) for h in horas_disponiveis],
+            value=horario_atual if horario_atual in horas_disponiveis else None,
+            width=400
+        )
+
+        def on_data_change(e):
+            self._reag_data_escolhida = e.control.value
+            data_formatada = e.control.value.strftime('%d/%m/%Y')
+            self._reag_data_label.value = f"Data: {data_formatada}"
+            self.page.update()
+
+        # DatePicker
+        self._reag_date_picker = ft.DatePicker(
+            first_date=datetime.date.today(),
+            last_date=datetime.date.today() + datetime.timedelta(days=365),
+            on_change=on_data_change
+        )
+        # Pré-seleciona a data atual do agendamento (se existir)
+        try:
+            d = datetime.datetime.strptime(data_atual_str, "%Y-%m-%d").date()
+            # Não “abre” automaticamente, só marcamos o estado para a label
+            self._reag_data_escolhida = d
+            self._reag_data_label.value = f"Data: {d.strftime('%d/%m/%Y')}"
+        except Exception:
+            pass
+
+        if self._reag_date_picker not in self.page.overlay:
+            self.page.overlay.append(self._reag_date_picker)
+
+        def abrir_calendario(e):
+            self._reag_date_picker.open = True
+            self.page.update()
+
+        def confirmar_reagendamento(e):
+            # Validações
+            if not self._reag_data_escolhida or not self._reag_horario_dd.value:
+                self.page.snack_bar.content.value = "❗ Selecione data e horário para reagendar."
+                self.page.snack_bar.bgcolor = ft.Colors.RED_400
+                self.page.snack_bar.open = True
+                self.page.update()
+                return
+
+            ag_id = self._resolver_agendamento_id(registro)
+            if not ag_id:
+                self.page.snack_bar.content.value = "❌ Não foi possível identificar o agendamento."
+                self.page.snack_bar.bgcolor = ft.Colors.RED_400
+                self.page.snack_bar.open = True
+                self.page.update()
+                return
+
+            nova_data = self._reag_data_escolhida.strftime('%Y-%m-%d')
+            novo_horario = self._reag_horario_dd.value
+
+            ok = self.reagendar_agendamento_db(ag_id, nova_data, novo_horario)
+            if ok:
+                self.page.snack_bar.content.value = "✅ Agendamento reagendado com sucesso! Status voltou para Pendente."
+                self.page.snack_bar.bgcolor = ft.Colors.GREEN_500
+                self.page.snack_bar.open = True
+                self.page.update()
+                self.page.go("/agendamentos")
+            else:
+                self.page.snack_bar.content.value = "❌ Não foi possível reagendar. Tente novamente."
+                self.page.snack_bar.bgcolor = ft.Colors.RED_400
+                self.page.snack_bar.open = True
+                self.page.update()
+
+        # UI — espelha a tela de agendamento, com título diferente e apenas 1 item
+        return ft.View(
+            route="/reagendamento",
+            controls=[
+                self.page.snack_bar,
+                self._reag_date_picker,
+                ft.Container(
+                    expand=True,
+                    bgcolor=ft.Colors.WHITE,
+                    alignment=ft.alignment.center,
+                    padding=40,
+                    content=ft.Column(
+                        alignment=ft.MainAxisAlignment.CENTER,
+                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                        spacing=30,
+                        scroll=ft.ScrollMode.AUTO,
+                        controls=[
+                            ft.Text("🗓️ Reagendamento de Retirada", size=32, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
+                            ft.Container(
+                                width=700,
+                                alignment=ft.alignment.center,
+                                padding=30,
+                                border_radius=24,
+                                bgcolor="#F0F9FF",
+                                shadow=ft.BoxShadow(blur_radius=25, color=ft.Colors.BLACK26, offset=ft.Offset(0, 10)),
+                                content=ft.Column(
+                                    spacing=20,
+                                    alignment=ft.MainAxisAlignment.CENTER,
+                                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                                    controls=[
+                                        ft.Text("Atualize a data e o horário do seu agendamento:", size=18, color=ft.Colors.BLUE_900, text_align=ft.TextAlign.CENTER),
+                                        ft.Container(
+                                            width=550,
+                                            bgcolor="#E8F3FF",
+                                            padding=16,
+                                            border_radius=16,
+                                            content=ft.Column([
+                                                ft.Text(f"{med_nome}", size=16, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
+                                                ft.Text(f"🏥 Farmácia: {farmacia_nome}", size=14, color=ft.Colors.BLUE_900),
+                                                ft.Text(f"📍 Endereço: {endereco}", size=14, color=ft.Colors.BLUE_900),
+                                                ft.Text(f"🆔 Código: {codigo}", size=13, color=ft.Colors.GREY_700),
+                                                ft.Text(f"Status atual: {status_atual}", size=12, color=ft.Colors.GREY_700),
+                                                ft.Divider(height=10, color=ft.Colors.TRANSPARENT),
+                                                self._reag_horario_dd,
+                                                ft.Row([
+                                                    self._reag_data_label,
+                                                    ft.IconButton(
+                                                        icon=ft.Icons.CALENDAR_MONTH,
+                                                        icon_color=ft.Colors.BLUE_900,
+                                                        on_click=abrir_calendario
+                                                    )
+                                                ])
+                                            ], spacing=8)
+                                        ),
+                                        ft.ElevatedButton(
+                                            "Confirmar Reagendamento",
+                                            icon=ft.Icons.UPDATE,
+                                            on_click=confirmar_reagendamento,
+                                            style=ft.ButtonStyle(
+                                                bgcolor=ft.Colors.INDIGO_600,
+                                                color=ft.Colors.WHITE,
+                                                padding=ft.padding.symmetric(vertical=14),
+                                                shape=ft.RoundedRectangleBorder(radius=16)
+                                            )
+                                        )
+                                    ]
+                                )
+                            ),
+                            ft.ElevatedButton(
+                                "Voltar",
+                                icon=ft.Icons.ARROW_BACK,
+                                color=ft.Colors.BLUE_900,
+                                on_click=lambda e: self.page.go("/agendamentos"),
+                                style=ft.ButtonStyle(
+                                    bgcolor=ft.Colors.GREY_50,
+                                    color=ft.Colors.WHITE,
+                                    padding=ft.padding.symmetric(vertical=12, horizontal=24),
+                                    shape=ft.RoundedRectangleBorder(radius=12)
+                                )
+                            )
+                        ]
+                    )
+                )
+            ]
+        )
+
+
     def get_usuario_id_por_email(self, email):
         import sqlite3
         conn = sqlite3.connect("farmconnect.db")
@@ -1257,7 +1491,7 @@ class TelaUsuarioDashboard:
                         bgcolor=ft.Colors.INDIGO_100,
                         color=ft.Colors.INDIGO_900
                     ),
-                    on_click=lambda e, med=agendamento["medicamento"]: print(f"Reagendando: {med}")
+                    on_click=lambda e, registro=ag: self.abrir_tela_reagendamento(registro)
                 ),
                 ft.ElevatedButton(
                     "📥 Comprovante",
@@ -1270,6 +1504,7 @@ class TelaUsuarioDashboard:
                     on_click=lambda e, dados=ag: self.gerar_pdf_comprovante(dados)
                 )
             ], spacing=10)
+
 
             cards.append(
                 ft.Container(
@@ -1685,6 +1920,8 @@ if __name__ == "__main__":
                 page.views.append(dashboard.tela_medicamentos_retirados())
             elif page.route == "/agendamento":
                 page.views.append(dashboard.tela_agendamento())
+            elif page.route == "/reagendamento":
+                page.views.append(dashboard.tela_reagendamento())
             elif page.route == "/detalhes_medicamento":
                 page.views.append(dashboard.tela_detalhes_medicamento())
             elif page.route == "/agendamentos":
