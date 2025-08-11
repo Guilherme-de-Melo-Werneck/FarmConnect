@@ -70,22 +70,49 @@ class TelaUsuarioDashboard:
         except Exception:
             return None
 
-    def reagendar_agendamento_db(self, agendamento_id, nova_data, novo_horario):
-        """Atualiza data/horário e seta status para Pendente.
-        Não mexe em estoque nem em medicamento/farmácia."""
+    # <<< FUNÇÃO MODIFICADA >>>
+    def reagendar_agendamento_db(self, agendamento_id, data_antiga, horario_antigo, nova_data, novo_horario):
+        """
+        Executa o reagendamento dentro de uma transação:
+        1. Insere o log na tabela 'reagendamentos'.
+        2. Atualiza o agendamento original na tabela 'agendamentos',
+           incrementando o contador 'total_reagendamentos'.
+        Retorna True se bem-sucedido, False caso contrário.
+        """
         import sqlite3
-        conn = sqlite3.connect("farmconnect.db")
-        cur = conn.cursor()
-        cur.execute("""
-            UPDATE agendamentos
-            SET data = ?, horario = ?, status = 'Pendente'
-            WHERE id = ? AND usuario_id = ?
-        """, (nova_data, novo_horario, agendamento_id, self.usuario_id))
-        conn.commit()
-        linhas = cur.rowcount
-        cur.close()
-        conn.close()
-        return linhas > 0
+        conn = None
+        try:
+            conn = sqlite3.connect("farmconnect.db")
+            cur = conn.cursor()
+
+            # Iniciar transação (o SQLite faz isso implicitamente, o controle é no commit/rollback)
+
+            # 1. Inserir no histórico de reagendamentos
+            cur.execute("""
+                INSERT INTO reagendamentos (agendamento_id, usuario_id, data_antiga, horario_antigo, data_nova, horario_novo)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (agendamento_id, self.usuario_id, data_antiga, horario_antigo, nova_data, novo_horario))
+
+            # 2. Atualizar o agendamento original, o status e incrementar o contador
+            cur.execute("""
+                UPDATE agendamentos
+                SET data = ?, horario = ?, status = 'Pendente', total_reagendamentos = total_reagendamentos + 1
+                WHERE id = ? AND usuario_id = ?
+            """, (nova_data, novo_horario, agendamento_id, self.usuario_id))
+
+            # 3. Finalizar a transação
+            conn.commit()
+            return cur.rowcount > 0  # Retorna True se a atualização (UPDATE) afetou alguma linha
+
+        except sqlite3.Error as e:
+            print(f"Erro no banco de dados ao reagendar: {e}")
+            if conn:
+                conn.rollback()  # Desfaz tudo em caso de erro
+            return False
+        finally:
+            if conn:
+                conn.close()
+
 
     def tela_reagendamento(self):
         import datetime
@@ -152,7 +179,8 @@ class TelaUsuarioDashboard:
         def abrir_calendario(e):
             self._reag_date_picker.open = True
             self.page.update()
-
+            
+        # <<< FUNÇÃO INTERNA MODIFICADA >>>
         def confirmar_reagendamento(e):
             # Validações
             if not self._reag_data_escolhida or not self._reag_horario_dd.value:
@@ -172,19 +200,26 @@ class TelaUsuarioDashboard:
 
             nova_data = self._reag_data_escolhida.strftime('%Y-%m-%d')
             novo_horario = self._reag_horario_dd.value
+            
+            # Os dados antigos já estão na variável 'registro'
+            data_antiga = registro[5]
+            horario_antigo = registro[6]
 
-            ok = self.reagendar_agendamento_db(ag_id, nova_data, novo_horario)
+            # Chamada atualizada para o novo método
+            ok = self.reagendar_agendamento_db(ag_id, data_antiga, horario_antigo, nova_data, novo_horario)
+            
             if ok:
                 self.page.snack_bar.content.value = "✅ Agendamento reagendado com sucesso! Status voltou para Pendente."
                 self.page.snack_bar.bgcolor = ft.Colors.GREEN_500
                 self.page.snack_bar.open = True
-                self.page.update()
+                self.page.client_storage.remove("agendamento_para_reagendar") # Limpa o storage
                 self.page.go("/agendamentos")
             else:
                 self.page.snack_bar.content.value = "❌ Não foi possível reagendar. Tente novamente."
                 self.page.snack_bar.bgcolor = ft.Colors.RED_400
                 self.page.snack_bar.open = True
                 self.page.update()
+
 
         # UI — espelha a tela de agendamento, com título diferente e apenas 1 item
         return ft.View(
@@ -330,7 +365,7 @@ class TelaUsuarioDashboard:
             } for m in dados
         ]
 
-    medicamentos_por_pagina = 8    
+    medicamentos_por_pagina = 8  
     def criar_carrinho_drawer(self):
         return ft.Container(
             width=480,
@@ -1770,17 +1805,17 @@ class TelaUsuarioDashboard:
         c.setFont("Helvetica", 11)
 
         y -= 0.8 * cm
-        c.drawString(2 * cm, y, f"Medicamento: {agendamento[1]}")         # Nome do medicamento
+        c.drawString(2 * cm, y, f"Medicamento: {agendamento[1]}")       # Nome do medicamento
         y -= 0.6 * cm
-        c.drawString(2 * cm, y, f"Farmácia: {agendamento[2]}")            # Nome da farmácia
+        c.drawString(2 * cm, y, f"Farmácia: {agendamento[2]}")         # Nome da farmácia
         y -= 0.6 * cm
-        c.drawString(2 * cm, y, f"Endereço: {agendamento[3]}")            # Endereço
+        c.drawString(2 * cm, y, f"Endereço: {agendamento[3]}")         # Endereço
         y -= 0.6 * cm
-        c.drawString(2 * cm, y, f"Data: {agendamento[5]}")                # Data do agendamento
+        c.drawString(2 * cm, y, f"Data: {agendamento[5]}")             # Data do agendamento
         y -= 0.6 * cm
-        c.drawString(2 * cm, y, f"Horário: {agendamento[6]}")             # Horário
+        c.drawString(2 * cm, y, f"Horário: {agendamento[6]}")            # Horário
         y -= 0.6 * cm
-        c.drawString(2 * cm, y, f"Status atual: {agendamento[7]}")        # Status do agendamento
+        c.drawString(2 * cm, y, f"Status atual: {agendamento[7]}")     # Status do agendamento
 
         from datetime import datetime, timedelta
         validade_limite = datetime.strptime(agendamento[5], "%Y-%m-%d") + timedelta(days=20)
@@ -1894,9 +1929,6 @@ class TelaUsuarioDashboard:
 
         c.save()
         self.page.launch_url(caminho)
-
-
-
 
 
 if __name__ == "__main__":
