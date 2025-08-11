@@ -235,7 +235,8 @@ class TelaLoginUsuario:
 
         header = ft.Container(
             content=ft.Row([
-                ft.Image(src="administrador/img_adm/logo.png", width=120, height=80),
+                ft.Image(src="img/logo.png", width=100, height=100),
+                
                 ft.Text("FarmConnect Usuário", size=20, weight="bold", color=ft.Colors.BLUE_900)
             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
             padding=ft.padding.symmetric(horizontal=40, vertical=24),
