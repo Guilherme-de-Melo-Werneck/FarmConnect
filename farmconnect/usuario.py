@@ -16,14 +16,6 @@ class TelaLoginUsuario:
         self.page.scroll = ft.ScrollMode.ADAPTIVE
         self.page.padding = 0
 
-    # async def start_typing_effect(self):
-    #     full_text = "Administre com eficiência e segurança."
-    #     self.typing_text.value = ""
-    #     for char in full_text:
-    #         self.typing_text.value += char
-    #         await self.page.update_async()
-    #         await asyncio.sleep(0.04)
-
     def build_tela(self):
         self.typing_text = ft.Text(
             "Teste",
@@ -31,6 +23,8 @@ class TelaLoginUsuario:
             color="#065F46",
             weight="bold"
         )
+
+        self.page.snack_bar = ft.SnackBar(content=ft.Text(""), bgcolor=ft.Colors.RED_400, duration=3000)
 
         def cpf_change(e):
             texto_original = self.cadastro_cpf.value
@@ -236,7 +230,6 @@ class TelaLoginUsuario:
         header = ft.Container(
             content=ft.Row([
                 ft.Image(src="img/logo.png", width=100, height=100),
-                
                 ft.Text("FarmConnect Usuário", size=20, weight="bold", color=ft.Colors.BLUE_900)
             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
             padding=ft.padding.symmetric(horizontal=40, vertical=24),
@@ -290,11 +283,11 @@ class TelaLoginUsuario:
                     ft.ElevatedButton("Registrar", bgcolor=ft.Colors.BLUE_900, color="white",
                     style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10), overlay_color=ft.Colors.BLUE_500),
                     on_click=registrar_click
-                    ),
+                ),
                     ft.ElevatedButton("Voltar", bgcolor=ft.Colors.GREY_50, color=ft.Colors.BLUE_900,
                     style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=10), overlay_color=ft.Colors.BLUE_500),
                     on_click=lambda e: self.page.go("/escolha_usuario")
-                    )
+                )
                 ]),
             ], spacing=20, scroll=ft.ScrollMode.ADAPTIVE)
         )
