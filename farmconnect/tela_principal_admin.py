@@ -153,97 +153,84 @@ class TelaAdminDashboard:
         return item
 
     def side_menu(self):
-        def create_menu_item(icon, text, on_click=None):
-            container = ft.Container(
+            def create_menu_item(icon, text, on_click=None):
+                container = ft.Container(
+                    padding=ft.padding.symmetric(vertical=12, horizontal=10),
+                    content=ft.Row(
+                        [
+                            ft.Icon(icon, color=ft.Colors.BLUE_600, size=24),
+                            ft.Text(text, size=16, visible=self.sidebar_open, color="#111827"),
+                        ],
+                        alignment=ft.MainAxisAlignment.START,
+                        spacing=15,
+                    ),
+                    ink=True,
+                    border_radius=8,
+                    bgcolor="#FFFFFF",
+                    on_click=on_click,
+                    animate=ft.Animation(200, "easeInOut"),
+                    margin=ft.margin.only(bottom=8),
+                )
+
+                def on_hover(e):
+                    container.bgcolor = "#d1eefa" if e.data == "true" else "#FFFFFF"
+                    container.update()
+
+                container.on_hover = on_hover
+                return container
+
+            menu_items = [
+                create_menu_item(ft.Icons.HOME_OUTLINED, "Início", self.load_dashboard),
+                create_menu_item(ft.Icons.CALENDAR_MONTH_OUTLINED, "Agendamentos", self.load_agendamentos),
+                create_menu_item(ft.Icons.MEDICAL_SERVICES_OUTLINED, "Medicamentos", self.load_medicamentos),
+                create_menu_item(ft.Icons.PERSON_OUTLINED, "Pacientes", self.load_pacientes),
+            ]
+
+            botao_sair = ft.Container(
                 padding=ft.padding.symmetric(vertical=12, horizontal=10),
                 content=ft.Row(
                     [
-                        ft.Icon(icon, color=ft.Colors.BLUE_600, size=24),
-                        ft.Text(text, size=16, visible=self.sidebar_open, color="#111827"),
+                        ft.Icon(ft.Icons.LOGOUT, color="#DC2626", size=24),
+                        ft.Text("Sair", size=16, visible=self.sidebar_open, color="#DC2626"),
                     ],
                     alignment=ft.MainAxisAlignment.START,
                     spacing=15,
                 ),
-                ink=True,
                 border_radius=8,
-                bgcolor="#FFFFFF",
-                on_click=on_click,
+                bgcolor="#FEE2E2",
+                ink=True,
+                on_click=lambda e: self.page.go("/escolha_usuario"),
                 animate=ft.Animation(200, "easeInOut"),
-                margin=ft.margin.only(bottom=8),
             )
 
-            def on_hover(e):
-                container.bgcolor = "#d1eefa" if e.data == "true" else "#FFFFFF"
-                container.update()
+            def on_hover_sair(e):
+                botao_sair.bgcolor = "#FCA5A5" if e.data == "true" else "#FEE2E2"
+                botao_sair.update()
 
-            container.on_hover = on_hover
-            return container
+            botao_sair.on_hover = on_hover_sair
 
-        # Itens do menu
-        menu_items = [
-            create_menu_item(ft.Icons.HOME_OUTLINED, "Início", self.load_dashboard),
-            create_menu_item(ft.Icons.CALENDAR_MONTH_OUTLINED, "Agendamentos", self.load_agendamentos),  # <- AQUI
-            # create_menu_item(ft.Icons.LOCAL_HOSPITAL_OUTLINED, "Farmácias", self.load_farmacias),
-            create_menu_item(ft.Icons.MEDICAL_SERVICES_OUTLINED, "Medicamentos", self.load_medicamentos),
-            create_menu_item(ft.Icons.PERSON_OUTLINED, "Pacientes", self.load_pacientes),
-        ]
-
-        # Botão de sair
-        botao_sair = ft.Container(
-            padding=ft.padding.symmetric(vertical=12, horizontal=10),
-            content=ft.Row(
-                [
-                    ft.Icon(ft.Icons.LOGOUT, color="#DC2626", size=24),
-                    ft.Text("Sair", size=16, visible=self.sidebar_open, color="#DC2626"),
-                ],
-                alignment=ft.MainAxisAlignment.START,
-                spacing=15,
-            ),
-            border_radius=8,
-            bgcolor="#FEE2E2",
-            ink=True,
-            on_click=lambda e: self.page.go("/escolha_usuario"),
-            animate=ft.Animation(200, "easeInOut"),
-        )
-
-        def on_hover_sair(e):
-            botao_sair.bgcolor = "#FCA5A5" if e.data == "true" else "#FEE2E2"
-            botao_sair.update()
-
-        botao_sair.on_hover = on_hover_sair
-
-        # Sidebar final com botão "Sair" lá embaixo
-        return ft.Container(
-            width=240 if self.sidebar_open else 80,
-            bgcolor="#F9FAFB",
-            border=ft.border.only(right=ft.BorderSide(1, "#E5E7EB")),
-            padding=ft.padding.symmetric(vertical=20, horizontal=10),
-            content=ft.Column(
-                controls=[
-                    ft.Column(
-                        [
-                            ft.Container(
-                                alignment=ft.alignment.center,
-                                padding=ft.padding.symmetric(vertical=10),
-                                content=ft.IconButton(
-                                    icon=ft.Icons.ARROW_BACK_IOS_NEW if self.sidebar_open else ft.Icons.ARROW_FORWARD_IOS,
-                                    icon_color=ft.Colors.BLUE_600,
-                                    on_click=self.toggle_sidebar,
-                                    tooltip="Expandir/Recolher Menu",
-                                )
-                            ),
-                            ft.Divider(thickness=1),
-                            *menu_items,
-                        ],
-                        spacing=8,
-                        expand=True  # <- ESSENCIAL para empurrar o sair pra baixo
-                    ),
-                    botao_sair  # <- agora fixo no final da sidebar
-                ],
-                expand=True,
-                spacing=10,
+            return ft.Container(
+                width=240 if self.sidebar_open else 80,
+                bgcolor="#F9FAFB",
+                border=ft.border.only(right=ft.BorderSide(1, "#E5E7EB")),
+                padding=ft.padding.symmetric(horizontal=12, vertical=20),
+                animate=ft.Animation(duration=250, curve=ft.AnimationCurve.EASE_OUT),
+                content=ft.Column(
+                    expand=True,
+                    spacing=10,
+                    controls=[
+                        ft.Container(
+                            alignment=ft.alignment.center,
+                            padding=ft.padding.only(bottom=10),
+                            content=ft.Image(src="img/logo.png", width=80, height=80)
+                        ),
+                        ft.Divider(thickness=1),
+                        *menu_items,
+                        ft.Container(expand=True),  # O espaçador mágico
+                        botao_sair
+                    ]
+                )
             )
-        )
 
     def header(self):
         return ft.Container(
@@ -274,8 +261,8 @@ class TelaAdminDashboard:
                                 wrap=True,
                                 spacing=10,
                                 controls=[
-                                    ft.Text("Bem-vindo!", size=12, color=ft.Colors.BLUE_900),
-                                    ft.Text(self.page.session.get("admin_nome") or "Administrador", size=12, weight="bold", color=ft.Colors.BLUE_900),
+                                    ft.Text("Bem-vindo!", size=20, color=ft.Colors.BLUE_900),
+                                    ft.Text(self.page.session.get("admin_nome") or "Administrador", size=20, weight="bold", color=ft.Colors.BLUE_900),
                                     
                                 ]
                             )
@@ -783,7 +770,7 @@ class TelaAdminDashboard:
         self.campo_estoque = ft.TextField(label="Quantidade em Estoque", keyboard_type=ft.KeyboardType.NUMBER, border_radius=10, bgcolor="#F9FAFB")
         self.campo_descricao = ft.TextField(label="Descrição do Medicamento", border_radius=10, bgcolor="#F9FAFB")
         self.imagem_selecionada = ft.Ref[ft.Image]()
-        self.imagem_escolhida = "usuario/img_user/seringa.png"  # valor inicial
+        self.imagem_escolhida = "img/seringa.png"  # valor inicial
 
         def selecionar_imagem(imagem_path):
             def handler(e):
@@ -797,12 +784,12 @@ class TelaAdminDashboard:
                 ft.Text("Escolha a imagem do medicamento:", size=14),
                 ft.Row([
                     ft.GestureDetector(
-                        content=ft.Image(src="usuario/img_user/seringa.png", width=100, height=100),
-                        on_tap=selecionar_imagem("usuario/img_user/seringa.png")
+                        content=ft.Image(src="img/seringa.png", width=100, height=100),
+                        on_tap=selecionar_imagem("img/seringa.png")
                     ),
                     ft.GestureDetector(
-                        content=ft.Image(src="usuario/img_user/comprimido.png", width=100, height=100),
-                        on_tap=selecionar_imagem("usuario/img_user/comprimido.png")
+                        content=ft.Image(src="img/comprimido.png", width=100, height=100),
+                        on_tap=selecionar_imagem("img/comprimido.png")
                     ),
                 ], spacing=20),
                 ft.Text("Imagem selecionada:"),
@@ -2432,29 +2419,35 @@ class TelaAdminDashboard:
     def build_tela(self):
         return ft.View(
             route="/admin_dashboard",
+            padding=0,
             controls=[
-                ft.ResponsiveRow(
-                    columns=12,
-                    controls=[
-                        ft.Container(
-                            col={"sm": 12, "md": 3},
-                            content=self.side_menu(),
-                            bgcolor="#F9FAFB"
-                        ),
-                        ft.Container(
-                            col={"sm": 12, "md": 9},
-                            content=ft.Column([
-                                self.header(),
-                                self.current_view
-                            ], expand=True)
-                        )
-                    ],
+                ft.Row(
                     expand=True,
                     spacing=0,
-                    run_spacing=0
+                    vertical_alignment=ft.CrossAxisAlignment.START,
+                    controls=[
+                        self.side_menu(),
+                        ft.Column(
+                            expand=True,
+                            spacing=0,
+                            controls=[
+                                self.header(),
+                                ft.Container(
+                                    expand=True,
+                                    padding=20,
+                                    content=ft.Column(
+                                        expand=True,
+                                        scroll=ft.ScrollMode.ADAPTIVE,
+                                        controls=[
+                                            self.current_view
+                                        ]
+                                    )
+                                )
+                            ]
+                        )
+                    ]
                 )
-            ],
-            scroll=ft.ScrollMode.AUTO
+            ]
         )
 
 if __name__ == "__main__":

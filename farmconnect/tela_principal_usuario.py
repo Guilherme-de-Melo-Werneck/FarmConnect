@@ -626,7 +626,6 @@ class TelaUsuarioDashboard:
             )
         ])
 
-
     def create_menu_item(self, icon, text, route):
         container = ft.Container(
             padding=ft.padding.symmetric(vertical=12, horizontal=10),
@@ -651,7 +650,6 @@ class TelaUsuarioDashboard:
 
 
     def build_tela(self):
-
         sidebar = ft.Container(
             width=280,
             bgcolor="#F8FAFC",
@@ -661,7 +659,7 @@ class TelaUsuarioDashboard:
                 ft.Container(
                     alignment=ft.alignment.center,
                     padding=ft.padding.symmetric(vertical=10),
-                    content=ft.Image(src="logo.png", width=120, height=40)
+                    content=ft.Image(src="img/logo.png", width=100, height=100)
                 ),
                 ft.Divider(thickness=1),
                 self.create_menu_item(ft.Icons.PERSON_OUTLINED, "Meu Perfil", "/perfil"),
@@ -688,84 +686,87 @@ class TelaUsuarioDashboard:
         self.gerar_cards(self.pagina_atual)
         self.atualizar_contador()
 
+        header_busca = ft.Container(
+            bgcolor="#F8FAFC",
+            border_radius=16,
+            padding=ft.padding.symmetric(horizontal=20, vertical=18),
+            shadow=ft.BoxShadow(blur_radius=12, color=ft.Colors.BLACK26, offset=ft.Offset(0, 3)),
+            content=ft.ResponsiveRow([
+                ft.Image(src="logo.png", width=110, col={"xs": 12, "md": 2}),
+                ft.TextField(
+                    ref=self.busca_ref,
+                    hint_text="Buscar medicamentos...",
+                    prefix_icon=ft.Icons.SEARCH,
+                    border_radius=12,
+                    bgcolor=ft.Colors.WHITE,
+                    height=45,
+                    col={"xs": 12, "md": 6},
+                    on_change=lambda e: self.gerar_cards(None)
+                ),
+                ft.Row([
+                    ft.Stack([
+                        ft.IconButton(
+                            icon=ft.Icons.SHOPPING_BAG_OUTLINED,
+                            icon_size=30,
+                            icon_color="#1E3A8A",
+                            on_click=self.abrir_carrinho
+                        ),
+                        ft.Container(
+                            content=ft.Text(str(self.contador["valor"]), size=10, color=ft.Colors.WHITE, ref=self.carrinho_count),
+                            width=16,
+                            height=16,
+                            alignment=ft.alignment.center,
+                            bgcolor=ft.Colors.RED,
+                            border_radius=8,
+                            right=0,
+                            top=0,
+                            visible=True
+                        )
+                    ]),
+                    ft.CircleAvatar(foreground_image_src="/images/profile.jpg", radius=20),
+                    ft.Text(self.nome_usuario.upper(), size=13, weight=ft.FontWeight.BOLD)
+                ], spacing=10, alignment=ft.MainAxisAlignment.END, col={"xs": 12, "md": 4})
+            ])
+        )
+
+        conteudo_principal = ft.Container(
+            expand=True,
+            alignment=ft.alignment.top_center,
+            padding=30,
+            content=ft.Column([
+                ft.Container(
+                    ft.Text("MEDICAMENTOS DISPONÍVEIS", size=24, weight="bold", color="#1E3A8A"),
+                    expand=True,
+                    alignment=ft.alignment.center
+                ),
+                ft.Divider(height=25),
+                self.cards_container,
+                ft.Divider(height=30),
+                self.botoes_paginacao
+            ], spacing=30, scroll=ft.ScrollMode.ADAPTIVE)
+        )
+        
         return ft.View(
             route="/usuario",
+            padding=0,
             controls=[
                 self.page.snack_bar,
-                ft.Container(
-                    expand=True,
-                    content=ft.Row([
+                ft.Row(
+                    controls=[
                         sidebar,
                         self.carrinho_drawer,
-                        ft.Container(
+                        ft.Column(
+                            controls=[
+                                ft.Container(header_busca, padding=ft.padding.only(left=20, right=20, top=20)),
+                                conteudo_principal,
+                            ],
                             expand=True,
-                            padding=20,
-                            content=ft.Column([
-                                ft.Container(
-                                    bgcolor="#F8FAFC",
-                                    border_radius=16,
-                                    padding=ft.padding.symmetric(horizontal=20, vertical=18),
-                                    shadow=ft.BoxShadow(blur_radius=12, color=ft.Colors.BLACK26, offset=ft.Offset(0, 3)),
-                                    content=ft.ResponsiveRow([
-                                        ft.Image(src="logo.png", width=110, col={"xs": 12, "md": 2}),
-                                        ft.TextField(
-                                            ref=self.busca_ref,
-                                            hint_text="Buscar medicamentos...",
-                                            prefix_icon=ft.Icons.SEARCH,
-                                            border_radius=12,
-                                            bgcolor=ft.Colors.WHITE,
-                                            height=45,
-                                            col={"xs": 12, "md": 6},
-                                            on_change=lambda e: self.gerar_cards(None)
-                                        ),
-                                        ft.Row([
-                                            ft.Stack([
-                                                ft.IconButton(
-                                                    icon=ft.Icons.SHOPPING_BAG_OUTLINED,
-                                                    icon_size=30,
-                                                    icon_color="#1E3A8A",
-                                                    on_click=self.abrir_carrinho
-                                                ),
-                                                ft.Container(
-                                                    content=ft.Text(str(self.contador["valor"]), size=10, color=ft.Colors.WHITE, ref=self.carrinho_count),
-                                                    width=16,
-                                                    height=16,
-                                                    alignment=ft.alignment.center,
-                                                    bgcolor=ft.Colors.RED,
-                                                    border_radius=8,
-                                                    right=0,
-                                                    top=0,
-                                                    visible=True
-                                                )
-                                            ]),
-                                            ft.CircleAvatar(foreground_image_src="/images/profile.jpg", radius=20),
-                                            ft.Text(self.nome_usuario.upper(), size=13, weight=ft.FontWeight.BOLD)
-                                        ], spacing=10, alignment=ft.MainAxisAlignment.END, col={"xs": 12, "md": 4})
-                                    ])
-                                ),
-                                ft.Container(
-                                    alignment=ft.alignment.top_center,
-                                    padding=30,
-                                    content=ft.Column([
-                                        ft.Container(
-                                            ft.Text("MEDICAMENTOS DISPONÍVEIS", size=24, weight="bold", color="#1E3A8A"),
-                                            expand=True,
-                                            alignment=ft.alignment.center
-                                        ),
-                                        ft.Row([
-                                            ft.OutlinedButton("."),
-                                            ft.OutlinedButton("."),
-                                            ft.OutlinedButton("."),
-                                        ], alignment=ft.MainAxisAlignment.CENTER, spacing=16),
-                                        ft.Divider(height=25),
-                                        self.cards_container,
-                                        ft.Divider(height=30),
-                                        self.botoes_paginacao
-                                    ], spacing=30)
-                                )
-                            ], scroll=ft.ScrollMode.ADAPTIVE, spacing=20)
+                            spacing=0
                         )
-                    ])
+                    ],
+                    expand=True,
+                    spacing=0,
+                    vertical_alignment=ft.CrossAxisAlignment.START
                 )
             ]
         )
