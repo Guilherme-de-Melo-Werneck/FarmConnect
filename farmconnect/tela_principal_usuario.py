@@ -1599,7 +1599,7 @@ class TelaUsuarioDashboard:
                                 [
                                     ft.Image(
                                         src="img/logo.png", 
-                                        width=120, 
+                                        width=100, 
                                     ),
                                     ft.IconButton(
                                         icon=ft.Icons.DESCRIPTION,
