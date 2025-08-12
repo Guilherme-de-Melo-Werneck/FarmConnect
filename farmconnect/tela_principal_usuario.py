@@ -782,6 +782,11 @@ class TelaUsuarioDashboard:
                 ft.Container(
                     padding=40,
                     content=ft.Column([
+                        ft.Container(
+                            content=ft.Column([
+                                ft.Image(src="img/logo.png", width=100, height=100)
+                            ])
+                        ),
                         # Título da Página
                         ft.Text(
                             "📄 DOCUMENTOS NECESSÁRIOS", 
@@ -790,6 +795,7 @@ class TelaUsuarioDashboard:
                             color=ft.Colors.BLUE_900,
                             text_align=ft.TextAlign.CENTER,
                         ),
+
                         ft.Divider(height=30, color=ft.Colors.TRANSPARENT),
                         # Caixa de Documentos
                         ft.Container(
