@@ -785,7 +785,8 @@ class TelaUsuarioDashboard:
                         ft.Container(
                             content=ft.Column([
                                 ft.Image(src="img/logo.png", width=100, height=100)
-                            ])
+                            ]),
+                            alignment=ft.alignment.top_left
                         ),
                         # Título da Página
                         ft.Text(
