@@ -21,7 +21,7 @@ class TelaEscolhaUsuario:
 
     def build_tela(self):
         logo = ft.Image(
-            src="home/img_home/logo.png",
+            src="img/logo.png",
             width=100,
             height=100,
         )

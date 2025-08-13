@@ -50,6 +50,8 @@ def main(page: ft.Page):
             page.views.append(TelaUsuarioDashboard(page).tela_detalhes_medicamento())
         elif page.route == "/agendamentos":
             page.views.append(TelaUsuarioDashboard(page).tela_meus_agendamentos())
+        elif page.route == "/reagendamento":
+                page.views.append(TelaUsuarioDashboard(page).tela_reagendamento())
         elif page.route == "/agendamento_confirmado":
             page.views.append(TelaUsuarioDashboard(page).tela_agendamento_confirmado())
         elif page.route == "/politica_privacidade":

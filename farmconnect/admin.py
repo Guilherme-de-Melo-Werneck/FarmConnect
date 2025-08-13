@@ -16,14 +16,6 @@ class TelaLoginAdmin:
         self.page.scroll = ft.ScrollMode.ADAPTIVE
         self.page.padding = 0
 
-    async def start_typing_effect(self):
-        full_text = "Administre com eficiência e segurança."
-        self.typing_text.value = ""
-        for char in full_text:
-            self.typing_text.value += char
-            await self.page.update_async()
-            await asyncio.sleep(0.04)
-
     def build_tela(self):
         self.typing_text = ft.Text(
             "Gerencie agendamentos e estoques de medicamentos especializados",
@@ -98,7 +90,7 @@ class TelaLoginAdmin:
 
         header = ft.Container(
             content=ft.Row([
-                ft.Image(src="farmconnect/administrador/img_adm/logo.png", width=120, height=80),
+                ft.Image(src="img/logo.png", width=100, height=100),
                 ft.Text("FarmConnect Admin", size=20, weight="bold", color=ft.Colors.BLUE_900)
             ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
             padding=ft.padding.symmetric(horizontal=40, vertical=24),
@@ -154,7 +146,7 @@ class TelaLoginAdmin:
                     on_click=lambda e: self.page.go("/escolha_usuario")
                 )
                 ]),
-            ], spacing=20, scroll=ft.ScrollMode.ADAPTIVE)
+            ], spacing=20)
         )
 
         cards_section = ft.Container(

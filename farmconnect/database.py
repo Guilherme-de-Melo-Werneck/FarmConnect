@@ -111,11 +111,34 @@ def criar_tabelas():
             horario TEXT NOT NULL,
             status TEXT DEFAULT 'PENDENTE',
             data_criacao TEXT DEFAULT CURRENT_TIMESTAMP,
+            total_reagendamentos INTEGER NOT NULL DEFAULT 0, 
             FOREIGN KEY(usuario_id) REFERENCES usuarios(id),
             FOREIGN KEY(medicamento_id) REFERENCES medicamentos(id),
             FOREIGN KEY(farmacia_id) REFERENCES farmacias(id)
         )
         """)
+
+        # ReAgendamentos
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS reagendamentos (
+            id                INTEGER PRIMARY KEY AUTOINCREMENT,
+            agendamento_id    INTEGER NOT NULL,
+            usuario_id        INTEGER NOT NULL,
+            data_antiga       TEXT NOT NULL,   -- 'YYYY-MM-DD'
+            horario_antigo    TEXT NOT NULL,   -- 'HH:MM'
+            data_nova         TEXT NOT NULL,
+            horario_novo      TEXT NOT NULL,
+            criado_em         TEXT NOT NULL DEFAULT (CURRENT_TIMESTAMP),
+
+            FOREIGN KEY (agendamento_id) REFERENCES agendamentos(id),
+            FOREIGN KEY (usuario_id)     REFERENCES usuarios(id)
+        )
+        """)
+
+        # Índices úteis para relatórios
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_reag_agendamento ON reagendamentos(agendamento_id)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_reag_usuario ON reagendamentos(usuario_id)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_reag_criado_em ON reagendamentos(criado_em)")
 
         # Medicamentos Reservados
         cursor.execute("""
@@ -1222,7 +1245,6 @@ def verificar_agendamentos_vencidos():
     cursor.close()
     conn.close()
 
-
     # Adicionar coluna de quantidade
 def add_qtd_agendamentos():
     conn = conectar()
@@ -1236,6 +1258,8 @@ def add_qtd_agendamentos():
     finally:
         cursor.close()
         conn.close()
+
+
 
 
 

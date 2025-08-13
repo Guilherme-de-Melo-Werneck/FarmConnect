@@ -39,6 +39,275 @@ class TelaUsuarioDashboard:
         # Cria o drawer do carrinho
         self.carrinho_drawer = self.criar_carrinho_drawer()
 
+    def abrir_tela_reagendamento(self, registro):
+        # registro é a tupla retornada por listar_agendamentos_usuario para um agendamento
+        # guardamos no client_storage e vamos para a tela
+        self.page.client_storage.set("agendamento_para_reagendar", registro)
+        self.page.go("/reagendamento")
+
+    def _resolver_agendamento_id(self, registro):
+        """Tenta obter o ID do agendamento.
+        registro[0] costuma ser o id. Se não for um int, buscamos por código + usuário."""
+        try:
+            ag_id = int(registro[0])
+            return ag_id
+        except Exception:
+            pass
+        try:
+            import sqlite3
+            codigo = registro[4]  # código do agendamento presente na listagem
+            conn = sqlite3.connect("farmconnect.db")
+            cur = conn.cursor()
+            cur.execute("""
+                SELECT id FROM agendamentos
+                WHERE codigo = ? AND usuario_id = ?
+                ORDER BY id DESC LIMIT 1
+            """, (codigo, self.usuario_id))
+            row = cur.fetchone()
+            cur.close()
+            conn.close()
+            return row[0] if row else None
+        except Exception:
+            return None
+
+    # <<< FUNÇÃO MODIFICADA >>>
+    def reagendar_agendamento_db(self, agendamento_id, data_antiga, horario_antigo, nova_data, novo_horario):
+        """
+        Executa o reagendamento dentro de uma transação:
+        1. Insere o log na tabela 'reagendamentos'.
+        2. Atualiza o agendamento original na tabela 'agendamentos',
+           incrementando o contador 'total_reagendamentos'.
+        Retorna True se bem-sucedido, False caso contrário.
+        """
+        import sqlite3
+        conn = None
+        try:
+            conn = sqlite3.connect("farmconnect.db")
+            cur = conn.cursor()
+
+            # Iniciar transação (o SQLite faz isso implicitamente, o controle é no commit/rollback)
+
+            # 1. Inserir no histórico de reagendamentos
+            cur.execute("""
+                INSERT INTO reagendamentos (agendamento_id, usuario_id, data_antiga, horario_antigo, data_nova, horario_novo)
+                VALUES (?, ?, ?, ?, ?, ?)
+            """, (agendamento_id, self.usuario_id, data_antiga, horario_antigo, nova_data, novo_horario))
+
+            # 2. Atualizar o agendamento original, o status e incrementar o contador
+            cur.execute("""
+                UPDATE agendamentos
+                SET data = ?, horario = ?, status = 'Pendente', total_reagendamentos = total_reagendamentos + 1
+                WHERE id = ? AND usuario_id = ?
+            """, (nova_data, novo_horario, agendamento_id, self.usuario_id))
+
+            # 3. Finalizar a transação
+            conn.commit()
+            return cur.rowcount > 0  # Retorna True se a atualização (UPDATE) afetou alguma linha
+
+        except sqlite3.Error as e:
+            print(f"Erro no banco de dados ao reagendar: {e}")
+            if conn:
+                conn.rollback()  # Desfaz tudo em caso de erro
+            return False
+        finally:
+            if conn:
+                conn.close()
+
+
+    def tela_reagendamento(self):
+        import datetime
+        self.sincronizar_carrinho()
+
+        registro = self.page.client_storage.get("agendamento_para_reagendar")
+        if not registro:
+            return ft.View(
+                route="/reagendamento",
+                controls=[
+                    self.page.snack_bar,
+                    ft.Container(expand=True, alignment=ft.alignment.center,
+                                 content=ft.Text("❌ Nenhum agendamento selecionado.", size=18, color=ft.Colors.RED))
+                ]
+            )
+
+        # Mapeamento do registro conforme listar_agendamentos_usuario
+        # [0]=id, [1]=medicamento, [2]=farmacia, [3]=endereco, [4]=codigo, [5]=data, [6]=horario, [7]=status
+        med_nome = registro[1]
+        farmacia_nome = registro[2]
+        endereco = registro[3]
+        codigo = registro[4]
+        data_atual_str = registro[5]
+        horario_atual = registro[6]
+        status_atual = registro[7]
+
+        # DatePicker e Dropdown (pré-selecionados)
+        horas_disponiveis = [f"{h:02d}:{m:02d}" for h in range(8, 18) for m in (0, 30)]
+
+        # Estado local
+        self._reag_data_escolhida = None
+        self._reag_data_label = ft.Text("Nenhuma data selecionada ➡️", size=14, color=ft.Colors.GREY_700)
+        self._reag_horario_dd = ft.Dropdown(
+            label="⏰ Novo horário",
+            options=[ft.dropdown.Option(h) for h in horas_disponiveis],
+            value=horario_atual if horario_atual in horas_disponiveis else None,
+            width=400
+        )
+
+        def on_data_change(e):
+            self._reag_data_escolhida = e.control.value
+            data_formatada = e.control.value.strftime('%d/%m/%Y')
+            self._reag_data_label.value = f"Data: {data_formatada}"
+            self.page.update()
+
+        # DatePicker
+        self._reag_date_picker = ft.DatePicker(
+            first_date=datetime.date.today(),
+            last_date=datetime.date.today() + datetime.timedelta(days=365),
+            on_change=on_data_change
+        )
+        # Pré-seleciona a data atual do agendamento (se existir)
+        try:
+            d = datetime.datetime.strptime(data_atual_str, "%Y-%m-%d").date()
+            # Não “abre” automaticamente, só marcamos o estado para a label
+            self._reag_data_escolhida = d
+            self._reag_data_label.value = f"Data: {d.strftime('%d/%m/%Y')}"
+        except Exception:
+            pass
+
+        if self._reag_date_picker not in self.page.overlay:
+            self.page.overlay.append(self._reag_date_picker)
+
+        def abrir_calendario(e):
+            self._reag_date_picker.open = True
+            self.page.update()
+            
+        # <<< FUNÇÃO INTERNA MODIFICADA >>>
+        def confirmar_reagendamento(e):
+            # Validações
+            if not self._reag_data_escolhida or not self._reag_horario_dd.value:
+                self.page.snack_bar.content.value = "❗ Selecione data e horário para reagendar."
+                self.page.snack_bar.bgcolor = ft.Colors.RED_400
+                self.page.snack_bar.open = True
+                self.page.update()
+                return
+
+            ag_id = self._resolver_agendamento_id(registro)
+            if not ag_id:
+                self.page.snack_bar.content.value = "❌ Não foi possível identificar o agendamento."
+                self.page.snack_bar.bgcolor = ft.Colors.RED_400
+                self.page.snack_bar.open = True
+                self.page.update()
+                return
+
+            nova_data = self._reag_data_escolhida.strftime('%Y-%m-%d')
+            novo_horario = self._reag_horario_dd.value
+            
+            # Os dados antigos já estão na variável 'registro'
+            data_antiga = registro[5]
+            horario_antigo = registro[6]
+
+            # Chamada atualizada para o novo método
+            ok = self.reagendar_agendamento_db(ag_id, data_antiga, horario_antigo, nova_data, novo_horario)
+            
+            if ok:
+                self.page.snack_bar.content.value = "✅ Agendamento reagendado com sucesso! Status voltou para Pendente."
+                self.page.snack_bar.bgcolor = ft.Colors.GREEN_500
+                self.page.snack_bar.open = True
+                self.page.client_storage.remove("agendamento_para_reagendar") # Limpa o storage
+                self.page.go("/agendamentos")
+            else:
+                self.page.snack_bar.content.value = "❌ Não foi possível reagendar. Tente novamente."
+                self.page.snack_bar.bgcolor = ft.Colors.RED_400
+                self.page.snack_bar.open = True
+                self.page.update()
+
+
+        # UI — espelha a tela de agendamento, com título diferente e apenas 1 item
+        return ft.View(
+            route="/reagendamento",
+            controls=[
+                self.page.snack_bar,
+                self._reag_date_picker,
+                ft.Container(
+                    expand=True,
+                    bgcolor=ft.Colors.WHITE,
+                    alignment=ft.alignment.center,
+                    padding=40,
+                    content=ft.Column(
+                        alignment=ft.MainAxisAlignment.CENTER,
+                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                        spacing=30,
+                        scroll=ft.ScrollMode.AUTO,
+                        controls=[
+                            ft.Text("🗓️ Reagendamento de Retirada", size=32, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
+                            ft.Container(
+                                width=700,
+                                alignment=ft.alignment.center,
+                                padding=30,
+                                border_radius=24,
+                                bgcolor="#F0F9FF",
+                                shadow=ft.BoxShadow(blur_radius=25, color=ft.Colors.BLACK26, offset=ft.Offset(0, 10)),
+                                content=ft.Column(
+                                    spacing=20,
+                                    alignment=ft.MainAxisAlignment.CENTER,
+                                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                                    controls=[
+                                        ft.Text("Atualize a data e o horário do seu agendamento:", size=18, color=ft.Colors.BLUE_900, text_align=ft.TextAlign.CENTER),
+                                        ft.Container(
+                                            width=550,
+                                            bgcolor="#E8F3FF",
+                                            padding=16,
+                                            border_radius=16,
+                                            content=ft.Column([
+                                                ft.Text(f"{med_nome}", size=16, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
+                                                ft.Text(f"🏥 Farmácia: {farmacia_nome}", size=14, color=ft.Colors.BLUE_900),
+                                                ft.Text(f"📍 Endereço: {endereco}", size=14, color=ft.Colors.BLUE_900),
+                                                ft.Text(f"🆔 Código: {codigo}", size=13, color=ft.Colors.GREY_700),
+                                                ft.Text(f"Status atual: {status_atual}", size=12, color=ft.Colors.GREY_700),
+                                                ft.Divider(height=10, color=ft.Colors.TRANSPARENT),
+                                                self._reag_horario_dd,
+                                                ft.Row([
+                                                    self._reag_data_label,
+                                                    ft.IconButton(
+                                                        icon=ft.Icons.CALENDAR_MONTH,
+                                                        icon_color=ft.Colors.BLUE_900,
+                                                        on_click=abrir_calendario
+                                                    )
+                                                ])
+                                            ], spacing=8)
+                                        ),
+                                        ft.ElevatedButton(
+                                            "Confirmar Reagendamento",
+                                            icon=ft.Icons.UPDATE,
+                                            on_click=confirmar_reagendamento,
+                                            style=ft.ButtonStyle(
+                                                bgcolor=ft.Colors.INDIGO_600,
+                                                color=ft.Colors.WHITE,
+                                                padding=ft.padding.symmetric(vertical=14),
+                                                shape=ft.RoundedRectangleBorder(radius=16)
+                                            )
+                                        )
+                                    ]
+                                )
+                            ),
+                            ft.ElevatedButton(
+                                "Voltar",
+                                icon=ft.Icons.ARROW_BACK,
+                                color=ft.Colors.BLUE_900,
+                                on_click=lambda e: self.page.go("/agendamentos"),
+                                style=ft.ButtonStyle(
+                                    bgcolor=ft.Colors.GREY_50,
+                                    color=ft.Colors.WHITE,
+                                    padding=ft.padding.symmetric(vertical=12, horizontal=24),
+                                    shape=ft.RoundedRectangleBorder(radius=12)
+                                )
+                            )
+                        ]
+                    )
+                )
+            ]
+        )
+
+
     def get_usuario_id_por_email(self, email):
         import sqlite3
         conn = sqlite3.connect("farmconnect.db")
@@ -96,7 +365,7 @@ class TelaUsuarioDashboard:
             } for m in dados
         ]
 
-    medicamentos_por_pagina = 8    
+    medicamentos_por_pagina = 8  
     def criar_carrinho_drawer(self):
         return ft.Container(
             width=480,
@@ -357,7 +626,6 @@ class TelaUsuarioDashboard:
             )
         ])
 
-
     def create_menu_item(self, icon, text, route):
         container = ft.Container(
             padding=ft.padding.symmetric(vertical=12, horizontal=10),
@@ -382,7 +650,6 @@ class TelaUsuarioDashboard:
 
 
     def build_tela(self):
-
         sidebar = ft.Container(
             width=280,
             bgcolor="#F8FAFC",
@@ -392,7 +659,7 @@ class TelaUsuarioDashboard:
                 ft.Container(
                     alignment=ft.alignment.center,
                     padding=ft.padding.symmetric(vertical=10),
-                    content=ft.Image(src="logo.png", width=120, height=40)
+                    content=ft.Image(src="img/logo.png", width=100, height=100)
                 ),
                 ft.Divider(thickness=1),
                 self.create_menu_item(ft.Icons.PERSON_OUTLINED, "Meu Perfil", "/perfil"),
@@ -419,84 +686,87 @@ class TelaUsuarioDashboard:
         self.gerar_cards(self.pagina_atual)
         self.atualizar_contador()
 
+        header_busca = ft.Container(
+            bgcolor="#F8FAFC",
+            border_radius=16,
+            padding=ft.padding.symmetric(horizontal=20, vertical=18),
+            shadow=ft.BoxShadow(blur_radius=12, color=ft.Colors.BLACK26, offset=ft.Offset(0, 3)),
+            content=ft.ResponsiveRow([
+                ft.Image(src="logo.png", width=110, col={"xs": 12, "md": 2}),
+                ft.TextField(
+                    ref=self.busca_ref,
+                    hint_text="Buscar medicamentos...",
+                    prefix_icon=ft.Icons.SEARCH,
+                    border_radius=12,
+                    bgcolor=ft.Colors.WHITE,
+                    height=45,
+                    col={"xs": 12, "md": 6},
+                    on_change=lambda e: self.gerar_cards(None)
+                ),
+                ft.Row([
+                    ft.Stack([
+                        ft.IconButton(
+                            icon=ft.Icons.SHOPPING_BAG_OUTLINED,
+                            icon_size=30,
+                            icon_color="#1E3A8A",
+                            on_click=self.abrir_carrinho
+                        ),
+                        ft.Container(
+                            content=ft.Text(str(self.contador["valor"]), size=10, color=ft.Colors.WHITE, ref=self.carrinho_count),
+                            width=16,
+                            height=16,
+                            alignment=ft.alignment.center,
+                            bgcolor=ft.Colors.RED,
+                            border_radius=8,
+                            right=0,
+                            top=0,
+                            visible=True
+                        )
+                    ]),
+                    ft.CircleAvatar(foreground_image_src="/images/profile.jpg", radius=20),
+                    ft.Text(self.nome_usuario.upper(), size=13, weight=ft.FontWeight.BOLD)
+                ], spacing=10, alignment=ft.MainAxisAlignment.END, col={"xs": 12, "md": 4})
+            ])
+        )
+
+        conteudo_principal = ft.Container(
+            expand=True,
+            alignment=ft.alignment.top_center,
+            padding=30,
+            content=ft.Column([
+                ft.Container(
+                    ft.Text("MEDICAMENTOS DISPONÍVEIS", size=24, weight="bold", color="#1E3A8A"),
+                    expand=True,
+                    alignment=ft.alignment.center
+                ),
+                ft.Divider(height=25),
+                self.cards_container,
+                ft.Divider(height=30),
+                self.botoes_paginacao
+            ], spacing=30, scroll=ft.ScrollMode.ADAPTIVE)
+        )
+        
         return ft.View(
             route="/usuario",
+            padding=0,
             controls=[
                 self.page.snack_bar,
-                ft.Container(
-                    expand=True,
-                    content=ft.Row([
+                ft.Row(
+                    controls=[
                         sidebar,
                         self.carrinho_drawer,
-                        ft.Container(
+                        ft.Column(
+                            controls=[
+                                ft.Container(header_busca, padding=ft.padding.only(left=20, right=20, top=20)),
+                                conteudo_principal,
+                            ],
                             expand=True,
-                            padding=20,
-                            content=ft.Column([
-                                ft.Container(
-                                    bgcolor="#F8FAFC",
-                                    border_radius=16,
-                                    padding=ft.padding.symmetric(horizontal=20, vertical=18),
-                                    shadow=ft.BoxShadow(blur_radius=12, color=ft.Colors.BLACK26, offset=ft.Offset(0, 3)),
-                                    content=ft.ResponsiveRow([
-                                        ft.Image(src="logo.png", width=110, col={"xs": 12, "md": 2}),
-                                        ft.TextField(
-                                            ref=self.busca_ref,
-                                            hint_text="Buscar medicamentos...",
-                                            prefix_icon=ft.Icons.SEARCH,
-                                            border_radius=12,
-                                            bgcolor=ft.Colors.WHITE,
-                                            height=45,
-                                            col={"xs": 12, "md": 6},
-                                            on_change=lambda e: self.gerar_cards(None)
-                                        ),
-                                        ft.Row([
-                                            ft.Stack([
-                                                ft.IconButton(
-                                                    icon=ft.Icons.SHOPPING_BAG_OUTLINED,
-                                                    icon_size=30,
-                                                    icon_color="#1E3A8A",
-                                                    on_click=self.abrir_carrinho
-                                                ),
-                                                ft.Container(
-                                                    content=ft.Text(str(self.contador["valor"]), size=10, color=ft.Colors.WHITE, ref=self.carrinho_count),
-                                                    width=16,
-                                                    height=16,
-                                                    alignment=ft.alignment.center,
-                                                    bgcolor=ft.Colors.RED,
-                                                    border_radius=8,
-                                                    right=0,
-                                                    top=0,
-                                                    visible=True
-                                                )
-                                            ]),
-                                            ft.CircleAvatar(foreground_image_src="/images/profile.jpg", radius=20),
-                                            ft.Text(self.nome_usuario.upper(), size=13, weight=ft.FontWeight.BOLD)
-                                        ], spacing=10, alignment=ft.MainAxisAlignment.END, col={"xs": 12, "md": 4})
-                                    ])
-                                ),
-                                ft.Container(
-                                    alignment=ft.alignment.top_center,
-                                    padding=30,
-                                    content=ft.Column([
-                                        ft.Container(
-                                            ft.Text("MEDICAMENTOS DISPONÍVEIS", size=24, weight="bold", color="#1E3A8A"),
-                                            expand=True,
-                                            alignment=ft.alignment.center
-                                        ),
-                                        ft.Row([
-                                            ft.OutlinedButton("."),
-                                            ft.OutlinedButton("."),
-                                            ft.OutlinedButton("."),
-                                        ], alignment=ft.MainAxisAlignment.CENTER, spacing=16),
-                                        ft.Divider(height=25),
-                                        self.cards_container,
-                                        ft.Divider(height=30),
-                                        self.botoes_paginacao
-                                    ], spacing=30)
-                                )
-                            ], scroll=ft.ScrollMode.ADAPTIVE, spacing=20)
+                            spacing=0
                         )
-                    ])
+                    ],
+                    expand=True,
+                    spacing=0,
+                    vertical_alignment=ft.CrossAxisAlignment.START
                 )
             ]
         )
@@ -1257,7 +1527,7 @@ class TelaUsuarioDashboard:
                         bgcolor=ft.Colors.INDIGO_100,
                         color=ft.Colors.INDIGO_900
                     ),
-                    on_click=lambda e, med=agendamento["medicamento"]: print(f"Reagendando: {med}")
+                    on_click=lambda e, registro=ag: self.abrir_tela_reagendamento(registro)
                 ),
                 ft.ElevatedButton(
                     "📥 Comprovante",
@@ -1270,6 +1540,7 @@ class TelaUsuarioDashboard:
                     on_click=lambda e, dados=ag: self.gerar_pdf_comprovante(dados)
                 )
             ], spacing=10)
+
 
             cards.append(
                 ft.Container(
@@ -1535,17 +1806,17 @@ class TelaUsuarioDashboard:
         c.setFont("Helvetica", 11)
 
         y -= 0.8 * cm
-        c.drawString(2 * cm, y, f"Medicamento: {agendamento[1]}")         # Nome do medicamento
+        c.drawString(2 * cm, y, f"Medicamento: {agendamento[1]}")       # Nome do medicamento
         y -= 0.6 * cm
-        c.drawString(2 * cm, y, f"Farmácia: {agendamento[2]}")            # Nome da farmácia
+        c.drawString(2 * cm, y, f"Farmácia: {agendamento[2]}")         # Nome da farmácia
         y -= 0.6 * cm
-        c.drawString(2 * cm, y, f"Endereço: {agendamento[3]}")            # Endereço
+        c.drawString(2 * cm, y, f"Endereço: {agendamento[3]}")         # Endereço
         y -= 0.6 * cm
-        c.drawString(2 * cm, y, f"Data: {agendamento[5]}")                # Data do agendamento
+        c.drawString(2 * cm, y, f"Data: {agendamento[5]}")             # Data do agendamento
         y -= 0.6 * cm
-        c.drawString(2 * cm, y, f"Horário: {agendamento[6]}")             # Horário
+        c.drawString(2 * cm, y, f"Horário: {agendamento[6]}")            # Horário
         y -= 0.6 * cm
-        c.drawString(2 * cm, y, f"Status atual: {agendamento[7]}")        # Status do agendamento
+        c.drawString(2 * cm, y, f"Status atual: {agendamento[7]}")     # Status do agendamento
 
         from datetime import datetime, timedelta
         validade_limite = datetime.strptime(agendamento[5], "%Y-%m-%d") + timedelta(days=20)
@@ -1654,14 +1925,11 @@ class TelaUsuarioDashboard:
         c.saveState()
         c.translate(largura / 4, altura / 2)
         c.rotate(30)
-        c.drawString(0, 0, "FARMCONECT")
+        c.drawString(0, 0, "FARMCONNECT")
         c.restoreState()
 
         c.save()
         self.page.launch_url(caminho)
-
-
-
 
 
 if __name__ == "__main__":
@@ -1685,6 +1953,8 @@ if __name__ == "__main__":
                 page.views.append(dashboard.tela_medicamentos_retirados())
             elif page.route == "/agendamento":
                 page.views.append(dashboard.tela_agendamento())
+            elif page.route == "/reagendamento":
+                page.views.append(dashboard.tela_reagendamento())
             elif page.route == "/detalhes_medicamento":
                 page.views.append(dashboard.tela_detalhes_medicamento())
             elif page.route == "/agendamentos":
