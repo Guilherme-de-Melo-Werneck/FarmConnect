@@ -11,6 +11,7 @@ from collections import Counter, defaultdict
 
 
 
+
 class TelaAdminDashboard:
     def __init__(self, page: ft.Page):
         self.page = page
@@ -2323,8 +2324,6 @@ class TelaAdminDashboard:
         rodape()
         c.save()
         self.page.launch_url(caminho)
-
-
     
     def gerar_relatorio_excel(self):
         import openpyxl
