@@ -1203,6 +1203,34 @@ def listar_medicamentos_retirados(usuario_id):
     conn.close()
     return resultado
 
+def listar_reagendamentos():
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT 
+            r.id,
+            u.nome AS paciente,
+            m.nome AS medicamento,
+            f.nome AS farmacia,
+            a.codigo,
+            r.data_antiga,
+            r.horario_antigo,
+            r.data_nova,
+            r.horario_novo,
+            r.criado_em
+        FROM reagendamentos r
+        JOIN agendamentos a ON r.agendamento_id = a.id
+        JOIN usuarios u ON r.usuario_id = u.id
+        JOIN medicamentos m ON a.medicamento_id = m.id
+        JOIN farmacias f ON a.farmacia_id = f.id
+        ORDER BY r.criado_em DESC
+    """)
+    resultados = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return resultados
+
+
 def verificar_status_usuario(email):
     conn = conectar()
     cursor = conn.cursor()
