@@ -1517,8 +1517,35 @@ class TelaAdminDashboard:
         self.editando_paciente = paciente is not None
         self.paciente_atual = paciente if paciente else None
 
-        # Buscar farmácias do banco de dados
+        # Buscar pacientes do banco de dados
         pacientes_db = listar_usuarios()
+
+        def telefone_change_paciente(e):
+            numeros = ''.join(filter(str.isdigit, self.campo_telefone_paciente.value))[:11]
+            if len(numeros) == 11:
+                self.campo_senha.focus()
+
+        def telefone_blur_paciente(e):
+            numeros = ''.join(filter(str.isdigit, self.campo_telefone_paciente.value))[:11]
+            fmt = ""
+            if len(numeros) >= 1:
+                fmt += "(" + numeros[:2] + ") "
+            if len(numeros) >= 7:
+                fmt += numeros[2:7] + "-"
+            if len(numeros) > 7:
+                fmt += numeros[7:]
+            elif len(numeros) > 2:
+                fmt += numeros[2:7]
+            self.campo_telefone_paciente.value = fmt
+            self.campo_telefone_paciente.update()
+
+        self.campo_telefone_paciente = ft.TextField(
+            label="Telefone",
+            on_blur=telefone_blur_paciente,
+            on_change=telefone_change_paciente,
+            border_radius=10,
+            bgcolor="#F9FAFB"
+        )
 
         def cpf_blur(e):
             texto_original = self.campo_cpf.value
@@ -1608,6 +1635,7 @@ class TelaAdminDashboard:
                 self.campo_email,
                 self.campo_cpf,
                 self.campo_nascimento,
+                self.campo_telefone_paciente,
                 self.campo_senha,
                 self.campo_confirmar_senha,
                 ft.Container(height=20),
@@ -1830,6 +1858,33 @@ class TelaAdminDashboard:
 
             if len(numeros) == 11:
                 self.campo_nascimento.focus()
+        
+        def telefone_change_cadastro(e):
+            numeros = ''.join(filter(str.isdigit, self.campo_telefone_paciente.value))[:11]
+            if len(numeros) == 11:
+                self.campo_senha.focus()
+
+        def telefone_blur_cadastro(e):
+            numeros = ''.join(filter(str.isdigit, self.campo_telefone_paciente.value))[:11]
+            fmt = ""
+            if len(numeros) >= 1:
+                fmt += "(" + numeros[:2] + ") "
+            if len(numeros) >= 7:
+                fmt += numeros[2:7] + "-"
+            if len(numeros) > 7:
+                fmt += numeros[7:]
+            elif len(numeros) > 2:
+                fmt += numeros[2:7]
+            self.campo_telefone_paciente.value = fmt
+            self.campo_telefone_paciente.update()
+
+            self.campo_telefone_paciente = ft.TextField(
+                label="Telefone",
+                on_blur=telefone_blur_cadastro,
+                on_change=telefone_change_cadastro,
+                border_radius=10,
+                bgcolor="#F3F4F6"
+            )
 
         def nascimento_change_cadastro(e):
             texto_original = self.campo_nascimento.value
@@ -1882,6 +1937,7 @@ class TelaAdminDashboard:
                                     self.campo_cpf,
                                     self.campo_email,
                                     self.campo_nascimento,
+                                    self.campo_telefone_paciente,
                                     self.campo_senha,
                                     self.campo_confirmar_senha,
                                     ft.Container(height=20),
@@ -1925,15 +1981,17 @@ class TelaAdminDashboard:
         cpf = self.campo_cpf.value.strip()
         email = self.campo_email.value.strip()
         nascimento = self.campo_nascimento.value.strip()
+        telefone = self.campo_telefone_paciente.value.strip()  # <-- NOVO
         senha = self.campo_senha.value.strip()
         confirmar_senha = self.campo_confirmar_senha.value.strip()
 
         # Validação dos campos
-        if not nome or not cpf or not email or not nascimento or not senha or not confirmar_senha:
+        if not nome or not cpf or not email or not nascimento or not telefone or not senha or not confirmar_senha:
             self.page.snack_bar = ft.SnackBar(content=ft.Text("Todos os campos são obrigatórios."), bgcolor="red")
             self.page.snack_bar.open = True
             self.page.update()
             return
+
         
         if senha != confirmar_senha:
             self.page.snack_bar = ft.SnackBar(content=ft.Text("As senhas não coincidem."), bgcolor="red")
@@ -1952,7 +2010,7 @@ class TelaAdminDashboard:
             return
 
         # Tenta registrar o usuário no banco de dados
-        sucesso = registrar_usuario(nome, email, cpf, nascimento_formatado, senha)
+        sucesso = registrar_usuario(nome, email, cpf, nascimento_formatado, telefone, senha)
         
         if sucesso:
             self.page.snack_bar = ft.SnackBar(content=ft.Text("Paciente cadastrado com sucesso!"), bgcolor="green")
