@@ -1662,22 +1662,60 @@ class TelaAdminDashboard:
         self.renderizar_tabela_pacientes(pacientes_db)
 
     def gerar_rows_pacientes(self, lista):
+        from datetime import datetime
+
+        def fmt_data_nasc(s: str) -> str:
+            if not s:
+                return "-"
+            s = s.strip()
+
+            # 1) Tenta formatos explícitos primeiro
+            for fmt in ("%d/%m/%Y", "%Y-%m-%d", "%d-%m-%Y", "%Y/%m/%d"):
+                try:
+                    return datetime.strptime(s, fmt).strftime("%d/%m/%Y")
+                except:
+                    pass
+
+            # 2) Fallback por dígitos
+            dig = "".join(ch for ch in s if ch.isdigit())
+            if len(digitos := dig) == 8:
+                # Se parece começar com ano (19xx/20xx) ou a string original começa com ano
+                if s.startswith(("19", "20")) or (digitos[:2] in {"19", "20"}):
+                    yyyy, mm, dd = digitos[0:4], digitos[4:6], digitos[6:8]
+                else:
+                    dd, mm, yyyy = digitos[0:2], digitos[2:4], digitos[4:8]
+                return f"{dd}/{mm}/{yyyy}"
+            return s  # mantém como veio se nada casar
+
+        def fmt_data_criacao(s: str) -> str:
+            if not s:
+                return "-"
+            s = s.strip()
+            for fmt in ("%Y-%m-%d %H:%M:%S", "%Y/%m/%d %H:%M:%S", "%d/%m/%Y %H:%M:%S"):
+                try:
+                    return datetime.strptime(s, fmt).strftime("%d/%m/%Y %H:%M:%S")
+                except:
+                    pass
+            for fmt in ("%Y-%m-%d", "%d-%m-%Y", "%Y/%m/%d", "%d/%m/%Y"):
+                try:
+                    return datetime.strptime(s, fmt).strftime("%d/%m/%Y")
+                except:
+                    pass
+            return s
+
         status_cores = {
             "Pendente": ("#D97706", "#FEF3C7"),
             "Aprovado": ("#15803D", "#D1FAE5"),
             "Cancelado": ("#DC2626", "#FEE2E2"),
-            "Recusado": ("#DC2626", "#FEE2E2")
+            "Recusado": ("#DC2626", "#FEE2E2"),
         }
 
         def status_badge(status):
             cor_texto, cor_fundo = status_cores.get(status, ("#6B7280", "#E5E7EB"))
             return ft.Row(
-                [
-                    ft.Container(width=8, height=8, bgcolor=cor_texto, border_radius=20),
-                    ft.Text(status, color=cor_texto, weight="bold")
-                ],
-                spacing=6,
-                alignment=ft.MainAxisAlignment.CENTER
+                [ft.Container(width=8, height=8, bgcolor=cor_texto, border_radius=20),
+                ft.Text(status, color=cor_texto, weight="bold")],
+                spacing=6, alignment=ft.MainAxisAlignment.CENTER
             )
 
         rows = []
@@ -1685,12 +1723,12 @@ class TelaAdminDashboard:
             rows.append(
                 ft.DataRow(
                     cells=[
-                        ft.DataCell(ft.Text(str(p[0]))),       # ID
-                        ft.DataCell(ft.Text(p[1])),            # Nome
-                        ft.DataCell(ft.Text(p[3])),            # CPF
-                        ft.DataCell(ft.Text(p[4])),            # Nascimento
-                        ft.DataCell(ft.Text(p[6])),            # Data de Criação (corrigido)
-                        ft.DataCell(                           # Status (corrigido)
+                        ft.DataCell(ft.Text(str(p[0]))),                 # ID
+                        ft.DataCell(ft.Text(p[1])),                      # Nome
+                        ft.DataCell(ft.Text(p[3])),                      # CPF
+                        ft.DataCell(ft.Text(fmt_data_nasc(p[4]))),       # Nascimento -> DD/MM/AAAA
+                        ft.DataCell(ft.Text(fmt_data_criacao(p[6]))),    # Criação -> DD/MM/AAAA HH:MM:SS
+                        ft.DataCell(
                             ft.Container(
                                 content=status_badge(p[7]),
                                 padding=ft.padding.symmetric(horizontal=4, vertical=4),
@@ -1705,22 +1743,26 @@ class TelaAdminDashboard:
                                         icon=ft.Icons.CHECK_CIRCLE_OUTLINE,
                                         icon_color="#059669",
                                         tooltip="Aprovar paciente",
-                                        on_click=lambda e, pid=p[0]: self.aprovar_usuario(pid)
+                                        on_click=lambda e, pid=p[0]: self.aprovar_usuario(pid),
                                     ),
                                     ft.IconButton(
                                         icon=ft.Icons.CANCEL_OUTLINED,
                                         icon_color="#DC2626",
                                         tooltip="Recusar paciente",
-                                        on_click=lambda e, pid=p[0]: self.recusar_usuario(pid)
+                                        on_click=lambda e, pid=p[0]: self.recusar_usuario(pid),
                                     ),
                                 ],
-                                spacing=8
+                                spacing=8,
                             )
-                        )
+                        ),
                     ]
                 )
             )
         return rows
+
+
+
+
 
 
     def renderizar_tabela_pacientes(self, lista):
