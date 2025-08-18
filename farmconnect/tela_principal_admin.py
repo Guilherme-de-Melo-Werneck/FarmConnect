@@ -1,15 +1,17 @@
 import flet as ft
-from database import listar_medicamentos, medicamentos_mais_solicitados, editar_medicamento, adicionar_medicamento, listar_categorias, listar_fabricantes, desativar_medicamento, adicionar_farmacia, listar_farmacias, deletar_farmacia, editar_farmacia, listar_usuarios, registrar_usuario, aprovar_usuario, recusar_usuario, listar_agendamentos, adicionar_agendamento, reativar_medicamento, adicionar_estoque, aprovar_agendamento, cancelar_agendamento, confirmar_retirada_medicamento
+from database import listar_medicamentos, medicamentos_mais_solicitados, editar_medicamento, adicionar_medicamento, listar_categorias, listar_fabricantes, desativar_medicamento, listar_farmacias, listar_usuarios, listar_medicamentos, registrar_usuario, listar_reagendamentos, aprovar_usuario, recusar_usuario, listar_agendamentos, adicionar_agendamento, reativar_medicamento, adicionar_estoque, aprovar_agendamento, cancelar_agendamento, confirmar_retirada_medicamento
+import openpyxl
+from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
+from openpyxl.utils import get_column_letter
+from datetime import datetime
+import sqlite3
 from datetime import datetime
 from collections import Counter
-import calendar
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import cm
 from reportlab.lib.colors import HexColor, lightgrey, black
 from collections import Counter, defaultdict
-
-
 
 
 class TelaAdminDashboard:
@@ -22,7 +24,6 @@ class TelaAdminDashboard:
         self.tabela_agendamentos_ref = ft.Ref[ft.DataTable]()
         self.tabela_pacientes_ref = ft.Ref[ft.DataTable]()
         self.tabela_medicamentos_ref = ft.Ref[ft.DataTable]()
-        # self.tabela_farmacias_ref = ft.Ref[ft.DataTable]()
 
     def page_settings(self):
         self.page.title = "FarmConnect - Painel Admin"
@@ -637,10 +638,7 @@ class TelaAdminDashboard:
                                         content=ft.Row(
                                             scroll=ft.ScrollMode.ALWAYS,
                                             controls = [
-                                                ft.Container(
-                                                    content=self.tabela_medicamentos,
-                                                    width=1000
-                                                )
+                                                self.tabela_medicamentos,
                                             ],
                                         )
                                     ),
@@ -650,7 +648,7 @@ class TelaAdminDashboard:
                                     )
                                 ]
                             )
-                        ], spacing=20)
+                        ], width = 1300, spacing=20)
                     )
                 ], spacing=20)
             )
@@ -1163,17 +1161,13 @@ class TelaAdminDashboard:
                             ]),
                             ft.Container(height=20),
 
-                            # SCROLL HORIZONTAL APLICADO AQUI
                             ft.Row(
                                 scroll=ft.ScrollMode.ALWAYS,
                                 controls=[
-                                    ft.Container(
-                                        content=self.tabela_agendamentos,
-                                        width=1200
-                                    )
+                                        self.tabela_agendamentos,
                                 ]
                             )
-                        ], spacing=20)
+                        ], width=1300, spacing=20)
                     )
                 ], spacing=20)
             )
@@ -1231,286 +1225,6 @@ class TelaAdminDashboard:
 
         self.campo_telefone.value = formatado
         self.campo_telefone.update()
-
-    # def salvar_farmacia(self, e=None):
-    #     nome = self.campo_nome_f.value.strip()
-    #     cnpj = self.campo_cnpj.value.strip()
-    #     endereco = self.campo_endereco.value.strip()
-    #     cidade = self.campo_cidade.value.strip()
-    #     estado = self.campo_estado.value.strip()
-    #     telefone = self.campo_telefone.value.strip()
-
-    #     if not all([nome, cnpj, endereco, cidade, estado, telefone]):
-    #         self.page.snack_bar = ft.SnackBar(content=ft.Text("Todos os campos são obrigatórios."), bgcolor="red")
-    #         self.page.snack_bar.open = True
-    #         self.page.update()
-    #         return
-
-    #     if self.editando_farmacia and self.farmacia_atual:
-    #         editar_farmacia(
-    #             self.farmacia_atual["id"],
-    #             nome=nome,
-    #             endereco=endereco,
-    #             cnpj=cnpj,
-    #             cidade=cidade,
-    #             estado=estado,
-    #             telefone=telefone
-    #         )
-    #         mensagem = "Farmácia atualizada com sucesso."
-    #     else:
-    #         adicionar_farmacia(
-    #             nome=nome,
-    #             endereco=endereco,
-    #             cnpj=cnpj,
-    #             cidade=cidade,
-    #             estado=estado,
-    #             telefone=telefone
-    #         )
-    #         mensagem = "Farmácia adicionada com sucesso."
-
-    #     self.page.snack_bar = ft.SnackBar(content=ft.Text(mensagem), bgcolor="green")
-    #     self.page.snack_bar.open = True
-    #     self.page.update()
-        # self.load_farmacias()
-
-    # def load_farmacias(self, e=None, farmacia=None):
-    #     self.current_view.controls.clear()
-    #     self.editando_farmacia = farmacia is not None
-    #     self.farmacia_atual = farmacia if farmacia else None
-
-    #     # Buscar farmácias do banco de dados
-    #     farmacias_db = listar_farmacias()
-        
-    #     # Campos de edição
-    #     self.campo_busca_farmacia = ft.TextField(
-    #         hint_text="Buscar farmácia...",
-    #         prefix_icon=ft.Icons.SEARCH,
-    #         border_radius=30,
-    #         bgcolor="#F9FAFB",
-    #         height=50,
-    #         on_change=self.filtrar_farmacias
-    #     )
-
-    #     self.campo_nome_f = ft.TextField(label="Nome da Farmácia", value=farmacia["nome"] if farmacia else "")
-    #     self.campo_endereco = ft.TextField(label="Endereço da Farmácia", value=farmacia["endereco"] if farmacia else "")
-    #     self.campo_cnpj = ft.TextField(label="CNPJ", on_blur=self.cnpj_blur, on_change=self.cnpj_change, value=farmacia["cnpj"] if farmacia else "")
-    #     self.campo_cidade = ft.TextField(label="Cidade", value=farmacia["cidade"] if farmacia else "")
-    #     self.campo_estado = ft.Dropdown(
-    #                         label="Estado",
-    #                         options=[
-    #                             ft.dropdown.Option("AC", "AC"),
-    #                             ft.dropdown.Option("AL", "AL"),
-    #                             ft.dropdown.Option("AP", "AP"),
-    #                             ft.dropdown.Option("AM", "AM"),
-    #                             ft.dropdown.Option("BA", "BA"),
-    #                             ft.dropdown.Option("CE", "CE"),
-    #                             ft.dropdown.Option("DF", "DF"),
-    #                             ft.dropdown.Option("ES", "ES"),
-    #                             ft.dropdown.Option("GO", "GO"),
-    #                             ft.dropdown.Option("MA", "MA"),
-    #                             ft.dropdown.Option("MT", "MT"),
-    #                             ft.dropdown.Option("MS", "MS"),
-    #                             ft.dropdown.Option("MG", "MG"),
-    #                             ft.dropdown.Option("PA", "PA"),
-    #                             ft.dropdown.Option("PB", "PB"),
-    #                             ft.dropdown.Option("PR", "PR"),
-    #                             ft.dropdown.Option("PE", "PE"),
-    #                             ft.dropdown.Option("PI", "PI"),
-    #                             ft.dropdown.Option("RJ", "RJ"),
-    #                             ft.dropdown.Option("RN", "RN"),
-    #                             ft.dropdown.Option("RS", "RS"),
-    #                             ft.dropdown.Option("RO", "RO"),
-    #                             ft.dropdown.Option("RR", "RR"),
-    #                             ft.dropdown.Option("SC", "SC"),
-    #                             ft.dropdown.Option("SP", "SP"),
-    #                             ft.dropdown.Option("SE", "SE"),
-    #                             ft.dropdown.Option("TO", "TO"),
-    #                         ],
-    #                         border_radius=10,
-    #                         bgcolor="#F3F4F6",
-    #                         expand=True
-    #                     )
-    #     self.campo_telefone = ft.TextField(label="Telefone", on_blur=self.telefone_blur, on_change = self.telefone_change, value=farmacia["telefone"] if farmacia else "")
-
-    #     # Painel lateral de edição
-    #     self.painel_detalhes_farmacia = ft.Container(
-    #         bgcolor="#FFFFFF",
-    #         border_radius=20,
-    #         padding=25,
-    #         shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26, offset=ft.Offset(0, 8)),
-    #         visible=self.editando_farmacia,
-    #         animate_opacity=300,
-    #         opacity=1.0 if self.editando_farmacia else 0.0,
-    #         expand=1,
-    #         content=ft.Column([
-    #             ft.Text("🏥 Editar Farmácia", size=20, weight="bold", color=ft.Colors.BLUE_900),
-    #             ft.Divider(),
-    #             self.campo_nome_f,
-    #             self.campo_endereco,
-    #             self.campo_cnpj,
-    #             self.campo_cidade,
-    #             self.campo_estado,
-    #             self.campo_telefone,
-    #             ft.Container(height=20),
-    #             ft.Row([
-    #                 ft.ElevatedButton(
-    #                     "Salvar",
-    #                     bgcolor=ft.Colors.BLUE_600,
-    #                     color="white",
-    #                     expand=True,
-    #                     style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12)),
-    #                     on_click=self.salvar_farmacia  # Novo método para salvar
-    #                 ),
-    #                 ft.OutlinedButton(
-    #                     "Cancelar",
-    #                     expand=True,
-    #                     style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12)),
-    #                     on_click=lambda e: self.load_farmacias()
-    #                 )
-    #             ], spacing=10)
-    #         ], spacing=12)
-    #     )
-
-    #     # Renderiza a tabela com farmácias do banco
-    #     self.renderizar_tabela_farmacias(farmacias_db)
-
-    # def gerar_rows_farmacias(self, lista):
-    #     rows = []
-    #     for f in lista:
-    #         rows.append(
-    #             ft.DataRow(
-    #                 cells=[
-    #                     ft.DataCell(ft.Text(str(f[0]))),
-    #                     ft.DataCell(ft.Text(f[1])),
-    #                     ft.DataCell(ft.Text(f[2])),
-    #                     ft.DataCell(ft.Text(f[3])),
-    #                     ft.DataCell(ft.Text(f[4])),
-    #                     ft.DataCell(ft.Text(f[5])),
-    #                     ft.DataCell(ft.Text(f[6])),
-    #                     ft.DataCell(
-    #                         ft.Row([
-    #                             ft.IconButton(
-    #                                 icon=ft.Icons.EDIT,
-    #                                 icon_color="#10B981",
-    #                                 tooltip="Editar",
-    #                                 on_click=lambda e, f=f: (
-    #                                     setattr(self, "farmacia_atual", {
-    #                                         "id": f[0],
-    #                                         "nome": f[1],
-    #                                         "endereco": f[2],
-    #                                         "cnpj": f[3],
-    #                                         "cidade": f[4],
-    #                                         "estado": f[5],
-    #                                         "telefone": f[6]
-    #                                     }),
-    #                                     self.load_farmacias(farmacia=self.farmacia_atual)
-    #                                 )
-    #                             ),
-    #                             ft.IconButton(
-    #                                 icon=ft.Icons.DELETE,
-    #                                 icon_color="#DC2626",
-    #                                 tooltip="Excluir",
-    #                                 on_click=lambda e: print(f"Excluir {f[1]}")
-    #                             )
-    #                         ], spacing=6)
-    #                     )
-    #                 ]
-    #             )
-    #         )
-    #     return rows
-
-    # def renderizar_tabela_farmacias(self, lista):
-    #     self.tabela_farmacias = ft.DataTable(
-    #         ref=self.tabela_farmacias_ref,
-    #         heading_row_color="#F9FAFB",
-    #         border=ft.border.all(1, "#E5E7EB"),
-    #         border_radius=12,
-    #         columns=[
-    #             ft.DataColumn(ft.Text("ID")),
-    #             ft.DataColumn(ft.Text("Nome")),
-    #             ft.DataColumn(ft.Text("Endereço")),
-    #             ft.DataColumn(ft.Text("CNPJ")),
-    #             ft.DataColumn(ft.Text("Cidade")),
-    #             ft.DataColumn(ft.Text("Estado")),
-    #             ft.DataColumn(ft.Text("Telefone")),
-    #             ft.DataColumn(ft.Text("Ações"))
-    #         ],
-    #         rows=self.gerar_rows_farmacias(lista)
-    #     )
-
-    #     self.current_view.controls.clear()
-    #     self.current_view.controls.append(
-    #         ft.Container(
-    #             padding=30,
-    #             content=ft.Column([
-    #                 ft.Row([
-    #                     ft.Icon(name=ft.Icons.LOCAL_HOSPITAL, size=40, color=ft.Colors.BLUE_600),
-    #                     ft.Text("Gerenciamento de Farmácias", size=32, weight="bold", color=ft.Colors.BLUE_900)
-    #                 ], spacing=10, alignment=ft.MainAxisAlignment.CENTER),
-    #                 ft.Text("Adicione, edite ou gerencie as farmácias cadastradas no sistema.",
-    #                         size=14, color=ft.Colors.GREY_700, text_align=ft.TextAlign.CENTER),
-    #                 ft.Divider(height=30),
-
-    #                 ft.Container(
-    #                     bgcolor="#FFFFFF",
-    #                     border_radius=20,
-    #                     padding=25,
-    #                     expand=True,
-    #                     shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26, offset=ft.Offset(0, 8)),
-    #                     content=ft.Column([
-    #                         ft.Row([
-    #                             ft.Text("📋 Lista de Farmácias", size=20, weight="bold", color="#111827"),
-    #                             ft.IconButton(
-    #                                 icon=ft.Icons.ADD,
-    #                                 tooltip="Adicionar nova farmácia",
-    #                                 icon_color=ft.Colors.BLUE_600,
-    #                                 on_click=lambda e: self.load_farmacias(farmacia={})
-    #                             )
-    #                         ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
-    #                         ft.Divider(),
-
-    #                         ft.Row([
-    #                             ft.Container(
-    #                                 expand=True,
-    #                                 content=self.campo_busca_farmacia
-    #                             )
-    #                         ]),
-    #                         ft.Container(height=20),
-
-    #                         ft.Container(
-    #                             expand=True,
-    #                             content=ft.Stack(
-    #                                 expand=True,
-    #                                 controls=[
-    #                                     ft.Container(
-    #                                         expand=True,
-    #                                         content=self.tabela_farmacias,
-    #                                         width=1200,
-    #                                     ),
-    #                                     ft.AnimatedSwitcher(
-    #                                         content=self.painel_detalhes_farmacia if self.editando_farmacia else ft.Container(),
-    #                                         transition=ft.Animation(300, "easeInOut")
-    #                                     )
-    #                                 ]
-    #                             )
-    #                         )
-    #                     ], spacing=20)
-    #                 )
-    #             ], spacing=20)
-    #         )
-    #     )
-
-    #     self.page.update()
-
-    # def filtrar_farmacias(self, e):
-    #     termo = self.campo_busca_farmacia.value.strip().lower()
-    #     farmacias = listar_farmacias()
-    #     resultado = [f for f in farmacias if termo in f[1].lower() or termo in f[3].lower() or termo in f[4].lower() or termo in f[5].lower()]
-
-    #     self.tabela_farmacias_ref.current.rows = self.gerar_rows_farmacias(resultado)
-    #     self.tabela_farmacias_ref.current.update()
-
-    from database import listar_usuarios, aprovar_usuario, recusar_usuario
 
     def load_pacientes(self, e=None, paciente=None):
         self.current_view.controls.clear()
@@ -1760,11 +1474,6 @@ class TelaAdminDashboard:
             )
         return rows
 
-
-
-
-
-
     def renderizar_tabela_pacientes(self, lista):
         self.tabela_pacientes = ft.DataTable(
             ref=self.tabela_pacientes_ref,
@@ -1827,10 +1536,11 @@ class TelaAdminDashboard:
                                 content=ft.Stack(
                                     expand=True,
                                     controls=[
-                                        ft.Container(
-                                            expand=True,
-                                            content=self.tabela_pacientes,
-                                            width=1200,
+                                        ft.Row(
+                                            scroll=ft.ScrollMode.ALWAYS,
+                                            controls=[
+                                                self.tabela_pacientes
+                                            ]
                                         ),
                                         ft.AnimatedSwitcher(
                                             content=self.painel_detalhes_paciente if self.editando_paciente else ft.Container(),
@@ -1839,7 +1549,7 @@ class TelaAdminDashboard:
                                     ]
                                 )
                             )
-                        ], spacing=20)
+                        ], width=1100, spacing=20)
                     )
                 ], spacing=20)
             )
@@ -2065,9 +1775,6 @@ class TelaAdminDashboard:
             self.page.update()
 
     def load_cadastro_agendamento(self, e=None):
-        from datetime import datetime
-        from database import listar_usuarios, listar_medicamentos
-
         pacientes = listar_usuarios()
         medicamentos = listar_medicamentos()
 
@@ -2182,13 +1889,9 @@ class TelaAdminDashboard:
         )
         self.page.update()
 
-
-
     def abrir_date_picker(self):
         self.date_picker.open = True
         self.page.update()
-
-
 
     def filtrar_agendamentos(self, e):
         termo = self.campo_busca_agendamentos.value.strip().lower()
@@ -2237,7 +1940,6 @@ class TelaAdminDashboard:
 
 
     def atualizar_farmacia_automatica(self, e):
-        from database import listar_medicamentos
         med_id = int(self.dropdown_medicamento.value)
         med_info = next((m for m in listar_medicamentos() if m[0] == med_id), None)
 
@@ -2258,7 +1960,7 @@ class TelaAdminDashboard:
         from datetime import datetime
         from collections import Counter, defaultdict
         import calendar
-        from database import listar_usuarios, listar_agendamentos, listar_medicamentos, listar_reagendamentos
+
 
         caminho = "relatorio_farmconnect.pdf"
         c = canvas.Canvas(caminho, pagesize=A4)
@@ -2481,13 +2183,6 @@ class TelaAdminDashboard:
     
     
     def gerar_relatorio_excel(self):
-        import openpyxl
-        from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
-        from openpyxl.utils import get_column_letter
-        from datetime import datetime
-        import sqlite3
-        from database import listar_usuarios, listar_agendamentos, listar_medicamentos
-
         wb = openpyxl.Workbook()
         del wb["Sheet"]
 
