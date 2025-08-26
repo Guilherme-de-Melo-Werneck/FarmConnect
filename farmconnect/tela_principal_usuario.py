@@ -790,8 +790,8 @@ class TelaUsuarioDashboard:
                         ),
                         # Título da Página
                         ft.Text(
-                            "📄 DOCUMENTOS NECESSÁRIOS", 
-                            size=30, 
+                            "📄 Documentos Necessários", 
+                            size=28, 
                             weight=ft.FontWeight.BOLD, 
                             color=ft.Colors.BLUE_900,
                             text_align=ft.TextAlign.CENTER,
@@ -1077,8 +1077,8 @@ class TelaUsuarioDashboard:
                     padding=40,
                     content=ft.Column([
                         ft.Text(
-                            "MEDICAMENTOS RETIRADOS", 
-                            size=32, 
+                            "Medicamentos Retirados", 
+                            size=28, 
                             weight=ft.FontWeight.BOLD, 
                             color=ft.Colors.BLUE_900,
                             text_align=ft.TextAlign.CENTER,
@@ -1092,7 +1092,7 @@ class TelaUsuarioDashboard:
                             content=ft.Column([
                                 ft.Row([
                                     ft.TextField(
-                                        label="🔍 Buscar Medicamento",
+                                        label="Buscar medicamento...",
                                         expand=True,
                                         border_radius=30,
                                         on_change=filtrar_medicamentos
@@ -1411,7 +1411,7 @@ class TelaUsuarioDashboard:
                                         icon=ft.Icons.ADD_SHOPPING_CART,
                                         icon_color=ft.Colors.WHITE,
                                         style=ft.ButtonStyle(
-                                            bgcolor="#1E3A8A",
+                                            bgcolor=ft.Colors.BLUE_900,
                                             color=ft.Colors.WHITE,
                                             padding=ft.padding.symmetric(vertical=14, horizontal=20),
                                             shape=ft.RoundedRectangleBorder(radius=12)

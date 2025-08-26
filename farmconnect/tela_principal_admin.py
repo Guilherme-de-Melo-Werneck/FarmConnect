@@ -1,14 +1,17 @@
 import flet as ft
-from database import listar_medicamentos, medicamentos_mais_solicitados, editar_medicamento, adicionar_medicamento, listar_categorias, listar_fabricantes, desativar_medicamento, adicionar_farmacia, listar_farmacias, deletar_farmacia, editar_farmacia, listar_usuarios, registrar_usuario, aprovar_usuario, recusar_usuario, listar_agendamentos, adicionar_agendamento, reativar_medicamento, adicionar_estoque, aprovar_agendamento, cancelar_agendamento, confirmar_retirada_medicamento
+from database import listar_medicamentos, medicamentos_mais_solicitados, editar_medicamento, adicionar_medicamento, listar_categorias, listar_fabricantes, desativar_medicamento, listar_farmacias, listar_usuarios, listar_medicamentos, registrar_usuario, listar_reagendamentos, aprovar_usuario, recusar_usuario, listar_agendamentos, adicionar_agendamento, reativar_medicamento, adicionar_estoque, aprovar_agendamento, cancelar_agendamento, confirmar_retirada_medicamento
+import openpyxl
+from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
+from openpyxl.utils import get_column_letter
+from datetime import datetime
+import sqlite3
 from datetime import datetime
 from collections import Counter
-import calendar
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import cm
 from reportlab.lib.colors import HexColor, lightgrey, black
 from collections import Counter, defaultdict
-
 
 
 class TelaAdminDashboard:
@@ -21,7 +24,6 @@ class TelaAdminDashboard:
         self.tabela_agendamentos_ref = ft.Ref[ft.DataTable]()
         self.tabela_pacientes_ref = ft.Ref[ft.DataTable]()
         self.tabela_medicamentos_ref = ft.Ref[ft.DataTable]()
-        # self.tabela_farmacias_ref = ft.Ref[ft.DataTable]()
 
     def page_settings(self):
         self.page.title = "FarmConnect - Painel Admin"
@@ -636,10 +638,7 @@ class TelaAdminDashboard:
                                         content=ft.Row(
                                             scroll=ft.ScrollMode.ALWAYS,
                                             controls = [
-                                                ft.Container(
-                                                    content=self.tabela_medicamentos,
-                                                    width=1000
-                                                )
+                                                self.tabela_medicamentos,
                                             ],
                                         )
                                     ),
@@ -649,7 +648,7 @@ class TelaAdminDashboard:
                                     )
                                 ]
                             )
-                        ], spacing=20)
+                        ], width = 1300, spacing=20)
                     )
                 ], spacing=20)
             )
@@ -1162,17 +1161,13 @@ class TelaAdminDashboard:
                             ]),
                             ft.Container(height=20),
 
-                            # SCROLL HORIZONTAL APLICADO AQUI
                             ft.Row(
                                 scroll=ft.ScrollMode.ALWAYS,
                                 controls=[
-                                    ft.Container(
-                                        content=self.tabela_agendamentos,
-                                        width=1200
-                                    )
+                                        self.tabela_agendamentos,
                                 ]
                             )
-                        ], spacing=20)
+                        ], width=1300, spacing=20)
                     )
                 ], spacing=20)
             )
@@ -1231,293 +1226,40 @@ class TelaAdminDashboard:
         self.campo_telefone.value = formatado
         self.campo_telefone.update()
 
-    # def salvar_farmacia(self, e=None):
-    #     nome = self.campo_nome_f.value.strip()
-    #     cnpj = self.campo_cnpj.value.strip()
-    #     endereco = self.campo_endereco.value.strip()
-    #     cidade = self.campo_cidade.value.strip()
-    #     estado = self.campo_estado.value.strip()
-    #     telefone = self.campo_telefone.value.strip()
-
-    #     if not all([nome, cnpj, endereco, cidade, estado, telefone]):
-    #         self.page.snack_bar = ft.SnackBar(content=ft.Text("Todos os campos são obrigatórios."), bgcolor="red")
-    #         self.page.snack_bar.open = True
-    #         self.page.update()
-    #         return
-
-    #     if self.editando_farmacia and self.farmacia_atual:
-    #         editar_farmacia(
-    #             self.farmacia_atual["id"],
-    #             nome=nome,
-    #             endereco=endereco,
-    #             cnpj=cnpj,
-    #             cidade=cidade,
-    #             estado=estado,
-    #             telefone=telefone
-    #         )
-    #         mensagem = "Farmácia atualizada com sucesso."
-    #     else:
-    #         adicionar_farmacia(
-    #             nome=nome,
-    #             endereco=endereco,
-    #             cnpj=cnpj,
-    #             cidade=cidade,
-    #             estado=estado,
-    #             telefone=telefone
-    #         )
-    #         mensagem = "Farmácia adicionada com sucesso."
-
-    #     self.page.snack_bar = ft.SnackBar(content=ft.Text(mensagem), bgcolor="green")
-    #     self.page.snack_bar.open = True
-    #     self.page.update()
-        # self.load_farmacias()
-
-    # def load_farmacias(self, e=None, farmacia=None):
-    #     self.current_view.controls.clear()
-    #     self.editando_farmacia = farmacia is not None
-    #     self.farmacia_atual = farmacia if farmacia else None
-
-    #     # Buscar farmácias do banco de dados
-    #     farmacias_db = listar_farmacias()
-        
-    #     # Campos de edição
-    #     self.campo_busca_farmacia = ft.TextField(
-    #         hint_text="Buscar farmácia...",
-    #         prefix_icon=ft.Icons.SEARCH,
-    #         border_radius=30,
-    #         bgcolor="#F9FAFB",
-    #         height=50,
-    #         on_change=self.filtrar_farmacias
-    #     )
-
-    #     self.campo_nome_f = ft.TextField(label="Nome da Farmácia", value=farmacia["nome"] if farmacia else "")
-    #     self.campo_endereco = ft.TextField(label="Endereço da Farmácia", value=farmacia["endereco"] if farmacia else "")
-    #     self.campo_cnpj = ft.TextField(label="CNPJ", on_blur=self.cnpj_blur, on_change=self.cnpj_change, value=farmacia["cnpj"] if farmacia else "")
-    #     self.campo_cidade = ft.TextField(label="Cidade", value=farmacia["cidade"] if farmacia else "")
-    #     self.campo_estado = ft.Dropdown(
-    #                         label="Estado",
-    #                         options=[
-    #                             ft.dropdown.Option("AC", "AC"),
-    #                             ft.dropdown.Option("AL", "AL"),
-    #                             ft.dropdown.Option("AP", "AP"),
-    #                             ft.dropdown.Option("AM", "AM"),
-    #                             ft.dropdown.Option("BA", "BA"),
-    #                             ft.dropdown.Option("CE", "CE"),
-    #                             ft.dropdown.Option("DF", "DF"),
-    #                             ft.dropdown.Option("ES", "ES"),
-    #                             ft.dropdown.Option("GO", "GO"),
-    #                             ft.dropdown.Option("MA", "MA"),
-    #                             ft.dropdown.Option("MT", "MT"),
-    #                             ft.dropdown.Option("MS", "MS"),
-    #                             ft.dropdown.Option("MG", "MG"),
-    #                             ft.dropdown.Option("PA", "PA"),
-    #                             ft.dropdown.Option("PB", "PB"),
-    #                             ft.dropdown.Option("PR", "PR"),
-    #                             ft.dropdown.Option("PE", "PE"),
-    #                             ft.dropdown.Option("PI", "PI"),
-    #                             ft.dropdown.Option("RJ", "RJ"),
-    #                             ft.dropdown.Option("RN", "RN"),
-    #                             ft.dropdown.Option("RS", "RS"),
-    #                             ft.dropdown.Option("RO", "RO"),
-    #                             ft.dropdown.Option("RR", "RR"),
-    #                             ft.dropdown.Option("SC", "SC"),
-    #                             ft.dropdown.Option("SP", "SP"),
-    #                             ft.dropdown.Option("SE", "SE"),
-    #                             ft.dropdown.Option("TO", "TO"),
-    #                         ],
-    #                         border_radius=10,
-    #                         bgcolor="#F3F4F6",
-    #                         expand=True
-    #                     )
-    #     self.campo_telefone = ft.TextField(label="Telefone", on_blur=self.telefone_blur, on_change = self.telefone_change, value=farmacia["telefone"] if farmacia else "")
-
-    #     # Painel lateral de edição
-    #     self.painel_detalhes_farmacia = ft.Container(
-    #         bgcolor="#FFFFFF",
-    #         border_radius=20,
-    #         padding=25,
-    #         shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26, offset=ft.Offset(0, 8)),
-    #         visible=self.editando_farmacia,
-    #         animate_opacity=300,
-    #         opacity=1.0 if self.editando_farmacia else 0.0,
-    #         expand=1,
-    #         content=ft.Column([
-    #             ft.Text("🏥 Editar Farmácia", size=20, weight="bold", color=ft.Colors.BLUE_900),
-    #             ft.Divider(),
-    #             self.campo_nome_f,
-    #             self.campo_endereco,
-    #             self.campo_cnpj,
-    #             self.campo_cidade,
-    #             self.campo_estado,
-    #             self.campo_telefone,
-    #             ft.Container(height=20),
-    #             ft.Row([
-    #                 ft.ElevatedButton(
-    #                     "Salvar",
-    #                     bgcolor=ft.Colors.BLUE_600,
-    #                     color="white",
-    #                     expand=True,
-    #                     style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12)),
-    #                     on_click=self.salvar_farmacia  # Novo método para salvar
-    #                 ),
-    #                 ft.OutlinedButton(
-    #                     "Cancelar",
-    #                     expand=True,
-    #                     style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=12)),
-    #                     on_click=lambda e: self.load_farmacias()
-    #                 )
-    #             ], spacing=10)
-    #         ], spacing=12)
-    #     )
-
-    #     # Renderiza a tabela com farmácias do banco
-    #     self.renderizar_tabela_farmacias(farmacias_db)
-
-    # def gerar_rows_farmacias(self, lista):
-    #     rows = []
-    #     for f in lista:
-    #         rows.append(
-    #             ft.DataRow(
-    #                 cells=[
-    #                     ft.DataCell(ft.Text(str(f[0]))),
-    #                     ft.DataCell(ft.Text(f[1])),
-    #                     ft.DataCell(ft.Text(f[2])),
-    #                     ft.DataCell(ft.Text(f[3])),
-    #                     ft.DataCell(ft.Text(f[4])),
-    #                     ft.DataCell(ft.Text(f[5])),
-    #                     ft.DataCell(ft.Text(f[6])),
-    #                     ft.DataCell(
-    #                         ft.Row([
-    #                             ft.IconButton(
-    #                                 icon=ft.Icons.EDIT,
-    #                                 icon_color="#10B981",
-    #                                 tooltip="Editar",
-    #                                 on_click=lambda e, f=f: (
-    #                                     setattr(self, "farmacia_atual", {
-    #                                         "id": f[0],
-    #                                         "nome": f[1],
-    #                                         "endereco": f[2],
-    #                                         "cnpj": f[3],
-    #                                         "cidade": f[4],
-    #                                         "estado": f[5],
-    #                                         "telefone": f[6]
-    #                                     }),
-    #                                     self.load_farmacias(farmacia=self.farmacia_atual)
-    #                                 )
-    #                             ),
-    #                             ft.IconButton(
-    #                                 icon=ft.Icons.DELETE,
-    #                                 icon_color="#DC2626",
-    #                                 tooltip="Excluir",
-    #                                 on_click=lambda e: print(f"Excluir {f[1]}")
-    #                             )
-    #                         ], spacing=6)
-    #                     )
-    #                 ]
-    #             )
-    #         )
-    #     return rows
-
-    # def renderizar_tabela_farmacias(self, lista):
-    #     self.tabela_farmacias = ft.DataTable(
-    #         ref=self.tabela_farmacias_ref,
-    #         heading_row_color="#F9FAFB",
-    #         border=ft.border.all(1, "#E5E7EB"),
-    #         border_radius=12,
-    #         columns=[
-    #             ft.DataColumn(ft.Text("ID")),
-    #             ft.DataColumn(ft.Text("Nome")),
-    #             ft.DataColumn(ft.Text("Endereço")),
-    #             ft.DataColumn(ft.Text("CNPJ")),
-    #             ft.DataColumn(ft.Text("Cidade")),
-    #             ft.DataColumn(ft.Text("Estado")),
-    #             ft.DataColumn(ft.Text("Telefone")),
-    #             ft.DataColumn(ft.Text("Ações"))
-    #         ],
-    #         rows=self.gerar_rows_farmacias(lista)
-    #     )
-
-    #     self.current_view.controls.clear()
-    #     self.current_view.controls.append(
-    #         ft.Container(
-    #             padding=30,
-    #             content=ft.Column([
-    #                 ft.Row([
-    #                     ft.Icon(name=ft.Icons.LOCAL_HOSPITAL, size=40, color=ft.Colors.BLUE_600),
-    #                     ft.Text("Gerenciamento de Farmácias", size=32, weight="bold", color=ft.Colors.BLUE_900)
-    #                 ], spacing=10, alignment=ft.MainAxisAlignment.CENTER),
-    #                 ft.Text("Adicione, edite ou gerencie as farmácias cadastradas no sistema.",
-    #                         size=14, color=ft.Colors.GREY_700, text_align=ft.TextAlign.CENTER),
-    #                 ft.Divider(height=30),
-
-    #                 ft.Container(
-    #                     bgcolor="#FFFFFF",
-    #                     border_radius=20,
-    #                     padding=25,
-    #                     expand=True,
-    #                     shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26, offset=ft.Offset(0, 8)),
-    #                     content=ft.Column([
-    #                         ft.Row([
-    #                             ft.Text("📋 Lista de Farmácias", size=20, weight="bold", color="#111827"),
-    #                             ft.IconButton(
-    #                                 icon=ft.Icons.ADD,
-    #                                 tooltip="Adicionar nova farmácia",
-    #                                 icon_color=ft.Colors.BLUE_600,
-    #                                 on_click=lambda e: self.load_farmacias(farmacia={})
-    #                             )
-    #                         ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
-    #                         ft.Divider(),
-
-    #                         ft.Row([
-    #                             ft.Container(
-    #                                 expand=True,
-    #                                 content=self.campo_busca_farmacia
-    #                             )
-    #                         ]),
-    #                         ft.Container(height=20),
-
-    #                         ft.Container(
-    #                             expand=True,
-    #                             content=ft.Stack(
-    #                                 expand=True,
-    #                                 controls=[
-    #                                     ft.Container(
-    #                                         expand=True,
-    #                                         content=self.tabela_farmacias,
-    #                                         width=1200,
-    #                                     ),
-    #                                     ft.AnimatedSwitcher(
-    #                                         content=self.painel_detalhes_farmacia if self.editando_farmacia else ft.Container(),
-    #                                         transition=ft.Animation(300, "easeInOut")
-    #                                     )
-    #                                 ]
-    #                             )
-    #                         )
-    #                     ], spacing=20)
-    #                 )
-    #             ], spacing=20)
-    #         )
-    #     )
-
-    #     self.page.update()
-
-    # def filtrar_farmacias(self, e):
-    #     termo = self.campo_busca_farmacia.value.strip().lower()
-    #     farmacias = listar_farmacias()
-    #     resultado = [f for f in farmacias if termo in f[1].lower() or termo in f[3].lower() or termo in f[4].lower() or termo in f[5].lower()]
-
-    #     self.tabela_farmacias_ref.current.rows = self.gerar_rows_farmacias(resultado)
-    #     self.tabela_farmacias_ref.current.update()
-
-    from database import listar_usuarios, aprovar_usuario, recusar_usuario
-
     def load_pacientes(self, e=None, paciente=None):
         self.current_view.controls.clear()
         self.editando_paciente = paciente is not None
         self.paciente_atual = paciente if paciente else None
 
-        # Buscar farmácias do banco de dados
+        # Buscar pacientes do banco de dados
         pacientes_db = listar_usuarios()
+
+        def telefone_change_paciente(e):
+            numeros = ''.join(filter(str.isdigit, self.campo_telefone_paciente.value))[:11]
+            if len(numeros) == 11:
+                self.campo_senha.focus()
+
+        def telefone_blur_paciente(e):
+            numeros = ''.join(filter(str.isdigit, self.campo_telefone_paciente.value))[:11]
+            fmt = ""
+            if len(numeros) >= 1:
+                fmt += "(" + numeros[:2] + ") "
+            if len(numeros) >= 7:
+                fmt += numeros[2:7] + "-"
+            if len(numeros) > 7:
+                fmt += numeros[7:]
+            elif len(numeros) > 2:
+                fmt += numeros[2:7]
+            self.campo_telefone_paciente.value = fmt
+            self.campo_telefone_paciente.update()
+
+        self.campo_telefone_paciente = ft.TextField(
+            label="Telefone",
+            on_blur=telefone_blur_paciente,
+            on_change=telefone_change_paciente,
+            border_radius=10,
+            bgcolor="#F9FAFB"
+        )
 
         def cpf_blur(e):
             texto_original = self.campo_cpf.value
@@ -1607,6 +1349,7 @@ class TelaAdminDashboard:
                 self.campo_email,
                 self.campo_cpf,
                 self.campo_nascimento,
+                self.campo_telefone_paciente,
                 self.campo_senha,
                 self.campo_confirmar_senha,
                 ft.Container(height=20),
@@ -1633,22 +1376,60 @@ class TelaAdminDashboard:
         self.renderizar_tabela_pacientes(pacientes_db)
 
     def gerar_rows_pacientes(self, lista):
+        from datetime import datetime
+
+        def fmt_data_nasc(s: str) -> str:
+            if not s:
+                return "-"
+            s = s.strip()
+
+            # 1) Tenta formatos explícitos primeiro
+            for fmt in ("%d/%m/%Y", "%Y-%m-%d", "%d-%m-%Y", "%Y/%m/%d"):
+                try:
+                    return datetime.strptime(s, fmt).strftime("%d/%m/%Y")
+                except:
+                    pass
+
+            # 2) Fallback por dígitos
+            dig = "".join(ch for ch in s if ch.isdigit())
+            if len(digitos := dig) == 8:
+                # Se parece começar com ano (19xx/20xx) ou a string original começa com ano
+                if s.startswith(("19", "20")) or (digitos[:2] in {"19", "20"}):
+                    yyyy, mm, dd = digitos[0:4], digitos[4:6], digitos[6:8]
+                else:
+                    dd, mm, yyyy = digitos[0:2], digitos[2:4], digitos[4:8]
+                return f"{dd}/{mm}/{yyyy}"
+            return s  # mantém como veio se nada casar
+
+        def fmt_data_criacao(s: str) -> str:
+            if not s:
+                return "-"
+            s = s.strip()
+            for fmt in ("%Y-%m-%d %H:%M:%S", "%Y/%m/%d %H:%M:%S", "%d/%m/%Y %H:%M:%S"):
+                try:
+                    return datetime.strptime(s, fmt).strftime("%d/%m/%Y %H:%M:%S")
+                except:
+                    pass
+            for fmt in ("%Y-%m-%d", "%d-%m-%Y", "%Y/%m/%d", "%d/%m/%Y"):
+                try:
+                    return datetime.strptime(s, fmt).strftime("%d/%m/%Y")
+                except:
+                    pass
+            return s
+
         status_cores = {
             "Pendente": ("#D97706", "#FEF3C7"),
             "Aprovado": ("#15803D", "#D1FAE5"),
             "Cancelado": ("#DC2626", "#FEE2E2"),
-            "Recusado": ("#DC2626", "#FEE2E2")
+            "Recusado": ("#DC2626", "#FEE2E2"),
         }
 
         def status_badge(status):
             cor_texto, cor_fundo = status_cores.get(status, ("#6B7280", "#E5E7EB"))
             return ft.Row(
-                [
-                    ft.Container(width=8, height=8, bgcolor=cor_texto, border_radius=20),
-                    ft.Text(status, color=cor_texto, weight="bold")
-                ],
-                spacing=6,
-                alignment=ft.MainAxisAlignment.CENTER
+                [ft.Container(width=8, height=8, bgcolor=cor_texto, border_radius=20),
+                ft.Text(status, color=cor_texto, weight="bold")],
+                spacing=6, alignment=ft.MainAxisAlignment.CENTER
             )
 
         rows = []
@@ -1656,12 +1437,12 @@ class TelaAdminDashboard:
             rows.append(
                 ft.DataRow(
                     cells=[
-                        ft.DataCell(ft.Text(str(p[0]))),       # ID
-                        ft.DataCell(ft.Text(p[1])),            # Nome
-                        ft.DataCell(ft.Text(p[3])),            # CPF
-                        ft.DataCell(ft.Text(p[4])),            # Nascimento
-                        ft.DataCell(ft.Text(p[6])),            # Data de Criação (corrigido)
-                        ft.DataCell(                           # Status (corrigido)
+                        ft.DataCell(ft.Text(str(p[0]))),                 # ID
+                        ft.DataCell(ft.Text(p[1])),                      # Nome
+                        ft.DataCell(ft.Text(p[3])),                      # CPF
+                        ft.DataCell(ft.Text(fmt_data_nasc(p[4]))),       # Nascimento -> DD/MM/AAAA
+                        ft.DataCell(ft.Text(fmt_data_criacao(p[6]))),    # Criação -> DD/MM/AAAA HH:MM:SS
+                        ft.DataCell(
                             ft.Container(
                                 content=status_badge(p[7]),
                                 padding=ft.padding.symmetric(horizontal=4, vertical=4),
@@ -1676,23 +1457,22 @@ class TelaAdminDashboard:
                                         icon=ft.Icons.CHECK_CIRCLE_OUTLINE,
                                         icon_color="#059669",
                                         tooltip="Aprovar paciente",
-                                        on_click=lambda e, pid=p[0]: self.aprovar_usuario(pid)
+                                        on_click=lambda e, pid=p[0]: self.aprovar_usuario(pid),
                                     ),
                                     ft.IconButton(
                                         icon=ft.Icons.CANCEL_OUTLINED,
                                         icon_color="#DC2626",
                                         tooltip="Recusar paciente",
-                                        on_click=lambda e, pid=p[0]: self.recusar_usuario(pid)
+                                        on_click=lambda e, pid=p[0]: self.recusar_usuario(pid),
                                     ),
                                 ],
-                                spacing=8
+                                spacing=8,
                             )
-                        )
+                        ),
                     ]
                 )
             )
         return rows
-
 
     def renderizar_tabela_pacientes(self, lista):
         self.tabela_pacientes = ft.DataTable(
@@ -1756,10 +1536,11 @@ class TelaAdminDashboard:
                                 content=ft.Stack(
                                     expand=True,
                                     controls=[
-                                        ft.Container(
-                                            expand=True,
-                                            content=self.tabela_pacientes,
-                                            width=1200,
+                                        ft.Row(
+                                            scroll=ft.ScrollMode.ALWAYS,
+                                            controls=[
+                                                self.tabela_pacientes
+                                            ]
                                         ),
                                         ft.AnimatedSwitcher(
                                             content=self.painel_detalhes_paciente if self.editando_paciente else ft.Container(),
@@ -1768,7 +1549,7 @@ class TelaAdminDashboard:
                                     ]
                                 )
                             )
-                        ], spacing=20)
+                        ], width=1100, spacing=20)
                     )
                 ], spacing=20)
             )
@@ -1829,6 +1610,33 @@ class TelaAdminDashboard:
 
             if len(numeros) == 11:
                 self.campo_nascimento.focus()
+        
+        def telefone_change_cadastro(e):
+            numeros = ''.join(filter(str.isdigit, self.campo_telefone_paciente.value))[:11]
+            if len(numeros) == 11:
+                self.campo_senha.focus()
+
+        def telefone_blur_cadastro(e):
+            numeros = ''.join(filter(str.isdigit, self.campo_telefone_paciente.value))[:11]
+            fmt = ""
+            if len(numeros) >= 1:
+                fmt += "(" + numeros[:2] + ") "
+            if len(numeros) >= 7:
+                fmt += numeros[2:7] + "-"
+            if len(numeros) > 7:
+                fmt += numeros[7:]
+            elif len(numeros) > 2:
+                fmt += numeros[2:7]
+            self.campo_telefone_paciente.value = fmt
+            self.campo_telefone_paciente.update()
+
+            self.campo_telefone_paciente = ft.TextField(
+                label="Telefone",
+                on_blur=telefone_blur_cadastro,
+                on_change=telefone_change_cadastro,
+                border_radius=10,
+                bgcolor="#F3F4F6"
+            )
 
         def nascimento_change_cadastro(e):
             texto_original = self.campo_nascimento.value
@@ -1881,6 +1689,7 @@ class TelaAdminDashboard:
                                     self.campo_cpf,
                                     self.campo_email,
                                     self.campo_nascimento,
+                                    self.campo_telefone_paciente,
                                     self.campo_senha,
                                     self.campo_confirmar_senha,
                                     ft.Container(height=20),
@@ -1924,15 +1733,17 @@ class TelaAdminDashboard:
         cpf = self.campo_cpf.value.strip()
         email = self.campo_email.value.strip()
         nascimento = self.campo_nascimento.value.strip()
+        telefone = self.campo_telefone_paciente.value.strip()  # <-- NOVO
         senha = self.campo_senha.value.strip()
         confirmar_senha = self.campo_confirmar_senha.value.strip()
 
         # Validação dos campos
-        if not nome or not cpf or not email or not nascimento or not senha or not confirmar_senha:
+        if not nome or not cpf or not email or not nascimento or not telefone or not senha or not confirmar_senha:
             self.page.snack_bar = ft.SnackBar(content=ft.Text("Todos os campos são obrigatórios."), bgcolor="red")
             self.page.snack_bar.open = True
             self.page.update()
             return
+
         
         if senha != confirmar_senha:
             self.page.snack_bar = ft.SnackBar(content=ft.Text("As senhas não coincidem."), bgcolor="red")
@@ -1951,7 +1762,7 @@ class TelaAdminDashboard:
             return
 
         # Tenta registrar o usuário no banco de dados
-        sucesso = registrar_usuario(nome, email, cpf, nascimento_formatado, senha)
+        sucesso = registrar_usuario(nome, email, cpf, nascimento_formatado, telefone, senha)
         
         if sucesso:
             self.page.snack_bar = ft.SnackBar(content=ft.Text("Paciente cadastrado com sucesso!"), bgcolor="green")
@@ -1964,9 +1775,6 @@ class TelaAdminDashboard:
             self.page.update()
 
     def load_cadastro_agendamento(self, e=None):
-        from datetime import datetime
-        from database import listar_usuarios, listar_medicamentos
-
         pacientes = listar_usuarios()
         medicamentos = listar_medicamentos()
 
@@ -2081,13 +1889,9 @@ class TelaAdminDashboard:
         )
         self.page.update()
 
-
-
     def abrir_date_picker(self):
         self.date_picker.open = True
         self.page.update()
-
-
 
     def filtrar_agendamentos(self, e):
         termo = self.campo_busca_agendamentos.value.strip().lower()
@@ -2136,7 +1940,6 @@ class TelaAdminDashboard:
 
 
     def atualizar_farmacia_automatica(self, e):
-        from database import listar_medicamentos
         med_id = int(self.dropdown_medicamento.value)
         med_info = next((m for m in listar_medicamentos() if m[0] == med_id), None)
 
@@ -2157,7 +1960,7 @@ class TelaAdminDashboard:
         from datetime import datetime
         from collections import Counter, defaultdict
         import calendar
-        from database import listar_usuarios, listar_agendamentos, listar_medicamentos
+
 
         caminho = "relatorio_farmconnect.pdf"
         c = canvas.Canvas(caminho, pagesize=A4)
@@ -2270,6 +2073,7 @@ class TelaAdminDashboard:
             c.drawString(17 * cm, y, a[7])
             y -= 0.4 * cm
             try:
+                # usa data_criacao do agendamento (a[8]) para o agrupamento mensal
                 mes = calendar.month_name[datetime.strptime(a[8], "%Y-%m-%d %H:%M:%S").month]
                 agendamentos_mes[mes] += 1
                 status_agendamento[mes][a[7]] += 1
@@ -2278,17 +2082,69 @@ class TelaAdminDashboard:
             except:
                 pass
 
-        # ░░░ COMPARATIVO MENSAL
+        # ░░░ REAGENDAMENTOS (NOVA SEÇÃO)
+        nova_pagina()
+        reagendamentos = listar_reagendamentos()
+        header("🔁 Reagendamentos", f"Total: {len(reagendamentos)}")
+
+        c.setFont("Helvetica-Bold", 10)
+        c.drawString(2 * cm, y, "ID")
+        c.drawString(3.5 * cm, y, "Paciente")
+        c.drawString(8 * cm, y, "Medicamento")
+        c.drawString(12.5 * cm, y, "Antigo (Data Hora)")
+        c.drawString(16.5 * cm, y, "Novo (Data Hora)")
+        y -= 0.4 * cm
+        c.line(2 * cm, y, largura - 2 * cm, y)
+        y -= 0.4 * cm
+        c.setFont("Helvetica", 9)
+
+        reag_mes = Counter()  # contagem mensal de reagendamentos pelo 'criado_em'
+        for r in reagendamentos:
+            if y < 3 * cm:
+                nova_pagina()
+                c.setFont("Helvetica-Bold", 10)
+                c.drawString(2 * cm, y, "ID")
+                c.drawString(3.5 * cm, y, "Paciente")
+                c.drawString(8 * cm, y, "Medicamento")
+                c.drawString(12.5 * cm, y, "Antigo (Data Hora)")
+                c.drawString(16.5 * cm, y, "Novo (Data Hora)")
+                y -= 0.4 * cm
+                c.line(2 * cm, y, largura - 2 * cm, y)
+                y -= 0.4 * cm
+                c.setFont("Helvetica", 9)
+
+            antigo = f"{r[5]} {r[6]}" if r[5] and r[6] else "-"
+            novo   = f"{r[7]} {r[8]}" if r[7] and r[8] else "-"
+
+            c.drawString(2 * cm, y, str(r[0]))      # ID
+            c.drawString(3.5 * cm, y, r[1][:25])    # Paciente
+            c.drawString(8 * cm, y, r[2][:25])      # Medicamento
+            c.drawString(12.5 * cm, y, antigo[:22])
+            c.drawString(16.5 * cm, y, novo[:22])
+            y -= 0.4 * cm
+
+            # contabiliza mês do criado_em (r[9])
+            try:
+                mes_r = calendar.month_name[datetime.strptime(r[9], "%Y-%m-%d %H:%M:%S").month]
+                reag_mes[mes_r] += 1
+            except:
+                pass
+
+        # ░░░ COMPARATIVO MENSAL (ATUALIZADO COM REAGEND.)
         nova_pagina()
         header("📊 Comparativo Mensal")
-        meses_todos = sorted(set(pacientes_mes.keys() | agendamentos_mes.keys()), key=lambda m: list(calendar.month_name).index(m))
+        # inclui meses que apareceram em pacientes, agendamentos ou reagendamentos
+        meses_todos = sorted(
+            set(pacientes_mes.keys()) | set(agendamentos_mes.keys()) | set(reag_mes.keys()),
+            key=lambda m: list(calendar.month_name).index(m)
+        )
 
         c.setFont("Helvetica-Bold", 10)
         c.drawString(2 * cm, y, "Mês")
         c.drawString(6 * cm, y, "Pacientes")
         c.drawString(9 * cm, y, "Medicamentos")
         c.drawString(13 * cm, y, "Agendamentos")
-        c.drawString(17 * cm, y, "Farmácias")
+        c.drawString(17 * cm, y, "Reagend.")
         y -= 0.4 * cm
         c.line(2 * cm, y, largura - 2 * cm, y)
         y -= 0.4 * cm
@@ -2302,7 +2158,7 @@ class TelaAdminDashboard:
                 c.drawString(6 * cm, y, "Pacientes")
                 c.drawString(9 * cm, y, "Medicamentos")
                 c.drawString(13 * cm, y, "Agendamentos")
-                c.drawString(17 * cm, y, "Farmácias")
+                c.drawString(17 * cm, y, "Reagend.")
                 y -= 0.4 * cm
                 c.line(2 * cm, y, largura - 2 * cm, y)
                 y -= 0.4 * cm
@@ -2310,33 +2166,27 @@ class TelaAdminDashboard:
 
             total_pac = pacientes_mes.get(mes, 0)
             total_ag = agendamentos_mes.get(mes, 0)
-            total_med = sum(medicamentos_mes[mes].values())
-            total_farms = len(farmacias_mes[mes])
+            total_med = sum(medicamentos_mes[mes].values()) if mes in medicamentos_mes else 0
+            total_reag = reag_mes.get(mes, 0)
 
             c.drawString(2 * cm, y, mes[:10])
             c.drawString(6 * cm, y, str(total_pac))
             c.drawString(9 * cm, y, str(total_med))
             c.drawString(13 * cm, y, str(total_ag))
-            c.drawString(17 * cm, y, str(total_farms))
+            c.drawString(17 * cm, y, str(total_reag))
             y -= 0.4 * cm
 
         rodape()
         c.save()
         self.page.launch_url(caminho)
 
-
+    
     
     def gerar_relatorio_excel(self):
-        import openpyxl
-        from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
-        from openpyxl.utils import get_column_letter
-        from datetime import datetime
-        from database import listar_usuarios, listar_agendamentos, listar_medicamentos
-
         wb = openpyxl.Workbook()
         del wb["Sheet"]
 
-        # Estilos
+        # ===== estilos =====
         header_font = Font(bold=True, color="FFFFFF")
         header_fill = PatternFill(start_color="1E3A8A", end_color="1E3A8A", fill_type="solid")
         align_left = Alignment(horizontal="left", vertical="center")
@@ -2376,7 +2226,7 @@ class TelaAdminDashboard:
                     cell.alignment = align_left
                     cell.border = border_preta
 
-        # ░░░ Pacientes
+        # Pacientes
         pacientes = listar_usuarios()
         ws1 = wb.create_sheet("Pacientes")
         headers_pac = ["ID", "Nome", "Email", "CPF", "Nascimento", "Telefone", "Criado em", "Status"]
@@ -2387,7 +2237,7 @@ class TelaAdminDashboard:
         formatar_corpo(ws1, linha_inicial=3)
         autoajustar_colunas(ws1)
 
-        # ░░░ Agendamentos
+        # Agendamentos
         agendamentos = listar_agendamentos()
         ws2 = wb.create_sheet("Agendamentos")
         headers_ag = ["ID", "Paciente", "Medicamento", "Farmácia", "Código", "Data", "Horário", "Status", "Criado em"]
@@ -2398,7 +2248,50 @@ class TelaAdminDashboard:
         formatar_corpo(ws2, linha_inicial=3)
         autoajustar_colunas(ws2)
 
-        # ░░░ Medicamentos
+        # Reagendamentos (sem total)
+        def listar_reagendamentos_excel():
+            conn = sqlite3.connect("farmconnect.db")
+            cur = conn.cursor()
+            cur.execute("""
+                SELECT
+                    r.id,
+                    u.nome           AS paciente,
+                    m.nome           AS medicamento,
+                    f.nome           AS farmacia,
+                    a.codigo         AS codigo_agendamento,
+                    r.data_antiga,
+                    r.horario_antigo,
+                    r.data_nova,
+                    r.horario_novo,
+                    a.status         AS status_atual,
+                    COALESCE(r.criado_em, a.data_criacao) AS criado_em
+                FROM reagendamentos r
+                JOIN agendamentos a ON a.id = r.agendamento_id
+                JOIN usuarios    u ON u.id = r.usuario_id
+                JOIN medicamentos m ON m.id = a.medicamento_id
+                JOIN farmacias    f ON f.id = a.farmacia_id
+                ORDER BY r.id DESC
+            """)
+            rows = cur.fetchall()
+            cur.close()
+            conn.close()
+            return rows
+
+        reag = listar_reagendamentos_excel()
+        ws4 = wb.create_sheet("Reagendamentos")
+        headers_reag = [
+            "ID", "Paciente", "Medicamento", "Farmácia", "Código",
+            "Data antiga", "Hora antiga", "Data nova", "Hora nova",
+            "Status atual", "Criado em"
+        ]
+        formatar_titulo(ws4, "Reagendamentos", len(headers_reag))
+        escrever_cabecalho(ws4, headers_reag)
+        for r in reag:
+            ws4.append([r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8], r[9], r[10]])
+        formatar_corpo(ws4, linha_inicial=3)
+        autoajustar_colunas(ws4)
+
+        # Medicamentos
         medicamentos = listar_medicamentos()
         ws3 = wb.create_sheet("Medicamentos")
         headers_med = ["ID", "Nome", "Código", "Descrição", "Estoque", "Categoria", "Fabricante", "Farmácia", "Ativo"]
@@ -2411,10 +2304,11 @@ class TelaAdminDashboard:
         formatar_corpo(ws3, linha_inicial=3)
         autoajustar_colunas(ws3)
 
-        # ░░░ Salvar
+        # Salvar
         nome_arquivo = f"relatorio_farmconnect_{datetime.now().strftime('%Y%m%d_%H%M')}.xlsx"
         wb.save(nome_arquivo)
         self.page.launch_url(nome_arquivo)
+
 
     def build_tela(self):
         return ft.View(

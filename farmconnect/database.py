@@ -1187,21 +1187,47 @@ def listar_medicamentos_retirados(usuario_id):
             a.data,
             a.horario,
             f.nome AS farmacia,
-            f.endereco as endereco,
-            COUNT(r.id) AS quantidade
-        FROM medicamentos_retirados r
-        JOIN medicamentos m ON r.medicamento_id = m.id
-        LEFT JOIN agendamentos a ON a.usuario_id = r.usuario_id AND a.medicamento_id = r.medicamento_id AND a.status = 'Concluído/Retirado'
-        LEFT JOIN farmacias f ON a.farmacia_id = f.id
-        WHERE r.usuario_id = ?
-        GROUP BY m.nome, a.data, a.horario, f.nome
-        ORDER BY a.data DESC
+            f.endereco AS endereco,
+            a.quantidade
+        FROM agendamentos a
+        JOIN medicamentos m ON a.medicamento_id = m.id
+        JOIN farmacias f ON a.farmacia_id = f.id
+        WHERE a.usuario_id = ? AND a.status = 'Concluído/Retirado'
+        ORDER BY a.data DESC, a.horario DESC
     """, (usuario_id,))
 
     resultado = cursor.fetchall()
     cursor.close()
     conn.close()
     return resultado
+
+def listar_reagendamentos():
+    conn = conectar()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT 
+            r.id,
+            u.nome AS paciente,
+            m.nome AS medicamento,
+            f.nome AS farmacia,
+            a.codigo,
+            r.data_antiga,
+            r.horario_antigo,
+            r.data_nova,
+            r.horario_novo,
+            r.criado_em
+        FROM reagendamentos r
+        JOIN agendamentos a ON r.agendamento_id = a.id
+        JOIN usuarios u ON r.usuario_id = u.id
+        JOIN medicamentos m ON a.medicamento_id = m.id
+        JOIN farmacias f ON a.farmacia_id = f.id
+        ORDER BY r.criado_em DESC
+    """)
+    resultados = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return resultados
+
 
 def verificar_status_usuario(email):
     conn = conectar()
