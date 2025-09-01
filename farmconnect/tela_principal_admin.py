@@ -1630,14 +1630,6 @@ class TelaAdminDashboard:
             self.campo_telefone_paciente.value = fmt
             self.campo_telefone_paciente.update()
 
-            self.campo_telefone_paciente = ft.TextField(
-                label="Telefone",
-                on_blur=telefone_blur_cadastro,
-                on_change=telefone_change_cadastro,
-                border_radius=10,
-                bgcolor="#F3F4F6"
-            )
-
         def nascimento_change_cadastro(e):
             texto_original = self.campo_nascimento.value
             numeros = ''.join(filter(str.isdigit, texto_original))[:8]
@@ -1667,6 +1659,7 @@ class TelaAdminDashboard:
         self.campo_cpf = ft.TextField(label="CPF", on_blur=cpf_blur, on_change=cpf_change_cadastro, border_radius=10, bgcolor="#F3F4F6")
         self.campo_email = ft.TextField(label="Email", border_radius=10, bgcolor="#F3F4F6")
         self.campo_nascimento = ft.TextField(label="Data de Nascimento (DD/MM/AAAA)", on_blur=nascimento_blur_cadastro, on_change=nascimento_change_cadastro, border_radius=10, bgcolor="#F3F4F6")
+        self.campo_telefone_paciente = ft.TextField(label="Telefone", on_blur=telefone_blur_cadastro, on_change=telefone_change_cadastro, border_radius=10, bgcolor="F3F4F6")
         self.campo_senha = ft.TextField(label="Senha", password=True, can_reveal_password=True, border_radius=10, bgcolor="#F3F4F6")
         self.campo_confirmar_senha = ft.TextField(label="Confirmar Senha", password=True, can_reveal_password=True, border_radius=10, bgcolor="#F3F4F6")
 
@@ -1830,7 +1823,7 @@ class TelaAdminDashboard:
             border_color="#CBD5E1",
             text_style=ft.TextStyle(size=14, weight="bold", color="#1E3A8A"),
             label_style=ft.TextStyle(size=14, weight="bold", color="#1E3A8A"),
-            icon=ft.icons.ACCESS_TIME
+            icon=ft.Icons.ACCESS_TIME
         )
 
 
