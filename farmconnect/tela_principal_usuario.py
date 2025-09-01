@@ -782,6 +782,12 @@ class TelaUsuarioDashboard:
                 ft.Container(
                     padding=40,
                     content=ft.Column([
+                        ft.Container(
+                            content=ft.Column([
+                                ft.Image(src="img/logo.png", width=100, height=100)
+                            ]),
+                            alignment=ft.alignment.top_left
+                        ),
                         # Título da Página
                         ft.Text(
                             "📄 Documentos Necessários", 
@@ -790,6 +796,7 @@ class TelaUsuarioDashboard:
                             color=ft.Colors.BLUE_900,
                             text_align=ft.TextAlign.CENTER,
                         ),
+
                         ft.Divider(height=30, color=ft.Colors.TRANSPARENT),
                         # Caixa de Documentos
                         ft.Container(
@@ -1565,6 +1572,7 @@ class TelaUsuarioDashboard:
         conteudo = (
             ft.Container(
                 content=ft.Column(cards, spacing=20),
+                expand=True
             )
             if cards else
             ft.Container(
@@ -1575,14 +1583,14 @@ class TelaUsuarioDashboard:
                 padding=60,
                 bgcolor=ft.Colors.WHITE,
                 border_radius=20,
-                shadow=ft.BoxShadow(blur_radius=12, color=ft.Colors.BLACK26)
+                shadow=ft.BoxShadow(blur_radius=12, color=ft.Colors.BLACK26),
             )
         )
 
         return ft.View(
             route="/agendamentos",
             scroll=ft.ScrollMode.AUTO,
-            bgcolor="#F0F9FF",  # ✅ Scroll só aqui
+            bgcolor="#F0F9FF",
             controls=[
                 self.page.snack_bar,
                 ft.Container(
@@ -1592,48 +1600,57 @@ class TelaUsuarioDashboard:
                         end=ft.alignment.bottom_right,
                         colors=["#E0F2FE", "#F0F4FF"]
                     ),
-                    content=ft.Column([
-                        ft.Container(
-                            alignment=ft.alignment.top_right,
-                            content=ft.IconButton(
-                                icon=ft.Icons.DESCRIPTION,
-                                tooltip="Ver documentos necessários",
-                                icon_color=ft.Colors.BLUE_700,
-                                on_click=lambda e: self.page.go("/documentos")
-                            )
-                        ),
-                        ft.Column([
-                            ft.Icon(name=ft.Icons.CALENDAR_MONTH, color=ft.Colors.BLUE_900, size=32),
-                            ft.Text("Meus Agendamentos", size=28, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
-                        ],
-                        alignment=ft.MainAxisAlignment.CENTER,
-                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                        spacing=8),
-                        ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
-
-                        # Conteúdo dos cards + botões no fim
-                        conteudo,  # Cards de agendamentos
-
-                        ft.Divider(height=30, color=ft.Colors.TRANSPARENT),
-
-                        ft.ElevatedButton(
-                            "Voltar",
-                            icon=ft.Icons.ARROW_BACK_IOS_NEW,
-                            bgcolor=ft.Colors.GREY_50,
-                            color=ft.Colors.BLUE_900,
-                            width=160,
-                            style=ft.ButtonStyle(
-                                shape=ft.RoundedRectangleBorder(radius=16),
-                                padding=ft.padding.symmetric(vertical=14)
+                    content=ft.Column(
+                        [
+                            ft.Row(
+                                [
+                                    ft.Image(
+                                        src="img/logo.png", 
+                                        width=100, 
+                                    ),
+                                    ft.IconButton(
+                                        icon=ft.Icons.DESCRIPTION,
+                                        tooltip="Ver documentos necessários",
+                                        icon_color=ft.Colors.BLUE_700,
+                                        on_click=lambda e: self.page.go("/documentos")
+                                    ),
+                                ],
+                                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                                vertical_alignment=ft.CrossAxisAlignment.CENTER 
                             ),
-                            on_click=lambda e: self.page.go("/usuario")
-                        ),
+                            ft.Row(
+                                [
+                                    ft.Icon(name=ft.Icons.CALENDAR_MONTH, color=ft.Colors.BLUE_900, size=32),
+                                    ft.Text("Meus Agendamentos", size=28, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900),
+                                ],
+                                alignment=ft.MainAxisAlignment.CENTER,
+                                spacing=8
+                            ),
+                            ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
+                            ft.Row([conteudo], alignment=ft.MainAxisAlignment.CENTER),
+                            ft.Divider(height=30, color=ft.Colors.TRANSPARENT),
+                            ft.Row(
+                                [
+                                    ft.ElevatedButton(
+                                        "Voltar",
+                                        icon=ft.Icons.ARROW_BACK_IOS_NEW,
+                                        bgcolor=ft.Colors.GREY_50,
+                                        color=ft.Colors.BLUE_900,
+                                        width=160,
+                                        style=ft.ButtonStyle(
+                                            shape=ft.RoundedRectangleBorder(radius=16),
+                                            padding=ft.padding.symmetric(vertical=14)
+                                        ),
+                                        on_click=lambda e: self.page.go("/usuario")
+                                    )
+                                ],
+                                alignment=ft.MainAxisAlignment.CENTER
+                            ),
 
-                        ft.Container(height=40)  # espaço extra final para segurança
-                    ],
-                    spacing=30,
-                    alignment=ft.MainAxisAlignment.CENTER,
-                    horizontal_alignment=ft.CrossAxisAlignment.CENTER)
+                            ft.Container(height=40)
+                        ],
+                        spacing=20 
+                    )
                 )
             ]
         )
