@@ -2,7 +2,7 @@
 > 🩺 Plataforma digital para otimizar o agendamento, retirada e controle de medicamentos de alto custo em farmácias públicas.
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white" />
+  <img src="https://img.shields.io/badge/Python-3.12%2B-blue?logo=python&logoColor=white" />
   <img src="https://img.shields.io/badge/Flet-Framework-green?logo=flet&logoColor=white" />
   <img src="https://img.shields.io/badge/SQLite-Database-lightgrey?logo=sqlite&logoColor=white" />
   <img src="https://img.shields.io/badge/Status-Em%20Desenvolvimento-yellow?style=flat-square" />
