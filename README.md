@@ -12,7 +12,8 @@
 
 ## 🧭 **Visão Geral**
 
-O **FarmConnect** é um sistema multiplataforma em desenvolvimento utilizando **Python (Flet + SQLite)** que busca **melhorar o acesso** de pacientes a medicamentos de alto custo, **reduzindo filas, deslocamentos** e **otimizando o controle de estoque** das farmácias públicas.
+O **FarmConnect** é um sistema multiplataforma em desenvolvimento utilizando **Python (Flet + SQLite)** que busca **melhorar o acesso** de pacientes a medicamentos de alto custo, **reduzindo filas, deslocamentos** e **otimizando o controle de estoque** das farmácias públicas.  
+A
 
 ---
 
