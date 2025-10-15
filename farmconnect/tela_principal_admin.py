@@ -1954,7 +1954,6 @@ class TelaAdminDashboard:
         from collections import Counter, defaultdict
         import calendar
 
-
         caminho = "relatorio_farmconnect.pdf"
         c = canvas.Canvas(caminho, pagesize=A4)
         largura, altura = A4
@@ -1987,7 +1986,7 @@ class TelaAdminDashboard:
             c.drawString(2 * cm, 1.5 * cm, f"Relatório gerado automaticamente em {datetime.now().strftime('%d/%m/%Y %H:%M')}")
             c.setFillColor(black)
 
-        # ░░░ PACIENTES
+        # PACIENTES
         pacientes = listar_usuarios()
         header("📋 Pacientes Cadastrados", f"Total: {len(pacientes)}")
         c.setFont("Helvetica-Bold", 10)
@@ -2025,7 +2024,7 @@ class TelaAdminDashboard:
             except:
                 pass
 
-        # ░░░ AGENDAMENTOS
+        # AGENDAMENTOS
         nova_pagina()
         agendamentos = listar_agendamentos()
         header("📅 Agendamentos Realizados", f"Total: {len(agendamentos)}")
@@ -2075,7 +2074,7 @@ class TelaAdminDashboard:
             except:
                 pass
 
-        # ░░░ REAGENDAMENTOS (NOVA SEÇÃO)
+        # REAGENDAMENTOS
         nova_pagina()
         reagendamentos = listar_reagendamentos()
         header("🔁 Reagendamentos", f"Total: {len(reagendamentos)}")
@@ -2123,7 +2122,7 @@ class TelaAdminDashboard:
             except:
                 pass
 
-        # ░░░ COMPARATIVO MENSAL (ATUALIZADO COM REAGEND.)
+        # COMPARATIVO MENSAL
         nova_pagina()
         header("📊 Comparativo Mensal")
         # inclui meses que apareceram em pacientes, agendamentos ou reagendamentos
