@@ -18,13 +18,10 @@ O **FarmConnect** é um sistema multiplataforma em desenvolvimento utilizando **
 
 ## 🧩 **Instalação e Execução**
 
-### 1️⃣ git clone https://github.com/Guilherme-de-Melo-Werneck/FarmConnect
-
-### 2️⃣ cd FarmConnect
-
-### 3️⃣ pip install -r requirements.txt
-
-### 4️⃣ flet run main.py
+### 1️⃣ git clone https://github.com/Guilherme-de-Melo-Werneck/FarmConnect  
+### 2️⃣ cd FarmConnect  
+### 3️⃣ pip install -r requirements.txt  
+### 4️⃣ flet run main.py  
 
 ---
 
