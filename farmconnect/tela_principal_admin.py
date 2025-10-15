@@ -1630,14 +1630,6 @@ class TelaAdminDashboard:
             self.campo_telefone_paciente.value = fmt
             self.campo_telefone_paciente.update()
 
-            self.campo_telefone_paciente = ft.TextField(
-                label="Telefone",
-                on_blur=telefone_blur_cadastro,
-                on_change=telefone_change_cadastro,
-                border_radius=10,
-                bgcolor="#F3F4F6"
-            )
-
         def nascimento_change_cadastro(e):
             texto_original = self.campo_nascimento.value
             numeros = ''.join(filter(str.isdigit, texto_original))[:8]
@@ -1667,6 +1659,7 @@ class TelaAdminDashboard:
         self.campo_cpf = ft.TextField(label="CPF", on_blur=cpf_blur, on_change=cpf_change_cadastro, border_radius=10, bgcolor="#F3F4F6")
         self.campo_email = ft.TextField(label="Email", border_radius=10, bgcolor="#F3F4F6")
         self.campo_nascimento = ft.TextField(label="Data de Nascimento (DD/MM/AAAA)", on_blur=nascimento_blur_cadastro, on_change=nascimento_change_cadastro, border_radius=10, bgcolor="#F3F4F6")
+        self.campo_telefone_paciente = ft.TextField(label="Telefone", on_blur=telefone_blur_cadastro, on_change=telefone_change_cadastro, border_radius=10, bgcolor="F3F4F6")
         self.campo_senha = ft.TextField(label="Senha", password=True, can_reveal_password=True, border_radius=10, bgcolor="#F3F4F6")
         self.campo_confirmar_senha = ft.TextField(label="Confirmar Senha", password=True, can_reveal_password=True, border_radius=10, bgcolor="#F3F4F6")
 
@@ -1830,7 +1823,7 @@ class TelaAdminDashboard:
             border_color="#CBD5E1",
             text_style=ft.TextStyle(size=14, weight="bold", color="#1E3A8A"),
             label_style=ft.TextStyle(size=14, weight="bold", color="#1E3A8A"),
-            icon=ft.icons.ACCESS_TIME
+            icon=ft.Icons.ACCESS_TIME
         )
 
 
@@ -1961,7 +1954,6 @@ class TelaAdminDashboard:
         from collections import Counter, defaultdict
         import calendar
 
-
         caminho = "relatorio_farmconnect.pdf"
         c = canvas.Canvas(caminho, pagesize=A4)
         largura, altura = A4
@@ -1994,7 +1986,7 @@ class TelaAdminDashboard:
             c.drawString(2 * cm, 1.5 * cm, f"Relatório gerado automaticamente em {datetime.now().strftime('%d/%m/%Y %H:%M')}")
             c.setFillColor(black)
 
-        # ░░░ PACIENTES
+        # PACIENTES
         pacientes = listar_usuarios()
         header("📋 Pacientes Cadastrados", f"Total: {len(pacientes)}")
         c.setFont("Helvetica-Bold", 10)
@@ -2032,7 +2024,7 @@ class TelaAdminDashboard:
             except:
                 pass
 
-        # ░░░ AGENDAMENTOS
+        # AGENDAMENTOS
         nova_pagina()
         agendamentos = listar_agendamentos()
         header("📅 Agendamentos Realizados", f"Total: {len(agendamentos)}")
@@ -2082,7 +2074,7 @@ class TelaAdminDashboard:
             except:
                 pass
 
-        # ░░░ REAGENDAMENTOS (NOVA SEÇÃO)
+        # REAGENDAMENTOS
         nova_pagina()
         reagendamentos = listar_reagendamentos()
         header("🔁 Reagendamentos", f"Total: {len(reagendamentos)}")
@@ -2130,7 +2122,7 @@ class TelaAdminDashboard:
             except:
                 pass
 
-        # ░░░ COMPARATIVO MENSAL (ATUALIZADO COM REAGEND.)
+        # COMPARATIVO MENSAL
         nova_pagina()
         header("📊 Comparativo Mensal")
         # inclui meses que apareceram em pacientes, agendamentos ou reagendamentos
