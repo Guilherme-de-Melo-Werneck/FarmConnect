@@ -869,6 +869,7 @@ def listar_agendamentos():
             a.codigo,
             a.data, 
             a.horario, 
+            a.quantidade,
             a.status,
             a.data_criacao
         FROM agendamentos a

@@ -72,13 +72,13 @@ class TelaAdminDashboard:
         total_hoje = 0
         for a in agendamentos:
             # a[8] = data_criacao, ex: "2025-08-10 14:22:31"
-            if a[8] and a[8].startswith(hoje_str):
+            if a[9] and a[9].startswith(hoje_str):  # 👈 era a[8]
                 total_hoje += 1
         return total_hoje
     
     def count_agendamentos_pendentes(self):
         agendamentos = listar_agendamentos()
-        total_pendentes = sum(1 for a in agendamentos if a[7] == "Pendente")
+        total_pendentes = sum(1 for a in agendamentos if a[8] == "Pendente")  # 👈 era a[7]
         return total_pendentes
     
     def desativar_medicamento(self, id):
@@ -1044,7 +1044,7 @@ class TelaAdminDashboard:
             ))
 
             # 🔁 Confirmar retirada (se status permitir)
-            if a[7] in ["Confirmado", "Pendente"]:
+            if a[8] in ["Confirmado", "Pendente"]:
                 acoes.append(ft.IconButton(
                     icon=ft.Icons.EXIT_TO_APP,
                     icon_color=ft.Colors.BLUE_900,
@@ -1074,11 +1074,13 @@ class TelaAdminDashboard:
                         ft.DataCell(ft.Text(a[4])),
                         ft.DataCell(ft.Text(a[5])),
                         ft.DataCell(ft.Text(a[6])),
+                        ft.DataCell(ft.Text(str(a[7]))),  
+
                         ft.DataCell(
                             ft.Container(
-                                content=status_badge(a[7]),
+                                content=status_badge(a[8]),
                                 padding=ft.padding.symmetric(horizontal=8, vertical=4),
-                                bgcolor=status_cores.get(a[7], "#E5E7EB")[1],
+                                bgcolor=status_cores.get(a[8], "#E5E7EB")[1],
                                 border_radius=20,
                             )
                         ),
@@ -1114,6 +1116,7 @@ class TelaAdminDashboard:
                 ft.DataColumn(ft.Text("Código")),
                 ft.DataColumn(ft.Text("Data")),
                 ft.DataColumn(ft.Text("Horário")),
+                ft.DataColumn(ft.Text("Qtd.")),   
                 ft.DataColumn(ft.Text("Status")),
                 ft.DataColumn(ft.Text("Ações")),
             ],
@@ -1968,12 +1971,12 @@ class TelaAdminDashboard:
             nonlocal y
             c.setFont("Helvetica-Bold", 16)
             c.setFillColor(HexColor("#1E3A8A"))
-            c.drawString(2 * cm, y, titulo)
+            c.drawString(2 * cm, y, str(titulo))
             y -= 0.6 * cm
             if subtitulo:
                 c.setFont("Helvetica", 10)
                 c.setFillColor(HexColor("#374151"))
-                c.drawString(2 * cm, y, subtitulo)
+                c.drawString(2 * cm, y, str(subtitulo))
                 y -= 0.5 * cm
             c.setStrokeColor(HexColor("#1E3A8A"))
             c.line(2 * cm, y, largura - 2 * cm, y)
@@ -1983,10 +1986,13 @@ class TelaAdminDashboard:
         def rodape():
             c.setFont("Helvetica-Oblique", 9)
             c.setFillColor(HexColor("#6B7280"))
-            c.drawString(2 * cm, 1.5 * cm, f"Relatório gerado automaticamente em {datetime.now().strftime('%d/%m/%Y %H:%M')}")
+            c.drawString(2 * cm, 1.5 * cm,
+                        f"Relatório gerado automaticamente em {datetime.now().strftime('%d/%m/%Y %H:%M')}")
             c.setFillColor(black)
 
+        # =========================
         # PACIENTES
+        # =========================
         pacientes = listar_usuarios()
         header("📋 Pacientes Cadastrados", f"Total: {len(pacientes)}")
         c.setFont("Helvetica-Bold", 10)
@@ -1998,8 +2004,10 @@ class TelaAdminDashboard:
         c.line(2 * cm, y, largura - 2 * cm, y)
         y -= 0.4 * cm
         c.setFont("Helvetica", 9)
+
         pacientes_mes = Counter()
         status_pacientes = defaultdict(Counter)
+
         for u in pacientes:
             if y < 3 * cm:
                 nova_pagina()
@@ -2012,69 +2020,93 @@ class TelaAdminDashboard:
                 c.line(2 * cm, y, largura - 2 * cm, y)
                 y -= 0.4 * cm
                 c.setFont("Helvetica", 9)
+
             c.drawString(2 * cm, y, str(u[0]))
-            c.drawString(3.5 * cm, y, u[1][:30])
-            c.drawString(9 * cm, y, u[2][:35])
-            c.drawString(14.5 * cm, y, u[7])
+            c.drawString(3.5 * cm, y, str((u[1] or "")[:30]))
+            c.drawString(9 * cm, y, str((u[2] or "")[:35]))
+            c.drawString(14.5 * cm, y, str(u[7] or ""))
             y -= 0.4 * cm
+
             try:
-                mes = calendar.month_name[datetime.strptime(u[6], "%Y-%m-%d %H:%M:%S").month]
+                mes = calendar.month_name[datetime.strptime(str(u[6]), "%Y-%m-%d %H:%M:%S").month]
                 pacientes_mes[mes] += 1
-                status_pacientes[mes][u[7]] += 1
-            except:
+                status_pacientes[mes][str(u[7] or "")] += 1
+            except Exception:
                 pass
 
-        # AGENDAMENTOS
+        # =========================
+        # AGENDAMENTOS (com Qtd.)
+        # Índices após incluir quantidade no SELECT:
+        # 0 id, 1 paciente, 2 medicamento, 3 farmacia, 4 codigo,
+        # 5 data, 6 horario, 7 quantidade, 8 status, 9 data_criacao
+        # =========================
         nova_pagina()
         agendamentos = listar_agendamentos()
         header("📅 Agendamentos Realizados", f"Total: {len(agendamentos)}")
         c.setFont("Helvetica-Bold", 10)
+
+        # Cabeçalho com Qtd.
         c.drawString(2 * cm, y, "ID")
         c.drawString(3.5 * cm, y, "Paciente")
         c.drawString(8 * cm, y, "Medicamento")
-        c.drawString(12.5 * cm, y, "Data")
-        c.drawString(15 * cm, y, "Hora")
+        c.drawString(12 * cm, y, "Data")
+        c.drawString(14 * cm, y, "Hora")
+        c.drawString(15.5 * cm, y, "Qtd.")
         c.drawString(17 * cm, y, "Status")
+
         y -= 0.4 * cm
         c.line(2 * cm, y, largura - 2 * cm, y)
         y -= 0.4 * cm
         c.setFont("Helvetica", 9)
+
         agendamentos_mes = Counter()
         status_agendamento = defaultdict(Counter)
         medicamentos_mes = defaultdict(Counter)
         farmacias_mes = defaultdict(Counter)
+
+        def cabecalho_agendamentos():
+            """Reimprime o cabeçalho quando quebra de página."""
+            nonlocal y  # 👈 movido para o início
+            c.setFont("Helvetica-Bold", 10)
+            c.drawString(2 * cm, y, "ID")
+            c.drawString(3.5 * cm, y, "Paciente")
+            c.drawString(8 * cm, y, "Medicamento")
+            c.drawString(12 * cm, y, "Data")
+            c.drawString(14 * cm, y, "Hora")
+            c.drawString(15.5 * cm, y, "Qtd.")
+            c.drawString(17 * cm, y, "Status")
+            y -= 0.4 * cm
+            c.line(2 * cm, y, largura - 2 * cm, y)
+            y -= 0.4 * cm
+            c.setFont("Helvetica", 9)
+
+
         for a in agendamentos:
             if y < 3 * cm:
                 nova_pagina()
-                c.setFont("Helvetica-Bold", 10)
-                c.drawString(2 * cm, y, "ID")
-                c.drawString(3.5 * cm, y, "Paciente")
-                c.drawString(8 * cm, y, "Medicamento")
-                c.drawString(12.5 * cm, y, "Data")
-                c.drawString(15 * cm, y, "Hora")
-                c.drawString(17 * cm, y, "Status")
-                y -= 0.4 * cm
-                c.line(2 * cm, y, largura - 2 * cm, y)
-                y -= 0.4 * cm
-                c.setFont("Helvetica", 9)
-            c.drawString(2 * cm, y, str(a[0]))
-            c.drawString(3.5 * cm, y, a[1][:25])
-            c.drawString(8 * cm, y, a[2][:25])
-            c.drawString(12.5 * cm, y, a[5])
-            c.drawString(15 * cm, y, a[6])
-            c.drawString(17 * cm, y, a[7])
+                cabecalho_agendamentos()
+
+            c.drawString(2 * cm, y, str(a[0]))                     # ID
+            c.drawString(3.5 * cm, y, str((a[1] or "")[:25]))      # Paciente
+            c.drawString(8 * cm, y, str((a[2] or "")[:25]))        # Medicamento
+            c.drawString(12 * cm, y, str(a[5] or ""))              # Data
+            c.drawString(14 * cm, y, str(a[6] or ""))              # Hora
+            c.drawString(15.5 * cm, y, str(a[7] or ""))            # Qtd. (NOVO)
+            c.drawString(17 * cm, y, str(a[8] or ""))              # Status
             y -= 0.4 * cm
+
             try:
-                # usa data_criacao do agendamento (a[8]) para o agrupamento mensal
-                mes = calendar.month_name[datetime.strptime(a[8], "%Y-%m-%d %H:%M:%S").month]
+                mes = calendar.month_name[datetime.strptime(str(a[9]), "%Y-%m-%d %H:%M:%S").month]
                 agendamentos_mes[mes] += 1
-                status_agendamento[mes][a[7]] += 1
-                medicamentos_mes[mes][a[2]] += 1
-                farmacias_mes[mes][a[3]] += 1
-            except:
+                status_agendamento[mes][str(a[8] or "")] += 1
+                medicamentos_mes[mes][str(a[2] or "")] += 1
+                farmacias_mes[mes][str(a[3] or "")] += 1
+            except Exception:
                 pass
 
+        # =========================
         # REAGENDAMENTOS
+        # =========================
         nova_pagina()
         reagendamentos = listar_reagendamentos()
         header("🔁 Reagendamentos", f"Total: {len(reagendamentos)}")
@@ -2090,7 +2122,7 @@ class TelaAdminDashboard:
         y -= 0.4 * cm
         c.setFont("Helvetica", 9)
 
-        reag_mes = Counter()  # contagem mensal de reagendamentos pelo 'criado_em'
+        reag_mes = Counter()
         for r in reagendamentos:
             if y < 3 * cm:
                 nova_pagina()
@@ -2105,27 +2137,27 @@ class TelaAdminDashboard:
                 y -= 0.4 * cm
                 c.setFont("Helvetica", 9)
 
-            antigo = f"{r[5]} {r[6]}" if r[5] and r[6] else "-"
-            novo   = f"{r[7]} {r[8]}" if r[7] and r[8] else "-"
+            antigo = f"{r[5]} {r[6]}".strip() if r[5] or r[6] else "-"
+            novo   = f"{r[7]} {r[8]}".strip() if r[7] or r[8] else "-"
 
-            c.drawString(2 * cm, y, str(r[0]))      # ID
-            c.drawString(3.5 * cm, y, r[1][:25])    # Paciente
-            c.drawString(8 * cm, y, r[2][:25])      # Medicamento
-            c.drawString(12.5 * cm, y, antigo[:22])
-            c.drawString(16.5 * cm, y, novo[:22])
+            c.drawString(2 * cm, y, str(r[0]))
+            c.drawString(3.5 * cm, y, str((r[1] or "")[:25]))
+            c.drawString(8 * cm, y, str((r[2] or "")[:25]))
+            c.drawString(12.5 * cm, y, str(antigo[:22]))
+            c.drawString(16.5 * cm, y, str(novo[:22]))
             y -= 0.4 * cm
 
-            # contabiliza mês do criado_em (r[9])
             try:
-                mes_r = calendar.month_name[datetime.strptime(r[9], "%Y-%m-%d %H:%M:%S").month]
+                mes_r = calendar.month_name[datetime.strptime(str(r[9]), "%Y-%m-%d %H:%M:%S").month]
                 reag_mes[mes_r] += 1
-            except:
+            except Exception:
                 pass
 
+        # =========================
         # COMPARATIVO MENSAL
+        # =========================
         nova_pagina()
         header("📊 Comparativo Mensal")
-        # inclui meses que apareceram em pacientes, agendamentos ou reagendamentos
         meses_todos = sorted(
             set(pacientes_mes.keys()) | set(agendamentos_mes.keys()) | set(reag_mes.keys()),
             key=lambda m: list(calendar.month_name).index(m)
@@ -2157,11 +2189,11 @@ class TelaAdminDashboard:
                 c.setFont("Helvetica", 9)
 
             total_pac = pacientes_mes.get(mes, 0)
-            total_ag = agendamentos_mes.get(mes, 0)
+            total_ag  = agendamentos_mes.get(mes, 0)
             total_med = sum(medicamentos_mes[mes].values()) if mes in medicamentos_mes else 0
             total_reag = reag_mes.get(mes, 0)
 
-            c.drawString(2 * cm, y, mes[:10])
+            c.drawString(2 * cm, y, str(mes[:10]))
             c.drawString(6 * cm, y, str(total_pac))
             c.drawString(9 * cm, y, str(total_med))
             c.drawString(13 * cm, y, str(total_ag))
@@ -2171,6 +2203,7 @@ class TelaAdminDashboard:
         rodape()
         c.save()
         self.page.launch_url(caminho)
+
 
     
     
@@ -2218,7 +2251,9 @@ class TelaAdminDashboard:
                     cell.alignment = align_left
                     cell.border = border_preta
 
+        # ======================
         # Pacientes
+        # ======================
         pacientes = listar_usuarios()
         ws1 = wb.create_sheet("Pacientes")
         headers_pac = ["ID", "Nome", "Email", "CPF", "Nascimento", "Telefone", "Criado em", "Status"]
@@ -2229,18 +2264,30 @@ class TelaAdminDashboard:
         formatar_corpo(ws1, linha_inicial=3)
         autoajustar_colunas(ws1)
 
-        # Agendamentos
+        # ======================
+        # Agendamentos (com Quantidade)
+        # ======================
         agendamentos = listar_agendamentos()
         ws2 = wb.create_sheet("Agendamentos")
-        headers_ag = ["ID", "Paciente", "Medicamento", "Farmácia", "Código", "Data", "Horário", "Status", "Criado em"]
+        headers_ag = [
+            "ID", "Paciente", "Medicamento", "Farmácia", "Código",
+            "Data", "Horário", "Qtd.", "Status", "Criado em"
+        ]
         formatar_titulo(ws2, "Agendamentos Realizados", len(headers_ag))
         escrever_cabecalho(ws2, headers_ag)
         for a in agendamentos:
-            ws2.append([a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8]])
+            # índices: 0=id,1=paciente,2=medicamento,3=farmácia,4=código,
+            # 5=data,6=horário,7=quantidade,8=status,9=data_criacao
+            ws2.append([
+                a[0], a[1], a[2], a[3], a[4], a[5],
+                a[6], a[7], a[8], a[9]
+            ])
         formatar_corpo(ws2, linha_inicial=3)
         autoajustar_colunas(ws2)
 
-        # Reagendamentos (sem total)
+        # ======================
+        # Reagendamentos
+        # ======================
         def listar_reagendamentos_excel():
             conn = sqlite3.connect("farmconnect.db")
             cur = conn.cursor()
@@ -2283,7 +2330,9 @@ class TelaAdminDashboard:
         formatar_corpo(ws4, linha_inicial=3)
         autoajustar_colunas(ws4)
 
+        # ======================
         # Medicamentos
+        # ======================
         medicamentos = listar_medicamentos()
         ws3 = wb.create_sheet("Medicamentos")
         headers_med = ["ID", "Nome", "Código", "Descrição", "Estoque", "Categoria", "Fabricante", "Farmácia", "Ativo"]
@@ -2291,15 +2340,20 @@ class TelaAdminDashboard:
         escrever_cabecalho(ws3, headers_med)
         for m in medicamentos:
             ws3.append([
-                m[0], m[1], m[2], m[3], m[5] or 0, m[6] or "-", m[7] or "-", m[8] or "-", "Sim" if m[9] else "Não"
+                m[0], m[1], m[2], m[3],
+                m[5] or 0, m[6] or "-", m[7] or "-",
+                m[8] or "-", "Sim" if m[9] else "Não"
             ])
         formatar_corpo(ws3, linha_inicial=3)
         autoajustar_colunas(ws3)
 
-        # Salvar
+        # ======================
+        # Salvar e abrir
+        # ======================
         nome_arquivo = f"relatorio_farmconnect_{datetime.now().strftime('%Y%m%d_%H%M')}.xlsx"
         wb.save(nome_arquivo)
         self.page.launch_url(nome_arquivo)
+
 
 
     def build_tela(self):
