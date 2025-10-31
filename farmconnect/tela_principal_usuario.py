@@ -36,6 +36,42 @@ class TelaUsuarioDashboard:
         self.sincronizar_carrinho()
         verificar_agendamentos_vencidos()
 
+        self.BREAKPOINT = 760   # <= ajuste se quiser
+        self.is_small = False
+
+        # BottomSheet de menu (feito uma vez)
+        self.menu_sheet = ft.BottomSheet(
+            content=ft.Container(
+                padding=16,
+                content=ft.Column(spacing=6, controls=[
+                    ft.ListTile(leading=ft.Icon(ft.Icons.PERSON_OUTLINED), title=ft.Text("Meu Perfil"),
+                                on_click=lambda e: self.page.go("/perfil")),
+                    ft.ListTile(leading=ft.Icon(ft.Icons.MEDICAL_SERVICES_OUTLINED), title=ft.Text("Histórico de Retiradas"),
+                                on_click=lambda e: self.page.go("/medicamentos_retirados")),
+                    ft.ListTile(leading=ft.Icon(ft.Icons.CALENDAR_MONTH_OUTLINED), title=ft.Text("Meus Agendamentos"),
+                                on_click=lambda e: self.page.go("/agendamentos")),
+                    ft.ListTile(leading=ft.Icon(ft.Icons.DESCRIPTION_OUTLINED), title=ft.Text("Documentos Requeridos"),
+                                on_click=lambda e: self.page.go("/documentos")),
+                    ft.Divider(),
+                    ft.ListTile(leading=ft.Icon(ft.Icons.LOGOUT, color="#DC2626"), 
+                                title=ft.Text("Sair", color="#DC2626"),
+                                on_click=lambda e: self.page.go("/")),
+                ])
+            )
+        )
+        if self.menu_sheet not in self.page.overlay:
+            self.page.overlay.append(self.menu_sheet)
+
+        # handler de resize
+        def _handle_resize(e):
+            prev = self.is_small
+            self.is_small = (self.page.width or 0) <= self.BREAKPOINT
+            if self.is_small != prev:
+                # reconstruir a view para refletir o estado
+                self.page.go("/usuario")  # força rebuild da view atual
+
+        self.page.on_resized = _handle_resize
+
         # Cria o drawer do carrinho
         self.carrinho_drawer = self.criar_carrinho_drawer()
 
@@ -367,8 +403,10 @@ class TelaUsuarioDashboard:
 
     medicamentos_por_pagina = 8  
     def criar_carrinho_drawer(self):
+        largura = self.page.width or 480
+        drawer_w = min(max(int(largura * 0.92), 320), 480)
         return ft.Container(
-            width=480,
+            width=drawer_w,
             height=self.page.height,  # ← ocupa toda a altura da janela
             bgcolor="#FFFFFF",
             padding=30,
@@ -650,8 +688,10 @@ class TelaUsuarioDashboard:
 
 
     def build_tela(self):
+        self.is_small = (self.page.width or 0) <= self.BREAKPOINT
         sidebar = ft.Container(
-            width=280,
+            width=280 if not self.is_small else 0,
+            visible=not self.is_small,
             bgcolor="#F8FAFC",
             border=ft.border.only(right=ft.BorderSide(1, "#E5E7EB")),
             padding=ft.padding.symmetric(vertical=20, horizontal=10),
@@ -686,13 +726,23 @@ class TelaUsuarioDashboard:
         self.gerar_cards(self.pagina_atual)
         self.atualizar_contador()
 
+        if self.is_small:
+            leading = ft.IconButton(
+                icon=ft.Icons.MENU,
+                icon_color="#1E3A8A",
+                on_click=lambda e: self._abrir_menu_sheet()
+            )
+            logo_or_title = ft.Row(controls=[leading, ft.Text("FarmConnect", size=18, weight=ft.FontWeight.BOLD, color="#1E3A8A")])
+        else:
+            logo_or_title = ft.Image(src="logo.png", width=110)
+
         header_busca = ft.Container(
             bgcolor="#F8FAFC",
             border_radius=16,
             padding=ft.padding.symmetric(horizontal=20, vertical=18),
             shadow=ft.BoxShadow(blur_radius=12, color=ft.Colors.BLACK26, offset=ft.Offset(0, 3)),
             content=ft.ResponsiveRow([
-                ft.Image(src="logo.png", width=110, col={"xs": 12, "md": 2}),
+                ft.Container(content=logo_or_title, col={"xs": 12, "md": 2}),
                 ft.TextField(
                     ref=self.busca_ref,
                     hint_text="Buscar medicamentos...",
@@ -713,14 +763,8 @@ class TelaUsuarioDashboard:
                         ),
                         ft.Container(
                             content=ft.Text(str(self.contador["valor"]), size=10, color=ft.Colors.WHITE, ref=self.carrinho_count),
-                            width=16,
-                            height=16,
-                            alignment=ft.alignment.center,
-                            bgcolor=ft.Colors.RED,
-                            border_radius=8,
-                            right=0,
-                            top=0,
-                            visible=True
+                            width=16, height=16, alignment=ft.alignment.center,
+                            bgcolor=ft.Colors.RED, border_radius=8, right=0, top=0, visible=True
                         )
                     ]),
                     ft.CircleAvatar(foreground_image_src="/images/profile.jpg", radius=20),
@@ -732,7 +776,7 @@ class TelaUsuarioDashboard:
         conteudo_principal = ft.Container(
             expand=True,
             alignment=ft.alignment.top_center,
-            padding=30,
+            padding=30 if not self.is_small else 16,
             content=ft.Column([
                 ft.Container(
                     ft.Text("MEDICAMENTOS DISPONÍVEIS", size=24, weight="bold", color="#1E3A8A"),
@@ -745,34 +789,66 @@ class TelaUsuarioDashboard:
                 self.botoes_paginacao
             ], spacing=30, scroll=ft.ScrollMode.ADAPTIVE)
         )
+
+        self.page.navigation_bar = (
+            ft.NavigationBar(
+                destinations=[
+                    ft.NavigationBarDestination(icon=ft.Icons.PERSON_OUTLINED, label="Perfil"),
+                    ft.NavigationBarDestination(icon=ft.Icons.HISTORY, label="Retiradas"),
+                    ft.NavigationBarDestination(icon=ft.Icons.CALENDAR_MONTH_OUTLINED, label="Agend."),
+                    ft.NavigationBarDestination(icon=ft.Icons.DESCRIPTION_OUTLINED, label="Docs"),
+                ],
+                on_change=lambda e: [
+                    self.page.go("/perfil"),
+                    self.page.go("/medicamentos_retirados"),
+                    self.page.go("/agendamentos"),
+                    self.page.go("/documentos"),
+                ][e.control.selected_index]
+            ) if self.is_small else None
+        )
         
         return ft.View(
-            route="/usuario",
-            padding=0,
-            controls=[
-                self.page.snack_bar,
-                ft.Row(
-                    controls=[
-                        sidebar,
-                        self.carrinho_drawer,
-                        ft.Column(
-                            controls=[
-                                ft.Container(header_busca, padding=ft.padding.only(left=20, right=20, top=20)),
-                                conteudo_principal,
-                            ],
-                            expand=True,
-                            spacing=0
-                        )
-                    ],
-                    expand=True,
-                    spacing=0,
-                    vertical_alignment=ft.CrossAxisAlignment.START
-                )
-            ]
-        )
+        route="/usuario",
+        padding=0,
+        controls=[
+            self.page.snack_bar,
+            ft.Row(
+                controls=[
+                    sidebar,
+                    self.carrinho_drawer,
+                    ft.Column(
+                        controls=[
+                            ft.Container(header_busca, padding=ft.padding.only(left=20, right=20, top=20)),
+                            conteudo_principal,
+                        ],
+                        expand=True,
+                        spacing=0
+                    )
+                ],
+                expand=True,
+                spacing=0,
+                vertical_alignment=ft.CrossAxisAlignment.START
+            )
+        ]
+    )
+
+    def _abrir_menu_sheet(self):
+        self.menu_sheet.open = True
+        self.page.update()
 
     def tela_documentos(self):
         self.sincronizar_carrinho()
+
+        # breakpoint simples
+        is_small = (self.page.width or 0) <= 760
+        pad_out   = 16 if is_small else 40
+        title_sz  = 24 if is_small else 28
+        card_pad  = 18 if is_small else 30
+
+        # largura dinâmica do card (máx 720)
+        vw = (self.page.width or 720)
+        card_width = min(max(vw - (pad_out * 2), 320), 720)
+
         return ft.View(
             route="/documentos",
             scroll=ft.ScrollMode.AUTO,
@@ -780,86 +856,102 @@ class TelaUsuarioDashboard:
             controls=[
                 self.page.snack_bar,
                 ft.Container(
-                    padding=40,
-                    content=ft.Column([
-                        ft.Container(
-                            content=ft.Column([
-                                ft.Image(src="img/logo.png", width=100, height=100)
-                            ]),
-                            alignment=ft.alignment.top_left
-                        ),
-                        # Título da Página
-                        ft.Text(
-                            "📄 Documentos Necessários", 
-                            size=28, 
-                            weight=ft.FontWeight.BOLD, 
-                            color=ft.Colors.BLUE_900,
-                            text_align=ft.TextAlign.CENTER,
-                        ),
-
-                        ft.Divider(height=30, color=ft.Colors.TRANSPARENT),
-                        # Caixa de Documentos
-                        ft.Container(
-                            padding=30,
-                            bgcolor=ft.Colors.WHITE,
-                            border_radius=20,
-                            shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26, offset=ft.Offset(0, 10)),
-                            content=ft.Column([
-                                ft.Text(
-                                    "Para retirar medicamentos é necessário apresentar:",
-                                    size=20,
-                                    weight=ft.FontWeight.BOLD,
-                                    color=ft.Colors.BLUE_900
-                                ),
-                                ft.Text(
-                                    "1. Documento com foto (RG, CNH, Passaporte)\n"
-                                    "2. Receita médica válida por até 3 meses\n\n"
-                                    "Se for um terceiro retirando o medicamento, é necessário:\n"
-                                    "- Documento com foto do responsável\n"
-                                    "- Documento com foto do paciente\n"
-                                    "- Autorização assinada pelo responsável.",
-                                    size=18,
-                                    color=ft.Colors.GREY_700,
-                                    selectable=True
-                                ),
-                            ], spacing=10)
-                        ),
-                        ft.Divider(height=30, color=ft.Colors.TRANSPARENT),
-                        # Botões de Ação
-                        ft.Row([
-                            ft.ElevatedButton(
-                                "Baixar Documento de Autorização",
-                                icon=ft.Icons.FILE_DOWNLOAD,
-                                icon_color=ft.Colors.WHITE,
-                                bgcolor=ft.Colors.BLUE_900,
-                                color=ft.Colors.WHITE,
-                                width=260,
-                                style=ft.ButtonStyle(
-                                    shape=ft.RoundedRectangleBorder(radius=12),
-                                    padding=ft.padding.symmetric(vertical=12)
-                                ),
-                                on_click=lambda e: self.gerar_documento_autorizacao()
+                    padding=pad_out,
+                    content=ft.Column(
+                        spacing=24 if is_small else 30,
+                        alignment=ft.MainAxisAlignment.CENTER,
+                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                        controls=[
+                            # (opcional) logo à esquerda em telas grandes, central no mobile
+                            ft.Container(
+                                content=ft.Image(src="img/logo.png", width=80 if is_small else 100, height=80 if is_small else 100),
+                                alignment=ft.alignment.center_left if not is_small else ft.alignment.center
                             ),
-                            ft.ElevatedButton(
-                                "Voltar",
-                                icon=ft.Icons.ARROW_BACK_IOS_NEW,
-                                bgcolor=ft.Colors.GREY_50,
+
+                            ft.Text(
+                                "📄 Documentos Necessários",
+                                size=title_sz,
+                                weight=ft.FontWeight.BOLD,
                                 color=ft.Colors.BLUE_900,
-                                width=150,
-                                style=ft.ButtonStyle(
-                                    shape=ft.RoundedRectangleBorder(radius=12),
-                                    padding=ft.padding.symmetric(vertical=12)
-                                ),
-                                on_click=lambda e: self.page.go("/usuario")
-                            )
-                        ], alignment=ft.MainAxisAlignment.CENTER, spacing=20)
-                    ], spacing=30, alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
+                                text_align=ft.TextAlign.CENTER,
+                            ),
+
+                            # Caixa com instruções
+                            ft.Container(
+                                width=card_width,
+                                padding=card_pad,
+                                bgcolor=ft.Colors.WHITE,
+                                border_radius=20,
+                                shadow=ft.BoxShadow(blur_radius=20, color=ft.Colors.BLACK26, offset=ft.Offset(0, 10)),
+                                content=ft.Column(spacing=10, controls=[
+                                    ft.Text(
+                                        "Para retirar medicamentos é necessário apresentar:",
+                                        size=18 if is_small else 20,
+                                        weight=ft.FontWeight.BOLD,
+                                        color=ft.Colors.BLUE_900
+                                    ),
+                                    ft.Text(
+                                        "1. Documento com foto (RG, CNH, Passaporte)\n"
+                                        "2. Receita médica válida por até 3 meses\n\n"
+                                        "Se for um terceiro retirando o medicamento, é necessário:\n"
+                                        "- Documento com foto do responsável\n"
+                                        "- Documento com foto do paciente\n"
+                                        "- Autorização assinada pelo responsável.",
+                                        size=16 if is_small else 18,
+                                        color=ft.Colors.GREY_700,
+                                        selectable=True
+                                    ),
+                                ])
+                            ),
+
+                            # Botões responsivos
+                            ft.ResponsiveRow(
+                                run_spacing=12,
+                                alignment=ft.MainAxisAlignment.CENTER,
+                                controls=[
+                                    ft.Container(
+                                        col={"xs": 12, "md": 4},
+                                        content=ft.ElevatedButton(
+                                            "Baixar Documento de Autorização",
+                                            icon=ft.Icons.FILE_DOWNLOAD,
+                                            icon_color=ft.Colors.WHITE,
+                                            bgcolor=ft.Colors.BLUE_900,
+                                            color=ft.Colors.WHITE,
+                                            # sem width fixo; ocupa 100% no xs por causa do col
+                                            style=ft.ButtonStyle(
+                                                shape=ft.RoundedRectangleBorder(radius=12),
+                                                padding=ft.padding.symmetric(vertical=12)
+                                            ),
+                                            on_click=lambda e: self.gerar_documento_autorizacao()
+                                        )
+                                    ),
+                                    ft.Container(
+                                        col={"xs": 12, "md": 2},
+                                        content=ft.ElevatedButton(
+                                            "Voltar",
+                                            icon=ft.Icons.ARROW_BACK_IOS_NEW,
+                                            bgcolor=ft.Colors.GREY_50,
+                                            color=ft.Colors.BLUE_900,
+                                            style=ft.ButtonStyle(
+                                                shape=ft.RoundedRectangleBorder(radius=12),
+                                                padding=ft.padding.symmetric(vertical=12)
+                                            ),
+                                            on_click=lambda e: self.page.go("/usuario")
+                                        )
+                                    ),
+                                ]
+                            ),
+                        ]
+                    )
                 )
             ]
         )
 
 
     def tela_perfil_paciente(self):
+        # rebuild automático desta view ao redimensionar
+        self.page.on_resized = lambda e: self.page.go("/perfil")
+
         self.sincronizar_carrinho()
 
         self.campos = {
@@ -877,6 +969,17 @@ class TelaUsuarioDashboard:
             "email": self.email_usuario,
             "tel": "(00) 00000-0000"
         }
+
+        # breakpoints simples
+        is_small = (self.page.width or 0) <= 760
+        pad_out   = 16 if is_small else 30
+        title_sz  = 24 if is_small else 32
+        name_sz   = 22 if is_small else 30
+        card_pad  = 18 if is_small else 30
+
+        # largura dinâmica do cartão (máx 700px)
+        vw = (self.page.width or 700)
+        card_width = min(max(vw - (pad_out * 2), 320), 700)
 
         def salvar_todos(e=None):
             for campo in self.campos:
@@ -903,37 +1006,97 @@ class TelaUsuarioDashboard:
 
             self.page.snack_bar.open = True
             self.page.update()
+
         def campo_editavel(label, campo, icone):
-            return ft.Column([
-                ft.Row([
-                    ft.Icon(icone, size=20, color=ft.Colors.BLUE_900),
-                    ft.Text(label, size=14, weight="bold", color=ft.Colors.BLUE_900),
-                    ft.Container(expand=True),
-                    ft.IconButton(  # apenas visual
-                        icon=ft.Icons.EDIT,
-                        icon_color=ft.Colors.BLUE_700,
-                        tooltip="Campo editável"
+            return ft.Container(
+                col={"xs": 12, "md": 6},
+                content=ft.Column([
+                    ft.Row([
+                        ft.Icon(icone, size=20, color=ft.Colors.BLUE_900),
+                        ft.Text(label, size=14, weight="bold", color=ft.Colors.BLUE_900),
+                        ft.Container(expand=True),
+                        ft.IconButton(icon=ft.Icons.EDIT, icon_color=ft.Colors.BLUE_700, tooltip="Campo editável")
+                    ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
+                    ft.TextField(
+                        ref=self.campos[campo],
+                        value=self.dados_usuario[campo],
+                        border_radius=12,
+                        filled=True,
+                        bgcolor="#F3F4F6",
+                        dense=True,
+                        text_size=15,
+                        content_padding=ft.padding.all(12),
+                        border_color=ft.Colors.GREY_300,
+                        on_submit=salvar_todos
                     )
-                ], alignment=ft.MainAxisAlignment.SPACE_BETWEEN),
-                ft.Row([
-                    ft.Container(
-                        expand=True,
-                        content=ft.TextField(
-                            ref=self.campos[campo],
-                            value=self.dados_usuario[campo],
-                            border_radius=12,
-                            filled=True,
-                            bgcolor="#F3F4F6",
-                            dense=True,
-                            text_size=15,
-                            content_padding=ft.padding.all(12),
-                            border_color=ft.Colors.GREY_300,
-                            on_submit=salvar_todos
-                        )
-                    )
-                ])
-            ], spacing=6)
-            
+                ], spacing=6)
+            )
+
+        # ===== cartão principal (sem 'constraints', com width dinâmico) =====
+        card = ft.Container(
+            width=card_width,
+            padding=card_pad,
+            bgcolor=ft.Colors.WHITE,
+            border_radius=20,
+            shadow=ft.BoxShadow(blur_radius=24, color=ft.Colors.BLACK26, offset=ft.Offset(0, 12)),
+            content=ft.Column([
+                ft.Row(
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    controls=[ft.Column(
+                        alignment=ft.MainAxisAlignment.CENTER,
+                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                        spacing=8,
+                        controls=[
+                            ft.Text(self.dados_usuario["nome"], size=name_sz, weight=ft.FontWeight.BOLD, text_align=ft.TextAlign.CENTER),
+                            ft.Text("Paciente FarmConnect", size=14, color=ft.Colors.GREY_600, text_align=ft.TextAlign.CENTER),
+                        ]
+                    )]
+                ),
+                ft.Divider(height=20 if is_small else 30),
+
+                ft.ResponsiveRow([
+                    campo_editavel("Nome completo", "nome", ft.Icons.PERSON),
+                    campo_editavel("CPF", "cpf", ft.Icons.BADGE),
+                    campo_editavel("Data de nascimento", "nasc", ft.Icons.CALENDAR_MONTH),
+                    campo_editavel("Email", "email", ft.Icons.EMAIL),
+                    campo_editavel("Telefone", "tel", ft.Icons.PHONE),
+                ], run_spacing=12, alignment=ft.MainAxisAlignment.START),
+            ], spacing=25)
+        )
+
+        botoes = ft.ResponsiveRow([
+            ft.Container(
+                col={"xs": 12, "md": 3},
+                content=ft.ElevatedButton(
+                    "Salvar",
+                    icon=ft.Icons.SAVE,
+                    icon_color=ft.Colors.WHITE,
+                    bgcolor=ft.Colors.BLUE_900,
+                    color=ft.Colors.WHITE,
+                    style=ft.ButtonStyle(
+                        shape=ft.RoundedRectangleBorder(radius=16),
+                        padding=ft.padding.symmetric(vertical=12),
+                        elevation=4
+                    ),
+                    on_click=salvar_todos
+                )
+            ),
+            ft.Container(
+                col={"xs": 12, "md": 3},
+                content=ft.ElevatedButton(
+                    "Voltar",
+                    icon=ft.Icons.ARROW_BACK,
+                    bgcolor=ft.Colors.GREY_50,
+                    color=ft.Colors.BLUE_900,
+                    style=ft.ButtonStyle(
+                        shape=ft.RoundedRectangleBorder(radius=16),
+                        padding=ft.padding.symmetric(vertical=12),
+                        elevation=4
+                    ),
+                    on_click=lambda e: self.page.go("/usuario")
+                )
+            )
+        ], run_spacing=12, alignment=ft.MainAxisAlignment.CENTER)
 
         return ft.View(
             route="/perfil",
@@ -943,87 +1106,18 @@ class TelaUsuarioDashboard:
                 self.page.snack_bar,
                 ft.Container(
                     expand=True,
-                    padding=30,
-                    alignment=ft.alignment.center,
+                    padding=pad_out,
+                    alignment=ft.alignment.top_center,
                     content=ft.Column([
                         ft.Row(
                             alignment=ft.MainAxisAlignment.CENTER,
-                            controls=[
-                                ft.Text("👤 Perfil do Paciente", size=32, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900)
-                            ]
+                            controls=[ft.Text("👤 Perfil do Paciente", size=title_sz, weight=ft.FontWeight.BOLD, color=ft.Colors.BLUE_900)]
                         ),
-                        ft.Row(
-                            alignment=ft.MainAxisAlignment.CENTER,
-                            controls=[
-                                ft.Container(
-                                    width=700,
-                                    padding=30,
-                                    bgcolor=ft.Colors.WHITE,
-                                    border_radius=20,
-                                    shadow=ft.BoxShadow(blur_radius=24, color=ft.Colors.BLACK26, offset=ft.Offset(0, 12)),
-                                    content=ft.Column([
-                                        ft.Row(
-                                            alignment=ft.MainAxisAlignment.CENTER,
-                                            controls=[
-                                                ft.Column(
-                                                    alignment=ft.MainAxisAlignment.CENTER,
-                                                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                                                    spacing=8,
-                                                    controls=[
-                                                        ft.Text(self.dados_usuario["nome"], size=30, weight=ft.FontWeight.BOLD, text_align=ft.TextAlign.CENTER),
-                                                        ft.Text("Paciente FarmConnect", size=14, color=ft.Colors.GREY_600, text_align=ft.TextAlign.CENTER),
-                                                    ]
-                                                )
-                                            ]
-                                        ),
-                                        ft.Divider(height=30),
-                                        campo_editavel("Nome completo", "nome", ft.Icons.PERSON),
-                                        campo_editavel("CPF", "cpf", ft.Icons.BADGE),
-                                        campo_editavel("Data de nascimento", "nasc", ft.Icons.CALENDAR_MONTH),
-                                        campo_editavel("Email", "email", ft.Icons.EMAIL),
-                                        campo_editavel("Telefone", "tel", ft.Icons.PHONE)
-                                    ], spacing=25)
-                                )
-                            ]
-                        ),
-                        ft.Row(
-                            alignment=ft.MainAxisAlignment.CENTER,
-                            controls=[
-                                ft.ElevatedButton(
-                                    "Salvar",
-                                    icon=ft.Icons.SAVE,
-                                    icon_color = ft.Colors.WHITE,
-                                    bgcolor=ft.Colors.BLUE_900,
-                                    color=ft.Colors.WHITE,
-                                    width=160,
-                                    style=ft.ButtonStyle(
-                                        shape=ft.RoundedRectangleBorder(radius=16),
-                                        padding=ft.padding.symmetric(vertical=12),
-                                        elevation=4
-                                    ),
-                                    on_click=salvar_todos
-                                )
-                            ]
-                        ),
-                        ft.Row(
-                            alignment=ft.MainAxisAlignment.CENTER,
-                            controls=[
-                                ft.ElevatedButton(
-                                    "Voltar",
-                                    icon=ft.Icons.ARROW_BACK,
-                                    bgcolor=ft.Colors.GREY_50,
-                                    color=ft.Colors.BLUE_900,
-                                    width=160,
-                                    style=ft.ButtonStyle(
-                                        shape=ft.RoundedRectangleBorder(radius=16),
-                                        padding=ft.padding.symmetric(vertical=12),
-                                        elevation=4
-                                    ),
-                                    on_click=lambda e: self.page.go("/usuario")
-                                )
-                            ]
-                        )
-                    ], spacing=30, alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
+                        card,
+                        botoes
+                    ], spacing=20 if is_small else 30,
+                    alignment=ft.MainAxisAlignment.START,
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER)
                 )
             ]
         )
