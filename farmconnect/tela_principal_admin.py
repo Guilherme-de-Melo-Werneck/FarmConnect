@@ -25,6 +25,56 @@ class TelaAdminDashboard:
         self.tabela_pacientes_ref = ft.Ref[ft.DataTable]()
         self.tabela_medicamentos_ref = ft.Ref[ft.DataTable]()
 
+        self.page = page
+        self.BREAKPOINT = 760
+        self.is_small = (self.page.width or 0) <= self.BREAKPOINT
+        self.current_view = ft.Column(expand=True, spacing=0)  # onde você injeta as telas
+
+        # BottomSheet com os mesmos itens da sidebar
+        self.menu_sheet = ft.BottomSheet(
+            content=ft.Container(
+                padding=16,
+                content=ft.Column(spacing=6, controls=[
+                    ft.ListTile(leading=ft.Icon(ft.Icons.HOME_OUTLINED), title=ft.Text("Início"),
+                                on_click=lambda e: self._goto("dashboard")),
+                    ft.ListTile(leading=ft.Icon(ft.Icons.CALENDAR_MONTH_OUTLINED), title=ft.Text("Agendamentos"),
+                                on_click=lambda e: self._goto("agendamentos")),
+                    ft.ListTile(leading=ft.Icon(ft.Icons.MEDICAL_SERVICES_OUTLINED), title=ft.Text("Medicamentos"),
+                                on_click=lambda e: self._goto("medicamentos")),
+                    ft.ListTile(leading=ft.Icon(ft.Icons.PERSON_OUTLINED), title=ft.Text("Pacientes"),
+                                on_click=lambda e: self._goto("pacientes")),
+                    ft.Divider(),
+                    ft.ListTile(leading=ft.Icon(ft.Icons.LOGOUT, color="#DC2626"), title=ft.Text("Sair", color="#DC2626"),
+                                on_click=lambda e: self.page.go("/escolha_usuario")),
+                ])
+            )
+        )
+        if self.menu_sheet not in self.page.overlay:
+            self.page.overlay.append(self.menu_sheet)
+
+        def _on_resize(e):
+            was = self.is_small
+            self.is_small = (self.page.width or 0) <= self.BREAKPOINT
+            if self.is_small != was:
+                # força rebuild desta view (ajuste a rota se a sua for outra)
+                self.page.go("/admin_dashboard")
+        self.page.on_resized = _on_resize
+
+        def _goto(route_key: str):
+            # navegação centralizada (BottomSheet/NavigationBar)
+            if route_key == "dashboard":   self.load_dashboard()
+            elif route_key == "agendamentos": self.load_agendamentos()
+            elif route_key == "medicamentos": self.load_medicamentos()
+            elif route_key == "pacientes":    self.load_pacientes()
+            self.menu_sheet.open = False
+            self.page.update()
+        self._goto = _goto
+
+        def _open_menu_sheet():
+            self.menu_sheet.open = True
+            self.page.update()
+        self._open_menu_sheet = _open_menu_sheet
+
     def page_settings(self):
         self.page.title = "FarmConnect - Painel Admin"
         self.page.bgcolor = "#EFF6FF"
@@ -212,6 +262,7 @@ class TelaAdminDashboard:
             botao_sair.on_hover = on_hover_sair
 
             return ft.Container(
+                visible=not self.is_small,
                 width=240 if self.sidebar_open else 80,
                 bgcolor="#F9FAFB",
                 border=ft.border.only(right=ft.BorderSide(1, "#E5E7EB")),
@@ -235,44 +286,48 @@ class TelaAdminDashboard:
             )
 
     def header(self):
+        is_small = self.is_small
+        leading = (
+            ft.IconButton(
+                icon=ft.Icons.MENU, icon_color=ft.Colors.BLUE_900,
+                on_click=lambda e: self._open_menu_sheet()
+            )
+            if is_small else ft.Container(width=1, height=1)
+        )
+        title = ft.Row(
+            controls=[
+                leading,
+                ft.Text("FarmConnect - Painel de Controle", size=20 if is_small else 22,
+                        weight="bold", color=ft.Colors.BLUE_900),
+            ],
+            spacing=10,
+            alignment=ft.MainAxisAlignment.START,
+        )
+        right = ft.Row(
+            wrap=True, spacing=8,
+            controls=[
+                ft.Text("Bem-vindo!", size=18 if is_small else 20, color=ft.Colors.BLUE_900),
+                ft.Text(self.page.session.get("admin_nome") or "Administrador",
+                        size=18 if is_small else 20, weight="bold", color=ft.Colors.BLUE_900),
+            ],
+            alignment=ft.MainAxisAlignment.END
+        )
         return ft.Container(
             padding=ft.padding.symmetric(horizontal=20, vertical=14),
             bgcolor="white",
             border=ft.border.only(bottom=ft.BorderSide(1, "#E5E7EB")),
             content=ft.ResponsiveRow(
-                columns=12,
-                spacing=10,
-                run_spacing=10,
+                columns=12, spacing=10, run_spacing=10,
                 controls=[
-                    ft.Container(
-                        col={"sm": 12, "md": 6},
-                        alignment=ft.alignment.center_left,
-                        content=ft.Text(
-                            "FarmConnect - Painel de Controle",
-                            size=22,
-                            weight="bold",
-                            color=ft.Colors.BLUE_900,
-                            text_align=ft.TextAlign.START
-                        )
-                    ),
-                    ft.Container(
-                        col={"sm": 12, "md": 6},
-                        alignment=ft.alignment.center_right,
-                        content=ft.Column([
-                            ft.Row(
-                                wrap=True,
-                                spacing=10,
-                                controls=[
-                                    ft.Text("Bem-vindo!", size=20, color=ft.Colors.BLUE_900),
-                                    ft.Text(self.page.session.get("admin_nome") or "Administrador", size=20, weight="bold", color=ft.Colors.BLUE_900),
-                                    
-                                ]
-                            )
-                        ])
-                    )
+                    ft.Container(col={"sm": 12, "md": 6}, alignment=ft.alignment.center_left, content=title),
+                    ft.Container(col={"sm": 12, "md": 6}, alignment=ft.alignment.center_right, content=right),
                 ]
             )
         )
+
+    def _open_menu_sheet(self):
+        self.menu_sheet.open = True
+        self.page.update()
 
     def graph_cards(self):
         return ft.ResponsiveRow(
@@ -390,7 +445,7 @@ class TelaAdminDashboard:
             ]
         )
 
-    def load_dashboard(self, e=None):
+    def load_dashboard(self, e=None, do_update=True):
         self.current_view.controls = [
             ft.Container(
                 padding=20,
@@ -400,47 +455,61 @@ class TelaAdminDashboard:
                     self.metric_cards(),
                     ft.Container(height=40),
 
-                    # Botões centralizados para baixar relatórios
+                    # Botões centralizados e responsivos para baixar relatórios
                     ft.Container(
+                        expand=True,  # ocupa toda a largura
                         alignment=ft.alignment.center,
-                        padding=20,
-                        content=ft.Row(
+                        padding=ft.padding.only(top=10, bottom=30),
+                        content=ft.ResponsiveRow(
                             alignment=ft.MainAxisAlignment.CENTER,
-                            spacing=30,
+                            run_spacing=12,
+                            spacing=20,
                             controls=[
-                                ft.ElevatedButton(
-                                    text=" Baixar Relatório (PDF) ",
-                                    icon=ft.Icons.PICTURE_AS_PDF,
-                                    bgcolor=ft.Colors.BLUE_900,
-                                    color=ft.Colors.WHITE,
-                                    height=55,
-                                    style=ft.ButtonStyle(
-                                        shape=ft.RoundedRectangleBorder(radius=14),
-                                        padding=ft.padding.symmetric(vertical=12),
-                                        elevation=6
-                                    ),
-                                    on_click=lambda e: self.gerar_relatorio_pdf()
+                                ft.Container(
+                                    col={"xs": 12, "md": 3},
+                                    alignment=ft.alignment.center,
+                                    content=ft.ElevatedButton(
+                                        text="Baixar Relatório (PDF)",
+                                        icon=ft.Icons.PICTURE_AS_PDF,
+                                        bgcolor=ft.Colors.BLUE_900,
+                                        color=ft.Colors.WHITE,
+                                        height=55,
+                                        expand=True,
+                                        style=ft.ButtonStyle(
+                                            shape=ft.RoundedRectangleBorder(radius=14),
+                                            padding=ft.padding.symmetric(vertical=12),
+                                            elevation=6
+                                        ),
+                                        on_click=lambda e: self.gerar_relatorio_pdf()
+                                    )
                                 ),
-                                ft.ElevatedButton(
-                                    text=" Baixar Relatório (Excel) ",
-                                    icon=ft.Icons.TABLE_VIEW,
-                                    bgcolor=ft.Colors.GREEN_700,
-                                    color=ft.Colors.WHITE,
-                                    height=55,
-                                    style=ft.ButtonStyle(
-                                        shape=ft.RoundedRectangleBorder(radius=14),
-                                        padding=ft.padding.symmetric(vertical=12),
-                                        elevation=6
-                                    ),
-                                    on_click=lambda e: self.gerar_relatorio_excel()
-                                )
+                                ft.Container(
+                                    col={"xs": 12, "md": 3},
+                                    alignment=ft.alignment.center,
+                                    content=ft.ElevatedButton(
+                                        text="Baixar Relatório (Excel)",
+                                        icon=ft.Icons.TABLE_VIEW,
+                                        bgcolor=ft.Colors.GREEN_700,
+                                        color=ft.Colors.WHITE,
+                                        height=55,
+                                        expand=True,
+                                        style=ft.ButtonStyle(
+                                            shape=ft.RoundedRectangleBorder(radius=14),
+                                            padding=ft.padding.symmetric(vertical=12),
+                                            elevation=6
+                                        ),
+                                        on_click=lambda e: self.gerar_relatorio_excel()
+                                    )
+                                ),
                             ]
                         )
                     )
                 ], spacing=20)
             )
         ]
-        self.page.update()
+
+        if do_update:
+            self.page.update()
 
 
     def gerar_rows_medicamentos(self, lista):
@@ -2357,6 +2426,37 @@ class TelaAdminDashboard:
 
 
     def build_tela(self):
+        # estado responsivo (a cada build)
+        self.is_small = (self.page.width or 0) <= self.BREAKPOINT
+
+        # NavigationBar para telas pequenas
+        self.page.navigation_bar = (
+            ft.NavigationBar(
+                destinations=[
+                    ft.NavigationBarDestination(icon=ft.Icons.HOME_OUTLINED, label="Início"),
+                    ft.NavigationBarDestination(icon=ft.Icons.CALENDAR_MONTH_OUTLINED, label="Agend."),
+                    ft.NavigationBarDestination(icon=ft.Icons.MEDICAL_SERVICES_OUTLINED, label="Medic."),
+                    ft.NavigationBarDestination(icon=ft.Icons.PERSON_OUTLINED, label="Pac."),
+                ],
+                on_change=lambda e: [
+                    self._goto("dashboard"),
+                    self._goto("agendamentos"),
+                    self._goto("medicamentos"),
+                    self._goto("pacientes"),
+                ][e.control.selected_index]
+            )
+            if self.is_small else None
+        )
+
+        # sidebar (some no mobile)
+        sidebar = self.side_menu()
+        try:
+            sidebar.visible = not self.is_small
+        except:
+            pass
+
+        content_pad = 12 if self.is_small else 20
+
         return ft.View(
             route="/admin_dashboard",
             padding=0,
@@ -2366,23 +2466,21 @@ class TelaAdminDashboard:
                     spacing=0,
                     vertical_alignment=ft.CrossAxisAlignment.START,
                     controls=[
-                        self.side_menu(),
+                        sidebar,
                         ft.Column(
                             expand=True,
                             spacing=0,
                             controls=[
-                                self.header(),
+                                self.header(),  # ver ajuste do hambúrguer abaixo
                                 ft.Container(
                                     expand=True,
-                                    padding=20,
+                                    padding=content_pad,
                                     content=ft.Column(
                                         expand=True,
                                         scroll=ft.ScrollMode.ADAPTIVE,
-                                        controls=[
-                                            self.current_view
-                                        ]
+                                        controls=[self.current_view]
                                     )
-                                )
+                                ),
                             ]
                         )
                     ]

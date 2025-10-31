@@ -17,7 +17,9 @@ def main(page: ft.Page):
     page.bgcolor = ft.Colors.WHITE
     page.theme_mode = ft.ThemeMode.LIGHT
     page.scroll = ft.ScrollMode.ADAPTIVE
-    page.window.maximized = True
+    page.window.height = 932
+    page.window.width = 430
+    page.window.resizable = True
     
     def route_change(e):
         page.views.clear()
@@ -35,7 +37,9 @@ def main(page: ft.Page):
         elif page.route == "/login_admin":
             page.views.append(TelaLoginAdmin(page).build_tela())
         elif page.route == "/admin_dashboard":
-            page.views.append(TelaAdminDashboard(page).build_tela())
+            admin = TelaAdminDashboard(page)
+            admin.load_dashboard(do_update=False)  # pré-carrega o conteúdo
+            page.views.append(admin.build_tela())
         elif page.route == "/login_usuario":
             page.views.append(TelaLoginUsuario(page).build_tela())
         elif page.route == "/documentos":
